@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Smart Library — Skylearn-adapted design tokens (lihat PRD §12)
+   Terang, hangat, tenang. Tanpa gradient, tanpa glass, tanpa glow.
+   Semantic: sky = aksi primer, leaf = sukses/tersedia,
+   sun = highlight statistik saja (BUKAN tombol), coral = error,
+   berry = info sekunder.
+   ============================================================ */
+
+@theme {
+  --color-sky: #3b82f6;
+  --color-sky-bright: #60a5fa;
+  --color-sky-deep: #1d4ed8;
+  --color-sky-soft: #dbeafe;
+
+  --color-sun: #fbbf24;
+  --color-sun-bright: #fcd34d;
+  --color-sun-deep: #d97706;
+  --color-sun-soft: #fef3c7;
+
+  --color-leaf: #22c55e;
+  --color-leaf-soft: #dcfce7;
+  --color-leaf-deep: #16a34a;
+
+  --color-coral: #f87171;
+  --color-coral-soft: #fee2e2;
+  --color-coral-deep: #dc2626;
+
+  --color-berry: #a855f7;
+  --color-berry-soft: #f3e8ff;
+
+  --color-background: #ffffff;
+  --color-surface: #f8fafc;
+  --color-surface-sunken: #f1f5f9;
+  --color-ink: #0f172a;
+  --color-ink-muted: #475569;
+  --color-ink-subtle: #94a3b8;
+  --color-ink-faint: #cbd5e1;
+  --color-outline: #e2e8f0;
+  --color-outline-strong: #94a3b8;
+
+  --font-display: var(--font-display), "Hubot Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sans), "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-card: 16px;
+  --radius-modal: 20px;
+
+  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-modal: 0 24px 48px rgba(15, 23, 42, 0.12);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Focus ring terlihat (a11y baseline PRD §16) */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-sky-bright);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Motion ringan: satu kali saat halaman tampil, 240ms.
+   Di-nonaktifkan otomatis oleh blok prefers-reduced-motion di bawah. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-rise {
+  animation: rise 240ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Print: label QR siap cetak (admin/qr/print) ---------- */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-sheet {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .qr-label {
+    border: 1.5px solid #0f172a;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}
+
+/* Scanner viewfinder: bingkai sederhana, tanpa animasi berlebihan */
+.scan-frame {
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.45);
+}
