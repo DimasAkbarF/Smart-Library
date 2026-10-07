@@ -101,20 +101,20 @@ export function HumanActivityFeed({
           <span className="flex size-7 items-center justify-center rounded-md bg-berry-soft text-berry">
             <History className="size-4" />
           </span>
-          <h2 id="activity-feed-heading" className="font-display text-base font-bold text-ink">
+          <h2 id="activity-feed-heading" className="font-display text-body font-bold text-ink">
             Aktivitas Terkini
           </h2>
         </div>
         <Link
           href={allLogsHref}
-          className="text-xs font-semibold text-sky-deep hover:underline transition-colors"
+          className="text-label font-semibold text-sky-deep hover:underline transition-colors"
         >
           Semua log audit →
         </Link>
       </div>
 
       {activities.length === 0 ? (
-        <p className="py-6 text-sm text-ink-muted">Belum ada aktivitas sirkulasi tercatat.</p>
+        <p className="py-6 text-body text-ink-muted">Belum ada aktivitas sirkulasi tercatat.</p>
       ) : (
         <div className="mt-4 relative pl-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-outline">
           <ul className="space-y-4">
@@ -141,7 +141,7 @@ export function HumanActivityFeed({
                     aria-hidden
                   />
 
-                  <div className="flex items-start justify-between gap-3 text-sm">
+                  <div className="flex items-start justify-between gap-3 text-body">
                     <div className="min-w-0 pr-2">
                       <p className="leading-snug text-ink">
                         <span className="font-bold text-ink">{actor}</span>{" "}
@@ -155,7 +155,7 @@ export function HumanActivityFeed({
                       <time
                         dateTime={a.created_at}
                         title={fullTime}
-                        className="text-xs font-mono text-ink-subtle hover:text-ink cursor-help border-b border-dotted border-ink-subtle/40"
+                        className="text-meta font-mono text-ink-subtle hover:text-ink cursor-help border-b border-dotted border-ink-subtle/40"
                       >
                         {relativeTime}
                       </time>

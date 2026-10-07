@@ -40,7 +40,7 @@ export default async function StudentBooks({
   return (
     <div className="grid gap-5">
       <header>
-        <h1 className="font-display text-2xl font-bold">Katalog Buku</h1>
+        <h1 className="font-display text-display-sm font-bold">Katalog Buku</h1>
         <p className="text-ink-muted">
           {result.total > 0
             ? `${result.total} buku ditemukan.`
@@ -56,7 +56,7 @@ export default async function StudentBooks({
         <Link
           href={href(sp, { cat: undefined, page: undefined })}
           className={cn(
-            "rounded-full px-3 py-1.5 text-sm font-semibold",
+            "rounded-full px-3 py-1.5 text-body font-semibold",
             !sp.cat ? "bg-sky-soft text-sky-deep" : "bg-surface text-ink-muted hover:text-ink",
           )}
         >
@@ -68,7 +68,7 @@ export default async function StudentBooks({
             href={href(sp, { cat: sp.cat === c.id ? undefined : c.id, page: undefined })}
             aria-pressed={sp.cat === c.id}
             className={cn(
-              "rounded-full px-3 py-1.5 text-sm font-semibold",
+              "rounded-full px-3 py-1.5 text-body font-semibold",
               sp.cat === c.id ? "bg-sky-soft text-sky-deep" : "bg-surface text-ink-muted hover:text-ink",
             )}
           >
@@ -79,7 +79,7 @@ export default async function StudentBooks({
           href={href(sp, { avail: sp.avail === "1" ? undefined : "1", page: undefined })}
           aria-pressed={sp.avail === "1"}
           className={cn(
-            "rounded-full border px-3 py-1.5 text-sm font-semibold",
+            "rounded-full border px-3 py-1.5 text-body font-semibold",
             sp.avail === "1"
               ? "border-leaf bg-leaf-soft text-leaf-deep"
               : "border-outline text-ink-muted hover:text-ink",
@@ -116,7 +116,7 @@ export default async function StudentBooks({
               <Button variant="secondary" size="sm">Sebelumnya</Button>
             </Link>
           )}
-          <span className="text-sm text-ink-muted">
+          <span className="text-body text-ink-muted">
             Halaman {result.page} dari {result.pageCount}
           </span>
           {page < result.pageCount && (

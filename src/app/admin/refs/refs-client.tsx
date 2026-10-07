@@ -48,7 +48,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
         </div>
       </form>
       {msg && (
-        <p role="alert" className="mt-2 text-sm font-semibold text-coral-deep">
+        <p role="alert" className="mt-2 text-body font-semibold text-coral-deep">
           {msg}
         </p>
       )}
@@ -63,7 +63,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
               onClick={() => {
                 if (window.confirm(`Hapus kategori "${c.name}"?`)) run(() => deleteCategory(c.id));
               }}
-              className="rounded-md border border-outline px-2 py-1 text-xs font-semibold text-coral-deep hover:bg-coral-soft disabled:opacity-50"
+              className="rounded-md border border-outline px-2 py-1 text-label font-semibold text-coral-deep hover:bg-coral-soft disabled:opacity-50"
             >
               Hapus
             </button>
@@ -94,7 +94,7 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
         </div>
       </form>
       {msg && (
-        <p role="alert" className="mt-2 text-sm font-semibold text-coral-deep">
+        <p role="alert" className="mt-2 text-body font-semibold text-coral-deep">
           {msg}
         </p>
       )}
@@ -109,7 +109,7 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
               onClick={() => {
                 if (window.confirm(`Hapus kelas "${c.name}"?`)) run(() => deleteClass(c.id));
               }}
-              className="rounded-md border border-outline px-2 py-1 text-xs font-semibold text-coral-deep hover:bg-coral-soft disabled:opacity-50"
+              className="rounded-md border border-outline px-2 py-1 text-label font-semibold text-coral-deep hover:bg-coral-soft disabled:opacity-50"
             >
               Hapus
             </button>

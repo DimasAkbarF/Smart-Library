@@ -54,13 +54,13 @@ export function TransactionsClient({
       {selectedIds.length > 0 && (
         <div className="sticky top-16 z-20 flex items-center justify-between gap-3 rounded-md border border-outline bg-background px-4 py-2.5 shadow-card">
           <div className="flex items-center gap-3">
-            <span className="font-display text-sm font-bold text-sky-deep">
+            <span className="font-display text-body font-bold text-sky-deep">
               {selectedIds.length} transaksi dipilih
             </span>
             <button
               type="button"
               onClick={clearSelection}
-              className="flex items-center gap-1 text-xs text-ink-muted hover:text-ink transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-meta text-ink-muted hover:text-ink transition-colors cursor-pointer"
             >
               <X className="size-3.5" />
               <span>Batal</span>
@@ -76,7 +76,7 @@ export function TransactionsClient({
                 window.open(`/api/export?type=loans&ids=${selectedIds.join(",")}`, "_blank");
                 clearSelection();
               }}
-              className="gap-1.5 text-xs h-8 bg-white"
+              className="gap-1.5 text-label h-8 bg-white"
             >
               <FileSpreadsheet className="size-3.5" />
               <span>Ekspor Terpilih</span>
@@ -87,7 +87,7 @@ export function TransactionsClient({
 
       {/* Interactive Table with Checkboxes & Drawer trigger */}
       <div className="overflow-x-auto rounded-card border border-outline bg-background shadow-xs">
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="w-full min-w-[640px] text-left text-body">
           <thead>
             <tr className="sticky top-0 z-10 border-b border-outline bg-surface-sunken">
               <th className="w-10 px-4 py-3 text-center">
@@ -99,19 +99,19 @@ export function TransactionsClient({
                   className="size-4 rounded border-outline text-sky focus:ring-sky cursor-pointer"
                 />
               </th>
-              <th className="px-4 py-3 text-xs font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Siswa
               </th>
-              <th className="px-4 py-3 text-xs font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Buku
               </th>
-              <th className="px-4 py-3 text-xs font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Dipinjam
               </th>
-              <th className="px-4 py-3 text-xs font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Jatuh Tempo
               </th>
-              <th className="px-4 py-3 text-xs font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Status
               </th>
             </tr>
@@ -144,7 +144,7 @@ export function TransactionsClient({
                   <td className="px-4 py-3.5 align-middle">
                     <div>
                       <span className="block font-semibold text-ink">{r.student_name}</span>
-                      <span className="font-mono text-xs text-ink-subtle">
+                      <span className="font-mono text-meta text-ink-subtle">
                         {r.student_nis} {r.class_name ? `· ${r.class_name}` : ""}
                       </span>
                     </div>
@@ -152,14 +152,14 @@ export function TransactionsClient({
                   <td className="px-4 py-3.5 align-middle">
                     <div>
                       <span className="block font-semibold text-ink line-clamp-1">{r.book_title}</span>
-                      <span className="font-mono text-xs text-ink-subtle">{r.inventory_code}</span>
+                      <span className="font-mono text-meta text-ink-subtle">{r.inventory_code}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3.5 align-middle">
-                    <span className="text-xs text-ink-muted">{formatTanggal(r.borrowed_at)}</span>
+                    <span className="text-meta text-ink-muted">{formatTanggal(r.borrowed_at)}</span>
                   </td>
                   <td className="px-4 py-3.5 align-middle">
-                    <div className="text-xs">
+                    <div className="text-label">
                       <span className="text-ink-muted">{formatTanggal(r.due_at)}</span>
                       {telat > 0 && r.status === "OVERDUE" && (
                         <span className="block font-bold text-coral-deep">Telat {telat} hari</span>
@@ -178,14 +178,14 @@ export function TransactionsClient({
 
       {/* Pagination Footer */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-        <p className="text-xs text-ink-subtle font-medium">
+        <p className="text-meta text-ink-subtle font-medium">
           {total.toLocaleString("id-ID")} transaksi · halaman {page} dari {pageCount}
         </p>
         <nav className="flex items-center gap-1.5" aria-label="Paginasi">
           {page <= 1 ? (
             <span
               aria-disabled
-              className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs text-ink-faint border border-outline/40 cursor-not-allowed"
+              className="flex items-center gap-1 rounded-md px-3 py-1.5 text-label text-ink-faint border border-outline/40 cursor-not-allowed"
             >
               <ChevronLeft className="size-3.5" />
               <span className="hidden sm:inline">Sebelumnya</span>
@@ -193,7 +193,7 @@ export function TransactionsClient({
           ) : (
             <Link
               href={href(page - 1)}
-              className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+              className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
             >
               <ChevronLeft className="size-3.5" />
               <span className="hidden sm:inline">Sebelumnya</span>
@@ -201,7 +201,7 @@ export function TransactionsClient({
           )}
 
           <span
-            className="px-3 py-1 rounded-md bg-surface border border-outline font-mono text-xs font-semibold text-ink"
+            className="px-3 py-1 rounded-md bg-surface border border-outline font-mono text-label font-semibold text-ink"
             aria-current="page"
           >
             {page} / {pageCount}
@@ -210,7 +210,7 @@ export function TransactionsClient({
           {page >= pageCount ? (
             <span
               aria-disabled
-              className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs text-ink-faint border border-outline/40 cursor-not-allowed"
+              className="flex items-center gap-1 rounded-md px-3 py-1.5 text-label text-ink-faint border border-outline/40 cursor-not-allowed"
             >
               <span className="hidden sm:inline">Berikutnya</span>
               <ChevronRight className="size-3.5" />
@@ -218,7 +218,7 @@ export function TransactionsClient({
           ) : (
             <Link
               href={href(page + 1)}
-              className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+              className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
             >
               <span className="hidden sm:inline">Berikutnya</span>
               <ChevronRight className="size-3.5" />
@@ -242,7 +242,7 @@ export function TransactionsClient({
                 href={`/admin/students?q=${encodeURIComponent(selectedLoan.student_nis)}`}
                 className="flex-1"
               >
-                <Button variant="secondary" size="md" className="w-full gap-2 text-xs">
+                <Button variant="secondary" size="md" className="w-full gap-2 text-label">
                   <User className="size-3.5" />
                   <span>Lihat Siswa</span>
                 </Button>
@@ -251,7 +251,7 @@ export function TransactionsClient({
                 href={`/librarian/books?q=${encodeURIComponent(selectedLoan.inventory_code)}`}
                 className="flex-1"
               >
-                <Button variant="secondary" size="md" className="w-full gap-2 text-xs">
+                <Button variant="secondary" size="md" className="w-full gap-2 text-label">
                   <Book className="size-3.5" />
                   <span>Lihat Buku</span>
                 </Button>
@@ -265,13 +265,13 @@ export function TransactionsClient({
             {/* Status Header Block */}
             <div className="rounded-lg bg-surface p-4 border border-outline flex items-center justify-between">
               <div>
-                <span className="text-xs font-mono text-ink-subtle uppercase">Status Transaksi</span>
+                <span className="text-meta font-mono text-ink-subtle uppercase">Status Transaksi</span>
                 <div className="mt-1">
                   <LoanStatusChip status={selectedLoan.status} />
                 </div>
               </div>
               {selectedLoan.status === "OVERDUE" && (
-                <div className="text-right text-xs">
+                <div className="text-right text-label">
                   <span className="text-coral-deep font-bold flex items-center gap-1">
                     <AlertCircle className="size-3.5" />
                     Telat {hariTelat(selectedLoan.due_at)} hari
@@ -282,18 +282,18 @@ export function TransactionsClient({
 
             {/* Siswa Section */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
+              <div className="flex items-center gap-2 text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
                 <User className="size-3.5 text-sky" />
                 <span>Peminjam</span>
               </div>
-              <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="grid grid-cols-2 gap-3 text-label">
                 <div>
                   <span className="text-ink-subtle">Nama Siswa:</span>
-                  <p className="font-bold text-ink text-sm">{selectedLoan.student_name}</p>
+                  <p className="font-bold text-ink text-body">{selectedLoan.student_name}</p>
                 </div>
                 <div>
                   <span className="text-ink-subtle">NIS:</span>
-                  <p className="font-mono font-semibold text-ink text-sm">{selectedLoan.student_nis}</p>
+                  <p className="font-mono font-semibold text-ink text-body">{selectedLoan.student_nis}</p>
                 </div>
                 <div>
                   <span className="text-ink-subtle">Kelas / Rombel:</span>
@@ -308,14 +308,14 @@ export function TransactionsClient({
 
             {/* Buku Section */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
+              <div className="flex items-center gap-2 text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
                 <Book className="size-3.5 text-leaf" />
                 <span>Koleksi Buku</span>
               </div>
-              <div className="space-y-2 text-xs">
+              <div className="space-y-2 text-label">
                 <div>
                   <span className="text-ink-subtle">Judul Buku:</span>
-                  <p className="font-bold text-ink text-sm">{selectedLoan.book_title}</p>
+                  <p className="font-bold text-ink text-body">{selectedLoan.book_title}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -334,11 +334,11 @@ export function TransactionsClient({
 
             {/* Linimasa Waktu */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
+              <div className="flex items-center gap-2 text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
                 <Calendar className="size-3.5 text-sun-deep" />
                 <span>Linimasa Sirkulasi</span>
               </div>
-              <div className="rounded-lg border border-outline bg-surface-sunken/40 p-3 space-y-2 text-xs">
+              <div className="rounded-lg border border-outline bg-surface-sunken/40 p-3 space-y-2 text-label">
                 <div className="flex justify-between">
                   <span className="text-ink-muted">Tanggal Pinjam:</span>
                   <span className="font-semibold text-ink">{formatTanggal(selectedLoan.borrowed_at)}</span>

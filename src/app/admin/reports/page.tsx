@@ -10,14 +10,14 @@ export default async function ReportsPage() {
     <div className="grid gap-6 animate-rise">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline/70 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
             <span className="size-2 rounded-full bg-sky" />
             <span>Laporan Operasional · SMP Negeri 17 Tangerang Selatan</span>
           </div>
-          <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+          <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
             Laporan Sirkulasi
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">Aktivitas peminjaman dan pengembalian 14 hari terakhir.</p>
+          <p className="mt-1 text-body text-ink-muted">Aktivitas peminjaman dan pengembalian 14 hari terakhir.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {[
@@ -28,7 +28,7 @@ export default async function ReportsPage() {
             <a
               key={e.type}
               href={`/api/export?type=${e.type}`}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-outline bg-background px-3 text-xs font-semibold text-ink hover:bg-surface transition-colors"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-outline bg-background px-3 text-label font-semibold text-ink hover:bg-surface transition-colors"
             >
               <Download className="size-3.5 text-ink-muted" />
               {e.label}
@@ -41,8 +41,8 @@ export default async function ReportsPage() {
         <h2 className="mb-3 font-bold text-ink">Peminjaman & Pengembalian per Hari</h2>
         <ul className="grid gap-2">
           {r.perDay.map((d) => (
-            <li key={d.date} className="grid grid-cols-[88px_1fr_auto] items-center gap-2 text-sm">
-              <span className="font-mono text-xs text-ink-muted">{d.date}</span>
+            <li key={d.date} className="grid grid-cols-[88px_1fr_auto] items-center gap-2 text-body">
+              <span className="font-mono text-meta text-ink-muted">{d.date}</span>
               <span
                 className="flex h-5 w-full items-center overflow-hidden rounded-sm bg-surface-sunken p-0.5 border border-outline/40"
                 role="group"
@@ -71,18 +71,18 @@ export default async function ReportsPage() {
                   />
                 )}
                 {d.pinjam === 0 && d.kembali === 0 && (
-                  <span className="text-[10px] font-mono text-ink-subtle px-1.5 select-none">
+                  <span className="text-meta font-mono text-ink-subtle px-1.5 select-none">
                     Tidak ada aktivitas
                   </span>
                 )}
               </span>
-              <span className="font-mono text-xs text-ink-muted">
+              <span className="font-mono text-meta text-ink-muted">
                 {d.pinjam} pinjam · {d.kembali} kembali
               </span>
             </li>
           ))}
         </ul>
-        <p className="mt-3 flex items-center gap-4 text-xs text-ink-muted border-t border-outline/40 pt-2.5">
+        <p className="mt-3 flex items-center gap-4 text-meta text-ink-muted border-t border-outline/40 pt-2.5">
           <span className="inline-flex items-center gap-1.5">
             <span className="size-2.5 rounded-sm bg-sky" /> Pinjam
           </span>
@@ -100,7 +100,7 @@ export default async function ReportsPage() {
           ) : (
             <ul className="grid gap-2">
               {r.topBooks.map((b) => (
-                <li key={b.title} className="grid gap-1 text-sm">
+                <li key={b.title} className="grid gap-1 text-body">
                   <span className="flex justify-between gap-2">
                     <span className="truncate font-semibold">{b.title}</span>
                     <span className="font-mono text-ink-muted">{b.count}×</span>
@@ -126,7 +126,7 @@ export default async function ReportsPage() {
           {r.byStatus.length === 0 ? (
             <p className="text-ink-muted">Belum ada transaksi pada periode ini.</p>
           ) : (
-            <ul className="grid gap-2 text-sm">
+            <ul className="grid gap-2 text-body">
               {r.byStatus.map((s) => (
                 <li key={s.status} className="flex items-center justify-between gap-2">
                   <span className="font-mono font-semibold">{s.status}</span>

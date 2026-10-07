@@ -43,7 +43,7 @@ export function QrImg({
       <div
         style={{ width: size, height: size }}
         className={cn(
-          "mx-auto flex items-center justify-center rounded bg-surface border border-outline text-xs text-ink-subtle",
+          "mx-auto flex items-center justify-center rounded bg-surface border border-outline text-meta text-ink-subtle",
           className
         )}
       >

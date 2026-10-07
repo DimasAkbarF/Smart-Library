@@ -7,7 +7,7 @@ export default async function RefsPage() {
   return (
     <div className="grid gap-4">
       <div>
-        <h1 className="text-2xl font-bold">Referensi</h1>
+        <h1 className="text-display-sm font-bold">Referensi</h1>
         <p className="text-ink-muted">Kelola kategori buku dan kelas.</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">

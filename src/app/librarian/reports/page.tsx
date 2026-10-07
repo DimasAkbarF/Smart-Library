@@ -10,7 +10,7 @@ export default async function LibrarianReports() {
     <div className="grid gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold">Laporan 14 Hari</h1>
+          <h1 className="font-display text-display-sm font-bold">Laporan 14 Hari</h1>
           <p className="mt-1 text-ink-muted">Aktivitas peminjaman dan pengembalian.</p>
         </div>
         <Link href="/api/export?type=loans" className="font-semibold text-sky-deep hover:underline">
@@ -21,15 +21,15 @@ export default async function LibrarianReports() {
       <section aria-label="Grafik harian" className="grid gap-2 rounded-card border border-outline p-5">
         {r.perDay.map((d) => (
           <div key={d.date} className="grid grid-cols-[72px_1fr] items-center gap-3">
-            <span className="text-sm text-ink-muted">{d.date}</span>
+            <span className="text-body text-ink-muted">{d.date}</span>
             <div className="grid gap-1">
               <div className="flex items-center gap-2">
                 <div className="h-3 min-w-1 rounded-sm bg-sky" style={{ width: `${Math.max(d.pinjam > 0 ? 4 : 0, (d.pinjam / max) * 100)}%` }} />
-                <span className="font-mono text-xs text-ink-subtle">{d.pinjam} pinjam</span>
+                <span className="font-mono text-meta text-ink-subtle">{d.pinjam} pinjam</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-3 min-w-1 rounded-sm bg-leaf" style={{ width: `${Math.max(d.kembali > 0 ? 4 : 0, (d.kembali / max) * 100)}%` }} />
-                <span className="font-mono text-xs text-ink-subtle">{d.kembali} kembali</span>
+                <span className="font-mono text-meta text-ink-subtle">{d.kembali} kembali</span>
               </div>
             </div>
           </div>
@@ -38,7 +38,7 @@ export default async function LibrarianReports() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <section aria-label="Buku terpopuler" className="rounded-card border border-outline p-5">
-          <h2 className="font-display text-lg font-bold">Buku terpopuler</h2>
+          <h2 className="font-display text-title font-bold">Buku terpopuler</h2>
           {r.topBooks.length === 0 ? (
             <p className="mt-2 text-ink-muted">Belum ada data.</p>
           ) : (
@@ -54,7 +54,7 @@ export default async function LibrarianReports() {
         </section>
 
         <section aria-label="Status pinjaman" className="rounded-card border border-outline p-5">
-          <h2 className="font-display text-lg font-bold">Status pinjaman</h2>
+          <h2 className="font-display text-title font-bold">Status pinjaman</h2>
           {r.byStatus.length === 0 ? (
             <p className="mt-2 text-ink-muted">Belum ada data.</p>
           ) : (

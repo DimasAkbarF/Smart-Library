@@ -46,27 +46,27 @@ export default async function CopiesPage({
     <div className="space-y-6 animate-rise">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline/70 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
             <span className="size-2 rounded-full bg-sky" />
             <span>Inventaris Fisik · SMP Negeri 17 Tangerang Selatan</span>
           </div>
-          <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+          <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
             Manajemen Eksemplar
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-body text-ink-muted">
             Pantau status fisik, penempatan rak, dan status operasional ({total.toLocaleString("id-ID")} unit tercatat).
           </p>
         </div>
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin/qr"
-            className="inline-flex min-h-10 items-center justify-center rounded-md border border-outline bg-background px-4 text-xs font-semibold text-ink hover:bg-surface transition-colors"
+            className="inline-flex min-h-10 items-center justify-center rounded-md border border-outline bg-background px-4 text-label font-semibold text-ink hover:bg-surface transition-colors"
           >
             Cetak Label QR
           </Link>
           <Link
             href="/admin/books"
-            className="inline-flex min-h-10 items-center justify-center rounded-md bg-sky px-4 text-xs font-display font-semibold text-white hover:bg-sky-deep transition-colors"
+            className="inline-flex min-h-10 items-center justify-center rounded-md bg-sky px-4 text-label font-display font-semibold text-white hover:bg-sky-deep transition-colors"
           >
             Katalog Buku
           </Link>
@@ -82,7 +82,7 @@ export default async function CopiesPage({
               href={chipHref(f.value)}
               aria-current={isActive ? "true" : undefined}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors",
+                "rounded-full border px-4 py-1.5 text-label font-semibold transition-colors",
                 isActive
                   ? "border-sky bg-sky-soft text-sky-deep shadow-xs font-bold"
                   : "border-outline text-ink-muted hover:border-outline-strong hover:bg-surface",
@@ -126,7 +126,7 @@ export default async function CopiesPage({
             {
               header: "Kode Inventaris",
               cell: (c) => (
-                <span className="font-mono text-xs font-semibold bg-surface-sunken px-2 py-0.5 rounded-sm border border-outline/70 text-ink">
+                <span className="font-mono text-label font-semibold bg-surface-sunken px-2 py-0.5 rounded-sm border border-outline/70 text-ink">
                   {c.inventory_code || "—"}
                 </span>
               ),
@@ -142,7 +142,7 @@ export default async function CopiesPage({
             {
               header: "Lokasi Rak",
               cell: (c) => (
-                <span className="text-xs font-mono text-ink-muted">
+                <span className="text-meta font-mono text-ink-muted">
                   {c.location ?? "—"}
                 </span>
               ),

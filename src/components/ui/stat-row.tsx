@@ -17,8 +17,8 @@ export function StatRow({ stats, cols }: { stats: Stat[]; cols: string }) {
     <dl className={cn("grid gap-px overflow-hidden rounded-card border border-outline bg-outline", cols)}>
       {stats.map((s) => (
         <div key={s.label} className="bg-background px-5 py-4">
-          <dd className="font-display text-3xl leading-none font-bold tabular-nums">{s.value}</dd>
-          <dt className="mt-1.5 flex items-center gap-1.5 text-sm text-ink-muted">
+          <dd className="font-display text-display-lg leading-none font-bold tabular-nums">{s.value}</dd>
+          <dt className="mt-1.5 flex items-center gap-1.5 text-body text-ink-muted">
             {s.dot && <span aria-hidden className={cn("size-2 rounded-full", s.dot)} />}
             {s.label}
           </dt>

@@ -6,7 +6,7 @@ export default async function ReturnPage() {
   return (
     <div className="grid gap-5">
       <div>
-        <h1 className="font-display text-2xl font-bold">Kembalikan Buku</h1>
+        <h1 className="font-display text-display-sm font-bold">Kembalikan Buku</h1>
         <p className="mt-1 text-ink-muted">
           Pindai QR pada buku. Denda Rp{policy.fine_per_day.toLocaleString("id-ID")} per hari keterlambatan.
         </p>

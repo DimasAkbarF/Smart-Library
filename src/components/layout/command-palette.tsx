@@ -104,7 +104,7 @@ export function CommandPalette({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cari buku, siswa, transaksi... (Ctrl + K)"
-            className="flex-1 bg-transparent px-3 text-base text-ink placeholder:text-ink-subtle focus:outline-none"
+            className="flex-1 bg-transparent px-3 text-body text-ink placeholder:text-ink-subtle focus:outline-none"
           />
           {isPending && <Loader2 className="size-5 animate-spin text-sky shrink-0" />}
           {query && !isPending && (
@@ -122,7 +122,7 @@ export function CommandPalette({
           <button
             type="button"
             onClick={handleClose}
-            className="ml-2 rounded-md border border-outline px-2 py-0.5 text-xs font-mono text-ink-subtle hover:bg-surface"
+            className="ml-2 rounded-md border border-outline px-2 py-0.5 text-meta font-mono text-ink-subtle hover:bg-surface"
           >
             ESC
           </button>
@@ -131,19 +131,19 @@ export function CommandPalette({
         {/* Results Container */}
         <div className="max-h-[60vh] overflow-y-auto p-2">
           {!hasValidQuery ? (
-            <div className="px-4 py-10 text-center text-sm text-ink-muted">
+            <div className="px-4 py-10 text-center text-body text-ink-muted">
               <p className="font-semibold text-ink">Pencarian Cepat Perpustakaan</p>
               <p className="mt-1 text-ink-subtle">
                 Ketik nama buku, penulis, NIS/nama siswa, atau nomor transaksi.
               </p>
             </div>
           ) : isPending && !activeResults ? (
-            <div className="flex items-center justify-center gap-2 py-12 text-sm text-ink-muted">
+            <div className="flex items-center justify-center gap-2 py-12 text-body text-ink-muted">
               <Loader2 className="size-4 animate-spin text-sky" />
               <span>Mencari data...</span>
             </div>
           ) : totalResults === 0 ? (
-            <div className="px-4 py-12 text-center text-sm text-ink-muted">
+            <div className="px-4 py-12 text-center text-body text-ink-muted">
               <p className="font-semibold text-ink">Tidak menemukan data untuk pencarian ini.</p>
               <p className="mt-1 text-ink-subtle">Periksa ejaan kata kunci atau coba kata kunci lain.</p>
             </div>
@@ -152,7 +152,7 @@ export function CommandPalette({
               {/* BUKU */}
               {activeResults && activeResults.books.length > 0 && (
                 <div>
-                  <div className="px-3 pb-1.5 text-xs font-bold tracking-wider text-ink-subtle uppercase">
+                  <div className="px-3 pb-1.5 text-meta font-bold tracking-wider text-ink-subtle uppercase">
                     Buku ({activeResults.books.length})
                   </div>
                   <div className="grid gap-1">
@@ -171,13 +171,13 @@ export function CommandPalette({
                             <p className="truncate font-semibold text-ink group-hover:text-sky-deep">
                               {b.title}
                             </p>
-                            <p className="truncate text-xs text-ink-muted">
+                            <p className="truncate text-meta text-ink-muted">
                               {b.author} {b.category_name ? `· ${b.category_name}` : ""}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="rounded-full bg-surface-sunken px-2.5 py-0.5 text-xs font-semibold text-ink-muted">
+                          <span className="rounded-full bg-surface-sunken px-2.5 py-0.5 text-meta font-semibold text-ink-muted">
                             {b.available_copies} / {b.total_copies} tersedia
                           </span>
                           <CornerDownLeft className="size-3.5 opacity-0 group-hover:opacity-100 text-sky-deep transition-opacity" />
@@ -191,7 +191,7 @@ export function CommandPalette({
               {/* SISWA */}
               {activeResults && activeResults.students.length > 0 && (
                 <div>
-                  <div className="px-3 pb-1.5 text-xs font-bold tracking-wider text-ink-subtle uppercase">
+                  <div className="px-3 pb-1.5 text-meta font-bold tracking-wider text-ink-subtle uppercase">
                     Siswa ({activeResults.students.length})
                   </div>
                   <div className="grid gap-1">
@@ -210,7 +210,7 @@ export function CommandPalette({
                             <p className="truncate font-semibold text-ink group-hover:text-leaf-deep">
                               {s.name}
                             </p>
-                            <p className="truncate text-xs text-ink-muted">
+                            <p className="truncate text-meta text-ink-muted">
                               NIS: <span className="font-mono">{s.nis}</span>{" "}
                               {s.class_name ? `· Kelas ${s.class_name}` : ""}
                             </p>
@@ -232,7 +232,7 @@ export function CommandPalette({
               {/* TRANSAKSI */}
               {activeResults && activeResults.transactions.length > 0 && (
                 <div>
-                  <div className="px-3 pb-1.5 text-xs font-bold tracking-wider text-ink-subtle uppercase">
+                  <div className="px-3 pb-1.5 text-meta font-bold tracking-wider text-ink-subtle uppercase">
                     Transaksi ({activeResults.transactions.length})
                   </div>
                   <div className="grid gap-1">
@@ -251,13 +251,13 @@ export function CommandPalette({
                             <p className="truncate font-semibold text-ink group-hover:text-sun-deep">
                               {t.book_title}
                             </p>
-                            <p className="truncate text-xs text-ink-muted">
+                            <p className="truncate text-meta text-ink-muted">
                               {t.student_name} ({t.student_nis}) · Kode:{" "}
                               <span className="font-mono font-semibold">{t.inventory_code}</span>
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0 text-xs text-ink-subtle">
+                        <div className="flex items-center gap-2 shrink-0 text-meta text-ink-subtle">
                           <span>Tempo: {formatTanggal(t.due_at)}</span>
                           <StatusChip
                             label={t.status}
@@ -281,7 +281,7 @@ export function CommandPalette({
         </div>
 
         {/* Footer shortcuts hint */}
-        <div className="flex items-center justify-between border-t border-outline bg-surface-sunken/40 px-4 py-2 text-xs text-ink-subtle">
+        <div className="flex items-center justify-between border-t border-outline bg-surface-sunken/40 px-4 py-2 text-meta text-ink-subtle">
           <div className="flex items-center gap-3">
             <span><kbd className="font-mono font-semibold text-ink">↑↓</kbd> Navigasi</span>
             <span><kbd className="font-mono font-semibold text-ink">Enter</kbd> Pilih</span>

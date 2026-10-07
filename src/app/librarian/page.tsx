@@ -12,14 +12,14 @@ export default async function LibrarianHome() {
     <div className="space-y-8 animate-in fade-in duration-200">
       {/* Header */}
       <header className="border-b border-outline/70 pb-6">
-        <div className="flex items-center gap-2 text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+        <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
           <span className="size-2 rounded-full bg-leaf" />
           <span>Meja Sirkulasi · SMP Negeri 17 Tangerang Selatan</span>
         </div>
-        <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+        <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
           Layanan Sirkulasi
         </h1>
-        <p className="mt-1 text-sm text-ink-muted">
+        <p className="mt-1 text-body text-ink-muted">
           Siap melayani peminjaman hari ini? Gunakan pemindai QR untuk alur cepat sirkulasi siswa.
         </p>
       </header>
@@ -33,8 +33,8 @@ export default async function LibrarianHome() {
                 <ArrowUpFromLine className="size-5" />
               </span>
               <div>
-                <p className="font-display text-base sm:text-lg font-bold text-ink">Pinjam Buku</p>
-                <p className="text-xs text-ink-muted mt-0.5">Pindai kartu siswa lalu pindai buku koleksi</p>
+                <p className="font-display text-body sm:text-title font-bold text-ink">Pinjam Buku</p>
+                <p className="text-meta text-ink-muted mt-0.5">Pindai kartu siswa lalu pindai buku koleksi</p>
               </div>
             </div>
             <ChevronRight className="size-5 text-sky-deep shrink-0" />
@@ -48,8 +48,8 @@ export default async function LibrarianHome() {
                 <ArrowDownToLine className="size-5" />
               </span>
               <div>
-                <p className="font-display text-base sm:text-lg font-bold text-ink">Kembalikan Buku</p>
-                <p className="text-xs text-ink-muted mt-0.5">Pindai kode inventaris buku yang dikembalikan</p>
+                <p className="font-display text-body sm:text-title font-bold text-ink">Kembalikan Buku</p>
+                <p className="text-meta text-ink-muted mt-0.5">Pindai kode inventaris buku yang dikembalikan</p>
               </div>
             </div>
             <ChevronRight className="size-5 text-leaf-deep shrink-0" />
@@ -102,14 +102,14 @@ export default async function LibrarianHome() {
             <span className="flex size-7 items-center justify-center rounded-md bg-coral-soft text-coral-deep">
               <Clock className="size-4" />
             </span>
-            <h2 className="font-display text-base font-bold text-ink">
+            <h2 className="font-display text-body font-bold text-ink">
               Keterlambatan Peminjaman ({d.overdue})
             </h2>
           </div>
           {d.overdue > 0 && (
             <Link
               href="/librarian/transactions?status=OVERDUE"
-              className="text-xs font-semibold text-coral-deep hover:underline"
+              className="text-label font-semibold text-coral-deep hover:underline"
             >
               Lihat semua ({d.overdue}) →
             </Link>
@@ -117,7 +117,7 @@ export default async function LibrarianHome() {
         </div>
 
         {d.overdueRows.length === 0 ? (
-          <div className="flex items-center gap-3 py-6 text-sm text-ink-muted">
+          <div className="flex items-center gap-3 py-6 text-body text-ink-muted">
             <CheckCircle2 className="size-5 text-leaf-deep shrink-0" />
             <p>Tidak ada pinjaman yang terlambat saat ini. Seluruh koleksi beredar terpantau tertib.</p>
           </div>
@@ -129,24 +129,24 @@ export default async function LibrarianHome() {
                 className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 hover:bg-coral-soft/20 px-2 rounded-lg -mx-2 transition-colors"
               >
                 <div>
-                  <p className="font-semibold text-sm text-ink">
+                  <p className="font-semibold text-body text-ink">
                     {r.student_name}{" "}
-                    <span className="font-mono text-xs text-ink-subtle">
+                    <span className="font-mono text-meta text-ink-subtle">
                       ({r.student_nis}) {r.class_name ? `· ${r.class_name}` : ""}
                     </span>
                   </p>
-                  <p className="text-xs text-ink-muted mt-0.5">
+                  <p className="text-meta text-ink-muted mt-0.5">
                     {r.book_title}{" "}
                     <span className="font-mono font-semibold text-sky-deep">[{r.inventory_code}]</span>
                   </p>
                 </div>
-                <div className="flex items-center gap-4 text-xs shrink-0">
+                <div className="flex items-center gap-4 text-label shrink-0">
                   <div className="text-left sm:text-right">
                     <p className="text-ink-subtle">Jatuh tempo: {formatTanggal(r.due_at)}</p>
                     <p className="font-bold text-coral-deep">Telat {hariTelat(r.due_at)} hari</p>
                   </div>
                   <Link href={`/librarian/transactions?q=${encodeURIComponent(r.inventory_code)}`}>
-                    <Button variant="secondary" size="sm" className="h-8 text-xs">
+                    <Button variant="secondary" size="sm" className="h-8 text-label">
                       Detail
                     </Button>
                   </Link>

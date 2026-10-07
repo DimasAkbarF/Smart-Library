@@ -53,7 +53,7 @@ export function CopyStatusButtons({ id, status }: { id: string; status: string }
             }
           }
         }}
-        className="h-7 rounded-md border border-outline bg-background px-2 text-xs font-medium text-ink-muted hover:border-outline-strong hover:bg-surface focus:outline-none focus:ring-1 focus:ring-sky disabled:opacity-50"
+        className="h-7 rounded-md border border-outline bg-background px-2 text-meta font-medium text-ink-muted hover:border-outline-strong hover:bg-surface focus:outline-none focus:ring-1 focus:ring-sky disabled:opacity-50"
       >
         <option value="" disabled>
           Ubah status…
@@ -65,7 +65,7 @@ export function CopyStatusButtons({ id, status }: { id: string; status: string }
         ))}
       </select>
       {msg && (
-        <p role="alert" className="text-xs font-semibold text-coral-deep">
+        <p role="alert" className="text-meta font-semibold text-coral-deep">
           {msg}
         </p>
       )}

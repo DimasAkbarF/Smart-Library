@@ -6,7 +6,7 @@ export default async function NewBookPage() {
   return (
     <div className="grid gap-4">
       <div>
-        <h1 className="text-2xl font-bold">Tambah buku</h1>
+        <h1 className="text-display-sm font-bold">Tambah buku</h1>
         <p className="text-ink-muted">Isi data buku dan jumlah eksemplar awal.</p>
       </div>
       <BookCreateForm categories={categories} />

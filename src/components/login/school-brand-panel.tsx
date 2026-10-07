@@ -18,8 +18,8 @@ export function SchoolBrandLockup({ className }: { className?: string }) {
         <BookOpen className="size-6" aria-hidden />
       </span>
       <div className="min-w-0">
-        <p className="font-display text-xl leading-tight font-bold">Smart Library</p>
-        <p className="truncate text-sm text-ink-muted">SMP Negeri 17 Tangerang Selatan</p>
+        <p className="font-display text-title leading-tight font-bold">Smart Library</p>
+        <p className="truncate text-body text-ink-muted">SMP Negeri 17 Tangerang Selatan</p>
       </div>
     </div>
   );
@@ -34,8 +34,8 @@ export function SchoolBrandPanel() {
           <BookOpen className="size-6" aria-hidden />
         </span>
         <div>
-          <p className="font-display text-xl leading-tight font-bold">Smart Library</p>
-          <p className="text-sm text-white/70">SMP Negeri 17 Tangerang Selatan</p>
+          <p className="font-display text-title leading-tight font-bold">Smart Library</p>
+          <p className="text-body text-white/70">SMP Negeri 17 Tangerang Selatan</p>
         </div>
       </div>
 
@@ -50,10 +50,10 @@ export function SchoolBrandPanel() {
       </div>
 
       <div className="mt-8 [@media(max-height:720px)]:mt-6">
-        <p className="font-display text-xl font-bold [@media(max-height:720px)]:text-lg">
+        <p className="font-display text-title font-bold [@media(max-height:720px)]:text-title">
           Belajar. Membaca. Berkembang.
         </p>
-        <p className="mt-2 max-w-sm text-sm text-white/80 leading-relaxed">
+        <p className="mt-2 max-w-sm text-body text-white/80 leading-relaxed">
           Peminjaman sirkulasi buku, pencarian katalog koleksi, dan kartu anggota digital siswa.
         </p>
       </div>

@@ -44,6 +44,27 @@
   --font-sans: var(--font-sans), "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
 
+  /* ---------- Typography scale ----------
+     Dinamai menurut PERAN, bukan ukuran. Mengubah satu baris di sini
+     mengubah setiap pemakaian token itu di seluruh aplikasi. Nilai dasar
+     adalah ukuran mobile; ukuran yang lebih besar datang dari varian
+     sm:/lg: di call-site, bukan dari token terpisah.
+     --font-display hanya dipakai display-* dan title; --font-sans untuk
+     body, label, meta. Pemisahan ini yang membuat hierarki terbaca. */
+  --text-display-lg: 1.75rem;   /* angka statistik utama, judul halaman */
+  --text-display-sm: 1.5rem;    /* angka sekunder, judul card */
+  --text-title: 1.125rem;       /* judul section, heading dialog */
+  --text-body: 0.9375rem;       /* 15px — body text, isi tabel, deskripsi */
+  --text-label: 0.8125rem;      /* 13px — label form, label tabel, chip */
+  --text-meta: 0.75rem;         /* 12px — metadata, hint, breadcrumb, timestamp */
+  --text-tap: 0.8125rem;        /* 13px — teks di dalam target sentuh */
+
+  /* ---------- Target sentuh ----------
+     44px = floor WCAG 2.5.8 untuk semua target sentuh.
+     56px = aksi utama siswa, PRD §14.1. */
+  --spacing-tap-min: 44px;
+  --spacing-tap-lg: 56px;
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;

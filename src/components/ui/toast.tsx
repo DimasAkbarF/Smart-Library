@@ -79,7 +79,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 {t.type === "info" && <Info className="size-5 text-sky-deep" aria-hidden />}
               </span>
 
-              <div className="flex-1 text-sm leading-snug">
+              <div className="flex-1 text-body leading-snug">
                 {t.title && <p className="font-semibold text-ink">{t.title}</p>}
                 <p className="text-ink-muted">{t.message}</p>
               </div>

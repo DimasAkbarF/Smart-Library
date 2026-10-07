@@ -110,17 +110,17 @@ export function QrPreviewGrid({
             </div>
 
             {/* Inventory Code */}
-            <p className="mt-3 font-mono text-sm font-bold text-ink">
+            <p className="mt-3 font-mono text-body font-bold text-ink">
               {c.inventory_code || "—"}
             </p>
 
             {/* Book Title */}
-            <p className="mt-0.5 line-clamp-1 text-xs font-semibold text-ink-muted group-hover:text-sky-deep transition-colors">
+            <p className="mt-0.5 line-clamp-1 text-meta font-semibold text-ink-muted group-hover:text-sky-deep transition-colors">
               {c.book_title}
             </p>
 
             {/* School label */}
-            <p className="mt-1 text-[11px] text-ink-subtle">
+            <p className="mt-1 text-meta text-ink-subtle">
               SMP Negeri 17 Tangerang Selatan
             </p>
 
@@ -131,7 +131,7 @@ export function QrPreviewGrid({
 
             {/* Action buttons on card footer */}
             <div className="no-print mt-3 flex items-center gap-1.5 pt-2 border-t border-outline/60 w-full justify-center">
-              <span className="text-[11px] font-semibold text-sky-deep group-hover:underline">
+              <span className="text-meta font-semibold text-sky-deep group-hover:underline">
                 Klik untuk pratinjau
               </span>
             </div>
@@ -150,8 +150,8 @@ export function QrPreviewGrid({
             {/* Official Label Card Frame */}
             <div className="w-full max-w-[280px] rounded-card border-2 border-ink bg-white p-6 shadow-card text-ink">
               <div className="border-b border-ink/20 pb-2 mb-3">
-                <p className="font-display text-sm font-bold tracking-wider">SMART LIBRARY</p>
-                <p className="text-[10px] text-ink-muted">SMP Negeri 17 Tangerang Selatan</p>
+                <p className="font-display text-body font-bold tracking-wider">SMART LIBRARY</p>
+                <p className="text-meta text-ink-muted">SMP Negeri 17 Tangerang Selatan</p>
               </div>
 
               <div className="flex justify-center my-3">
@@ -159,20 +159,20 @@ export function QrPreviewGrid({
               </div>
 
               <div className="border-t border-ink/20 pt-2 mt-3">
-                <p className="font-mono text-base font-bold text-ink tracking-wide">
+                <p className="font-mono text-body font-bold text-ink tracking-wide">
                   {selectedCopy.inventory_code}
                 </p>
-                <p className="font-semibold text-xs text-ink truncate mt-0.5">
+                <p className="font-semibold text-label text-ink truncate mt-0.5">
                   {selectedCopy.book_title}
                 </p>
-                <p className="text-[10px] text-ink-subtle mt-1">
+                <p className="text-meta text-ink-subtle mt-1">
                   Koleksi Resmi Perpustakaan
                 </p>
               </div>
             </div>
 
             {/* Metadata information */}
-            <div className="w-full rounded-lg bg-surface p-3 text-xs text-left space-y-1.5 text-ink-muted">
+            <div className="w-full rounded-lg bg-surface p-3 text-meta text-left space-y-1.5 text-ink-muted">
               <div className="flex justify-between">
                 <span>Status Eksemplar:</span>
                 <CopyStatusChip status={selectedCopy.status} />

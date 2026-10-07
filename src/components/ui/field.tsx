@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 const inputCls =
-  "w-full rounded-md border border-outline bg-background px-4 text-base text-ink placeholder:text-ink-subtle focus:border-sky disabled:bg-surface-sunken disabled:text-ink-subtle";
+  "w-full rounded-md border border-outline bg-background px-4 text-body text-ink placeholder:text-ink-subtle focus:border-sky disabled:bg-surface-sunken disabled:text-ink-subtle";
 
 export function Field({
   label,
@@ -19,13 +19,13 @@ export function Field({
   const err = Array.isArray(error) ? error[0] : error;
   return (
     <div className={cn("grid gap-1.5", className)}>
-      <label className="text-xs font-semibold text-ink uppercase tracking-wider font-mono">
+      <label className="text-label font-semibold text-ink uppercase tracking-wider font-mono">
         {label}
       </label>
       <div>{children}</div>
-      {hint && !err && <p className="text-xs text-ink-muted leading-relaxed">{hint}</p>}
+      {hint && !err && <p className="text-meta text-ink-muted leading-relaxed">{hint}</p>}
       {err && (
-        <p role="alert" className="text-xs font-semibold text-coral-deep">
+        <p role="alert" className="text-meta font-semibold text-coral-deep">
           {err}
         </p>
       )}

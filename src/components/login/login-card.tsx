@@ -9,8 +9,8 @@ import { supabaseConfigured } from "@/lib/supabase/env";
 export function LoginCard() {
   return (
     <div className="rounded-card border border-outline bg-background p-6 shadow-card sm:p-8 lg:rounded-none lg:border-0 lg:p-0 lg:shadow-none">
-      <p className="text-xs font-bold tracking-[0.18em] text-sky-deep">SMART LIBRARY</p>
-      <h1 className="mt-2 font-display text-3xl font-bold [@media(max-height:720px)]:text-2xl">
+      <p className="text-label font-bold tracking-[0.18em] text-sky-deep">SMART LIBRARY</p>
+      <h1 className="mt-2 font-display text-display-lg font-bold [@media(max-height:720px)]:text-display-sm">
         Selamat Datang
       </h1>
       <p className="mt-2 text-ink-muted">
@@ -20,7 +20,7 @@ export function LoginCard() {
       {!supabaseConfigured && (
         <p
           role="alert"
-          className="mt-5 rounded-md bg-sun-soft px-4 py-3 text-sm font-semibold text-sun-deep"
+          className="mt-5 rounded-md bg-sun-soft px-4 py-3 text-body font-semibold text-sun-deep"
         >
           Server belum terhubung ke database. Lengkapi{" "}
           <span className="font-mono">.env.local</span> lalu jalankan ulang — lihat README.
@@ -38,8 +38,8 @@ export function LoginCard() {
       </div>
 
       <div className="mt-7 border-t border-outline pt-5 [@media(max-height:720px)]:mt-5 [@media(max-height:720px)]:pt-4">
-        <p className="text-sm font-semibold text-ink">Lupa password?</p>
-        <p className="mt-1 text-sm text-ink-muted">
+        <p className="text-body font-semibold text-ink">Lupa password?</p>
+        <p className="mt-1 text-body text-ink-muted">
           Hubungi admin perpustakaan untuk reset password. Siswa masuk memakai NIS, petugas dan
           admin memakai username.
         </p>

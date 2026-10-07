@@ -31,7 +31,7 @@ export function Dialog({
       className="w-[min(560px,calc(100vw-2rem))] rounded-modal bg-background p-0 shadow-modal backdrop:bg-ink/50 animate-rise"
     >
       <div className="flex items-center justify-between border-b border-outline px-6 py-4">
-        <h2 className="text-lg font-bold">{title}</h2>
+        <h2 className="text-title font-bold">{title}</h2>
         <button
           type="button"
           onClick={onClose}

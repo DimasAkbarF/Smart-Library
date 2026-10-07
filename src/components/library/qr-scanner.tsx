@@ -86,8 +86,8 @@ export function QrScanner({
               <Camera className="size-7" aria-hidden />
             </span>
             <div>
-              <p className="font-display text-base font-bold">Kamera Pemindai QR</p>
-              <p className="mt-1 max-w-xs text-xs text-white/70">
+              <p className="font-display text-body font-bold">Kamera Pemindai QR</p>
+              <p className="mt-1 max-w-xs text-label text-white/70">
                 {phase === "no-camera" ? cameraError : hint}
               </p>
             </div>
@@ -96,7 +96,7 @@ export function QrScanner({
                 type="button"
                 size="lg"
                 onClick={start}
-                className="mt-2 bg-sky text-white hover:bg-sky-deep shadow-md font-bold text-sm"
+                className="mt-2 bg-sky text-white hover:bg-sky-deep shadow-md font-bold text-body"
               >
                 <Camera className="size-4" aria-hidden />
                 <span>Aktifkan Kamera</span>
@@ -125,7 +125,7 @@ export function QrScanner({
                   {/* Alignment guide line */}
                   <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 border-t border-dashed border-sky/50" />
                 </div>
-                <p className="mt-4 rounded-full bg-black/80 px-3.5 py-1 text-xs font-semibold text-white">
+                <p className="mt-4 rounded-full bg-black/80 px-3.5 py-1 text-label font-semibold text-white">
                   Arahkan kamera tepat ke QR Code
                 </p>
               </div>
@@ -139,9 +139,9 @@ export function QrScanner({
                     <CheckCircle2 className="size-7" />
                   </span>
                   <div>
-                    <p className="font-display text-sm font-bold text-ink">QR Berhasil Dideteksi</p>
-                    <p className="font-mono text-xs font-semibold text-leaf-deep">{lastScanned}</p>
-                    <p className="mt-0.5 text-[11px] text-ink-subtle">Memproses data secara otomatis...</p>
+                    <p className="font-display text-body font-bold text-ink">QR Berhasil Dideteksi</p>
+                    <p className="font-mono text-label font-semibold text-leaf-deep">{lastScanned}</p>
+                    <p className="mt-0.5 text-meta text-ink-subtle">Memproses data secara otomatis...</p>
                   </div>
                 </div>
               </div>
@@ -168,7 +168,7 @@ export function QrScanner({
             onChange={(e) => setManual(e.target.value)}
             placeholder="Atau ketik kode manual (cth. BOOK-000001 / SIS-1001)"
             aria-label="Kode manual"
-            className="pl-10 font-mono text-xs sm:text-sm"
+            className="pl-10 font-mono text-label sm:text-body"
           />
         </div>
         <Button type="submit" variant="secondary" size="md" className="shrink-0">

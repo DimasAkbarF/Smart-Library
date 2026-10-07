@@ -24,14 +24,14 @@ export default async function BooksPage({
     <div className="space-y-6 animate-rise">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline/70 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
             <span className="size-2 rounded-full bg-sky" />
             <span>Katalog Koleksi · SMP Negeri 17 Tangerang Selatan</span>
           </div>
-          <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+          <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
             Katalog Buku
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-body text-ink-muted">
             Kelola data bibliografi, nomor ISBN, penerbit, dan ketersediaan stok fisik perpustakaan.
           </p>
         </div>
@@ -92,7 +92,7 @@ export default async function BooksPage({
                     ) : (
                       <span
                         aria-hidden
-                        className="flex h-12 w-9 shrink-0 items-center justify-center rounded-xs bg-sky-soft text-sky-deep font-display text-xs font-bold shadow-xs border border-sky/20"
+                        className="flex h-12 w-9 shrink-0 items-center justify-center rounded-xs bg-sky-soft text-sky-deep font-display text-label font-bold shadow-xs border border-sky/20"
                       >
                         {initials}
                       </span>
@@ -105,7 +105,7 @@ export default async function BooksPage({
                       >
                         {b.title}
                       </Link>
-                      <span className="block text-xs text-ink-muted truncate">
+                      <span className="block text-meta text-ink-muted truncate">
                         {b.author || "Penulis tidak tercatat"} {b.publication_year ? `· ${b.publication_year}` : ""}
                       </span>
                     </div>
@@ -117,11 +117,11 @@ export default async function BooksPage({
               header: "Kategori & ISBN",
               cell: (b) => (
                 <div>
-                  <span className="inline-block rounded-full bg-surface-sunken px-2.5 py-0.5 text-xs font-medium text-ink">
+                  <span className="inline-block rounded-full bg-surface-sunken px-2.5 py-0.5 text-label font-medium text-ink">
                     {b.category_name ?? "Tanpa kategori"}
                   </span>
                   {b.isbn && (
-                    <span className="block font-mono text-xs text-ink-muted mt-0.5">
+                    <span className="block font-mono text-meta text-ink-muted mt-0.5">
                       {b.isbn}
                     </span>
                   )}
@@ -135,7 +135,7 @@ export default async function BooksPage({
                 return (
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-label font-semibold",
                       isAvailable
                         ? "bg-leaf-soft text-leaf-deep"
                         : b.total_copies === 0
@@ -160,7 +160,7 @@ export default async function BooksPage({
               cell: (b) => (
                 <Link
                   href={`/admin/books/${b.id}`}
-                  className="inline-flex items-center rounded-md border border-outline px-3 py-1 text-xs font-semibold text-ink hover:border-sky hover:bg-sky-soft hover:text-sky-deep transition-colors"
+                  className="inline-flex items-center rounded-md border border-outline px-3 py-1 text-label font-semibold text-ink hover:border-sky hover:bg-sky-soft hover:text-sky-deep transition-colors"
                 >
                   Kelola Detail
                 </Link>

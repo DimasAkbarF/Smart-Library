@@ -34,7 +34,7 @@ export default async function StudentBookDetail({
             <ArrowLeft className="size-4" aria-hidden /> Kembali ke katalog
           </Button>
         </Link>
-        <div className="flex items-center gap-2 text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+        <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
           <span className="size-2 rounded-full bg-leaf" />
           <span>Koleksi Buku Perpustakaan · SMP Negeri 17 Tangerang Selatan</span>
         </div>
@@ -47,10 +47,10 @@ export default async function StudentBookDetail({
             <CheckCircle2 className="size-5" />
           </div>
           <div className="space-y-1">
-            <h2 className="font-display font-bold text-leaf-deep text-sm sm:text-base">
+            <h2 className="font-display font-bold text-leaf-deep text-body sm:text-body">
               Buku Tersedia untuk Dipinjam ({book.available_copies} dari {book.total_copies} eksemplar)
             </h2>
-            <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
+            <p className="text-meta sm:text-body text-ink-muted leading-relaxed">
               Kunjungi meja sirkulasi perpustakaan saat jam istirahat. Buka menu{" "}
               <Link href="/student/profile" className="font-semibold text-leaf-deep underline hover:text-ink">
                 Kartu Anggota Digital
@@ -65,10 +65,10 @@ export default async function StudentBookDetail({
             <Clock className="size-5" />
           </div>
           <div className="space-y-1">
-            <h2 className="font-display font-bold text-sun-deep text-sm sm:text-base">
+            <h2 className="font-display font-bold text-sun-deep text-body sm:text-body">
               Seluruh Eksemplar Sedang Dipinjam
             </h2>
-            <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
+            <p className="text-meta sm:text-body text-ink-muted leading-relaxed">
               Saat ini seluruh eksemplar ({book.total_copies} buku) sedang berada di tangan siswa lain. Silakan cek berkala atau tanyakan perkiraan pengembalian kepada petugas perpustakaan.
             </p>
           </div>
@@ -91,7 +91,7 @@ export default async function StudentBookDetail({
               className="flex h-64 w-44 flex-col items-center justify-center gap-2 rounded-sm bg-sky-soft text-sky-deep font-display font-bold shadow-sm border border-sky/20"
             >
               <BookOpen className="size-10 text-sky" />
-              <span className="text-3xl">{initials}</span>
+              <span className="text-display-lg">{initials}</span>
             </div>
           )}
         </div>
@@ -100,44 +100,44 @@ export default async function StudentBookDetail({
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
               {book.category_name && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken border border-outline px-2.5 py-0.5 text-xs font-semibold text-ink">
+                <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken border border-outline px-2.5 py-0.5 text-label font-semibold text-ink">
                   <Tag className="size-3 text-sky-deep" />
                   {book.category_name}
                 </span>
               )}
               {isAvailable ? <CopyStatusChip status="AVAILABLE" /> : <CopyStatusChip status="BORROWED" />}
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+            <h1 className="font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
               {book.title}
             </h1>
-            <p className="text-sm font-medium text-ink-muted mt-1">oleh {book.author}</p>
+            <p className="text-body font-medium text-ink-muted mt-1">oleh {book.author}</p>
           </div>
 
           <div className="border-t border-outline/70 pt-4">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2">
+            <h2 className="text-meta font-semibold text-ink-muted uppercase tracking-wider mb-2">
               Spesifikasi Koleksi
             </h2>
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-label sm:text-body">
               {book.publisher && (
                 <div className="rounded-md border border-outline/70 bg-background p-2.5">
-                  <dt className="text-xs text-ink-muted">Penerbit</dt>
+                  <dt className="text-meta text-ink-muted">Penerbit</dt>
                   <dd className="font-semibold text-ink mt-0.5">{book.publisher}</dd>
                 </div>
               )}
               {book.publication_year && (
                 <div className="rounded-md border border-outline/70 bg-background p-2.5">
-                  <dt className="text-xs text-ink-muted">Tahun Terbit</dt>
+                  <dt className="text-meta text-ink-muted">Tahun Terbit</dt>
                   <dd className="font-semibold text-ink mt-0.5">{book.publication_year}</dd>
                 </div>
               )}
               {book.isbn && (
                 <div className="rounded-md border border-outline/70 bg-background p-2.5">
-                  <dt className="text-xs text-ink-muted">Nomor ISBN</dt>
+                  <dt className="text-meta text-ink-muted">Nomor ISBN</dt>
                   <dd className="font-mono font-semibold text-ink mt-0.5">{book.isbn}</dd>
                 </div>
               )}
               <div className="rounded-md border border-outline/70 bg-background p-2.5">
-                <dt className="text-xs text-ink-muted">Ketersediaan Fisik</dt>
+                <dt className="text-meta text-ink-muted">Ketersediaan Fisik</dt>
                 <dd className="font-semibold text-ink mt-0.5 font-mono">
                   {book.available_copies} / {book.total_copies} eksemplar
                 </dd>
@@ -150,8 +150,8 @@ export default async function StudentBookDetail({
       {/* Lending Policy Card */}
       <section className="rounded-card border border-outline bg-background p-6 shadow-card space-y-4">
         <div>
-          <h2 className="font-display text-lg font-bold text-ink">Ketentuan & Kebijakan Sirkulasi</h2>
-          <p className="text-xs text-ink-muted">Aturan resmi peminjaman buku bagi siswa SMP Negeri 17 Tangerang Selatan.</p>
+          <h2 className="font-display text-title font-bold text-ink">Ketentuan & Kebijakan Sirkulasi</h2>
+          <p className="text-meta text-ink-muted">Aturan resmi peminjaman buku bagi siswa SMP Negeri 17 Tangerang Selatan.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -160,8 +160,8 @@ export default async function StudentBookDetail({
               <Calendar className="size-5" />
             </div>
             <div>
-              <span className="block text-xs text-ink-muted">Durasi Pinjam</span>
-              <span className="font-display text-base font-bold text-ink">
+              <span className="block text-meta text-ink-muted">Durasi Pinjam</span>
+              <span className="font-display text-body font-bold text-ink">
                 {policy.loan_duration_days} Hari Kalender
               </span>
             </div>
@@ -172,8 +172,8 @@ export default async function StudentBookDetail({
               <BookOpen className="size-5" />
             </div>
             <div>
-              <span className="block text-xs text-ink-muted">Batas Maksimal</span>
-              <span className="font-display text-base font-bold text-ink">
+              <span className="block text-meta text-ink-muted">Batas Maksimal</span>
+              <span className="font-display text-body font-bold text-ink">
                 {policy.max_active_loans} Buku Sekaligus
               </span>
             </div>
@@ -184,8 +184,8 @@ export default async function StudentBookDetail({
               <ShieldCheck className="size-5" />
             </div>
             <div>
-              <span className="block text-xs text-ink-muted">Denda Keterlambatan</span>
-              <span className="font-display text-base font-bold text-ink">
+              <span className="block text-meta text-ink-muted">Denda Keterlambatan</span>
+              <span className="font-display text-body font-bold text-ink">
                 Rp {policy.fine_per_day.toLocaleString("id-ID")} / hari
               </span>
             </div>

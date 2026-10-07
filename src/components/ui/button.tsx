@@ -12,10 +12,10 @@ const button = cva(
         ghost: "text-ink-muted hover:bg-surface hover:text-ink active:bg-surface-sunken",
       },
       size: {
-        sm: "min-h-10 px-3 text-sm [&_svg]:size-4 [&_svg]:shrink-0",
-        md: "min-h-12 px-5 text-base [&_svg]:size-5 [&_svg]:shrink-0",
+        sm: "min-h-10 px-3 text-body [&_svg]:size-4 [&_svg]:shrink-0",
+        md: "min-h-12 px-5 text-body [&_svg]:size-5 [&_svg]:shrink-0",
         // Big Friendly Button (PRD §14.1): min 56px untuk aksi utama
-        lg: "min-h-14 px-6 text-lg [&_svg]:size-5 [&_svg]:shrink-0",
+        lg: "min-h-14 px-6 text-title [&_svg]:size-5 [&_svg]:shrink-0",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },

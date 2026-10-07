@@ -41,19 +41,19 @@ export default async function TransactionsPage({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline pb-5">
         <div>
-          <span className="text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <span className="text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
             Sirkulasi Buku · Transaksi
           </span>
-          <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+          <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
             Daftar Transaksi Peminjaman
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-body text-ink-muted">
             {total.toLocaleString("id-ID")} total riwayat peminjaman tercatat di perpustakaan.
           </p>
         </div>
         <Link
           href={exportHref}
-          className="inline-flex items-center justify-center rounded-md border border-outline bg-background px-4 py-2 text-xs font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-all shadow-xs"
+          className="inline-flex items-center justify-center rounded-md border border-outline bg-background px-4 py-2 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-all shadow-xs"
         >
           Ekspor Seluruh CSV
         </Link>
@@ -67,7 +67,7 @@ export default async function TransactionsPage({
               href={chipHref(f.value)}
               aria-current={(status || "") === f.value ? "true" : undefined}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-xs font-semibold transition-all",
+                "rounded-full border px-4 py-1.5 text-label font-semibold transition-all",
                 (status || "") === f.value
                   ? "border-sky bg-sky-soft text-sky-deep shadow-xs font-bold"
                   : "border-outline text-ink-muted hover:bg-surface hover:text-ink"

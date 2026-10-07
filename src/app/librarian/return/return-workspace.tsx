@@ -87,17 +87,17 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
       {copy && loan && (
         <div className="grid gap-4 rounded-card border border-outline bg-surface p-5">
           <div>
-            <p className="font-display text-lg font-bold">{copy.book_title}</p>
-            <p className="font-mono text-sm text-ink-muted">{copy.inventory_code}</p>
+            <p className="font-display text-title font-bold">{copy.book_title}</p>
+            <p className="font-mono text-body text-ink-muted">{copy.inventory_code}</p>
           </div>
-          <dl className="grid gap-2 text-sm sm:grid-cols-2">
+          <dl className="grid gap-2 text-body sm:grid-cols-2">
             <div><dt className="text-ink-subtle">Peminjam</dt><dd className="font-semibold">{loan.student_name} ({loan.student_nis})</dd></div>
             <div><dt className="text-ink-subtle">Jatuh tempo</dt><dd className="font-semibold">{formatTanggal(loan.due_at)}</dd></div>
             <div><dt className="text-ink-subtle">Keterlambatan</dt><dd className="font-semibold">{late > 0 ? `${late} hari` : "Tepat waktu"}</dd></div>
             <div><dt className="text-ink-subtle">Denda</dt><dd className="font-semibold">{formatRupiah(late * finePerDay)}</dd></div>
           </dl>
           {err && (
-            <div className="grid gap-2 rounded-md bg-coral-soft px-4 py-3 text-sm text-coral-deep">
+            <div className="grid gap-2 rounded-md bg-coral-soft px-4 py-3 text-body text-coral-deep">
               <p role="alert">{err}</p>
               <div><Button variant="secondary" onClick={() => setErr("")}>Ulangi</Button></div>
             </div>

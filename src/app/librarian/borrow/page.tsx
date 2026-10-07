@@ -6,7 +6,7 @@ export default async function BorrowPage() {
   return (
     <div className="grid gap-5">
       <div>
-        <h1 className="font-display text-2xl font-bold">Pinjam Buku</h1>
+        <h1 className="font-display text-display-sm font-bold">Pinjam Buku</h1>
         <p className="mt-1 text-ink-muted">
           Maksimal {policy.max_active_loans} buku aktif per siswa · durasi {policy.loan_duration_days} hari.
         </p>

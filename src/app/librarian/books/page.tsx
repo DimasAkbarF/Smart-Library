@@ -32,7 +32,7 @@ export default async function LibrarianBooksPage({
   return (
     <div className="grid gap-5">
       <div>
-        <h1 className="font-display text-2xl font-bold">Katalog Buku</h1>
+        <h1 className="font-display text-display-sm font-bold">Katalog Buku</h1>
         <p className="mt-1 text-ink-muted">{result.total} judul. Pilih buku untuk melihat eksemplar.</p>
       </div>
 
@@ -45,7 +45,7 @@ export default async function LibrarianBooksPage({
           href={catHref("")}
           aria-current={!category ? "true" : undefined}
           className={cn(
-            "rounded-full border px-4 py-2 text-sm font-semibold",
+            "rounded-full border px-4 py-2 text-body font-semibold",
             !category ? "border-sky bg-sky-soft text-sky-deep" : "border-outline text-ink-muted hover:bg-surface",
           )}
         >
@@ -57,7 +57,7 @@ export default async function LibrarianBooksPage({
             href={catHref(c.id)}
             aria-current={category === c.id ? "true" : undefined}
             className={cn(
-              "rounded-full border px-4 py-2 text-sm font-semibold",
+              "rounded-full border px-4 py-2 text-body font-semibold",
               category === c.id
                 ? "border-sky bg-sky-soft text-sky-deep"
                 : "border-outline text-ink-muted hover:bg-surface",
@@ -96,12 +96,12 @@ export default async function LibrarianBooksPage({
 
       {result.pageCount > 1 && (
         <nav className="flex items-center justify-between" aria-label="Paginasi">
-          <span className="font-mono text-sm text-ink-muted">{result.page} / {result.pageCount}</span>
+          <span className="font-mono text-body text-ink-muted">{result.page} / {result.pageCount}</span>
           <div className="flex gap-2">
             {result.page > 1 && (
               <Link
                 href={`/librarian/books?q=${encodeURIComponent(q)}&category=${category}&page=${result.page - 1}`}
-                className="rounded-md border border-outline px-3 py-2 text-sm font-semibold hover:bg-surface"
+                className="rounded-md border border-outline px-3 py-2 text-body font-semibold hover:bg-surface"
               >
                 ← Sebelumnya
               </Link>
@@ -109,7 +109,7 @@ export default async function LibrarianBooksPage({
             {result.page < result.pageCount && (
               <Link
                 href={`/librarian/books?q=${encodeURIComponent(q)}&category=${category}&page=${result.page + 1}`}
-                className="rounded-md border border-outline px-3 py-2 text-sm font-semibold hover:bg-surface"
+                className="rounded-md border border-outline px-3 py-2 text-body font-semibold hover:bg-surface"
               >
                 Berikutnya →
               </Link>

@@ -46,14 +46,14 @@ export default async function AuditLogsPage({
     <div className="space-y-6 animate-rise">
       {/* Header */}
       <header className="border-b border-outline/70 pb-5">
-        <div className="flex items-center gap-2 text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+        <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
           <ShieldCheck className="size-4" />
           <span>Keamanan & Transparansi · SMP Negeri 17 Tangerang Selatan</span>
         </div>
-        <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+        <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
           Log Audit Sistem
         </h1>
-        <p className="mt-1 text-sm text-ink-muted">
+        <p className="mt-1 text-body text-ink-muted">
           Rekaman jejak seluruh aktivitas perubahan data katalog, peminjaman sirkulasi, dan akun pengguna.
         </p>
       </header>
@@ -74,7 +74,7 @@ export default async function AuditLogsPage({
               header: "Waktu Aktivitas",
               cell: (a) => (
                 <div className="whitespace-nowrap">
-                  <span className="block text-xs font-semibold text-ink">
+                  <span className="block text-label font-semibold text-ink">
                     {formatTanggalWaktu(a.created_at)}
                   </span>
                 </div>
@@ -88,7 +88,7 @@ export default async function AuditLogsPage({
                     <User className="size-3.5" />
                   </div>
                   <div>
-                    <span className="block text-xs font-semibold text-ink">
+                    <span className="block text-label font-semibold text-ink">
                       {a.actor_name ?? "Sistem Otomatis"}
                     </span>
                   </div>
@@ -112,13 +112,13 @@ export default async function AuditLogsPage({
                   <div>
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold shadow-2xs",
+                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-label font-semibold shadow-2xs",
                         toneClasses
                       )}
                     >
                       {label}
                     </span>
-                    <span className="block font-mono text-[11px] text-ink-subtle mt-0.5">
+                    <span className="block font-mono text-meta text-ink-subtle mt-0.5">
                       {a.action}
                     </span>
                   </div>
@@ -128,7 +128,7 @@ export default async function AuditLogsPage({
             {
               header: "Entitas",
               cell: (a) => (
-                <span className="inline-block rounded-md bg-surface-sunken px-2 py-0.5 text-xs font-medium uppercase font-mono text-ink">
+                <span className="inline-block rounded-md bg-surface-sunken px-2 py-0.5 text-label font-medium uppercase font-mono text-ink">
                   {a.entity_type}
                 </span>
               ),
@@ -136,7 +136,7 @@ export default async function AuditLogsPage({
             {
               header: "ID Referensi",
               cell: (a) => (
-                <span className="font-mono text-xs text-ink-muted" title={a.entity_id}>
+                <span className="font-mono text-meta text-ink-muted" title={a.entity_id}>
                   {a.entity_id ? `${a.entity_id.slice(0, 12)}…` : "—"}
                 </span>
               ),

@@ -118,17 +118,17 @@ export function KpiCard({
     <div className="relative rounded-card border border-outline bg-background p-5 shadow-xs transition-colors duration-150 hover:border-outline-strong">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <span className="text-xs font-bold tracking-wider text-ink-subtle uppercase font-mono">
+          <span className="text-meta font-bold tracking-wider text-ink-subtle uppercase font-mono">
             {label}
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-ink tabular-nums">
+            <span className="font-display text-display-lg sm:text-display-lg font-bold tracking-tight text-ink tabular-nums">
               <AnimatedCounter value={value} />
             </span>
             {badge && (
               <span
                 className={cn(
-                  "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                  "inline-flex items-center rounded-full border px-2 py-0.5 text-meta font-semibold",
                   currentTone.badge
                 )}
               >
@@ -151,7 +151,7 @@ export function KpiCard({
       </div>
 
       <div className="mt-3 border-t border-outline/60 pt-2.5 min-h-[40px] flex items-center">
-        <p className="line-clamp-2 text-xs leading-relaxed text-ink-muted">{secondary}</p>
+        <p className="line-clamp-2 text-meta leading-relaxed text-ink-muted">{secondary}</p>
       </div>
     </div>
   );

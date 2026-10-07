@@ -32,7 +32,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         {msg ? (
-          <p role="alert" className="text-sm font-semibold text-coral-deep">
+          <p role="alert" className="text-body font-semibold text-coral-deep">
             {msg}
           </p>
         ) : (
@@ -61,7 +61,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
                   <span
                     aria-hidden
                     className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-full font-display text-xs font-bold border",
+                      "flex size-8 shrink-0 items-center justify-center rounded-full font-display text-label font-bold border",
                       isAdmin
                         ? "bg-berry-soft text-berry border-berry/30"
                         : "bg-sky-soft text-sky-deep border-sky/20"
@@ -70,8 +70,8 @@ export function UsersSection({ users }: { users: Profile[] }) {
                     {initials}
                   </span>
                   <div>
-                    <span className="block font-semibold text-ink text-sm">{u.full_name}</span>
-                    <span className="block font-mono text-xs text-ink-muted">@{u.username}</span>
+                    <span className="block font-semibold text-ink text-body">{u.full_name}</span>
+                    <span className="block font-mono text-meta text-ink-muted">@{u.username}</span>
                   </div>
                 </div>
               );
@@ -82,20 +82,20 @@ export function UsersSection({ users }: { users: Profile[] }) {
             cell: (u) => {
               if (u.role === "admin") {
                 return (
-                  <span className="inline-flex items-center rounded-full bg-berry-soft border border-berry/30 px-2.5 py-0.5 text-xs font-semibold text-berry">
+                  <span className="inline-flex items-center rounded-full bg-berry-soft border border-berry/30 px-2.5 py-0.5 text-label font-semibold text-berry">
                     Admin Data
                   </span>
                 );
               }
               if (u.role === "librarian") {
                 return (
-                  <span className="inline-flex items-center rounded-full bg-sky-soft border border-sky/30 px-2.5 py-0.5 text-xs font-semibold text-sky-deep">
+                  <span className="inline-flex items-center rounded-full bg-sky-soft border border-sky/30 px-2.5 py-0.5 text-label font-semibold text-sky-deep">
                     Petugas Perpustakaan
                   </span>
                 );
               }
               return (
-                <span className="inline-flex items-center rounded-full bg-surface-sunken border border-outline px-2.5 py-0.5 text-xs font-medium text-ink">
+                <span className="inline-flex items-center rounded-full bg-surface-sunken border border-outline px-2.5 py-0.5 text-label font-medium text-ink">
                   Siswa
                 </span>
               );
@@ -116,7 +116,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
               <button
                 type="button"
                 onClick={() => toggle(u)}
-                className="rounded-md border border-outline px-2.5 py-1 text-xs font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+                className="rounded-md border border-outline px-2.5 py-1 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
               >
                 {u.status === "active" ? "Nonaktifkan" : "Aktifkan"}
               </button>
@@ -170,7 +170,7 @@ function UserForm({ onDone }: { onDone: () => void }) {
         </Select>
       </Field>
       {state?.message && (
-        <p role="alert" className="text-sm font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-coral-deep">
           {state.message}
         </p>
       )}

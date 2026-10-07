@@ -29,10 +29,10 @@ function Brand({ collapsed = false }: { collapsed?: boolean }) {
       </span>
       {!collapsed && (
         <span className="min-w-0 transition-opacity duration-200">
-          <span className="block font-display text-base leading-tight font-bold tracking-tight text-ink">
+          <span className="block font-display text-body leading-tight font-bold tracking-tight text-ink">
             Smart Library
           </span>
-          <span className="block truncate text-[11px] font-medium text-ink-subtle">
+          <span className="block truncate text-meta font-medium text-ink-subtle">
             SMPN 17 Tangerang Selatan
           </span>
         </span>
@@ -65,7 +65,7 @@ function NavItemLink({
         onClick={onNavigate}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold transition-all duration-150 relative",
+          "flex items-center gap-3 rounded-md px-3 py-2.5 text-body font-semibold transition-all duration-150 relative",
           collapsed ? "justify-center px-0 w-10 h-10 mx-auto" : "w-full",
           active
             ? "bg-sky-soft text-sky-deep font-bold before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r before:bg-sky"
@@ -85,7 +85,7 @@ function NavItemLink({
 
       {/* Floating tooltip when collapsed */}
       {collapsed && (
-        <div className="pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 z-50 hidden rounded-md bg-ink px-2.5 py-1 text-xs font-medium text-white shadow-md group-hover:block whitespace-nowrap animate-in fade-in zoom-in-95 duration-150">
+        <div className="pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 z-50 hidden rounded-md bg-ink px-2.5 py-1 text-label font-medium text-white shadow-md group-hover:block whitespace-nowrap animate-in fade-in zoom-in-95 duration-150">
           {item.label}
         </div>
       )}
@@ -125,7 +125,7 @@ function Breadcrumb() {
   };
 
   return (
-    <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-xs text-ink-subtle">
+    <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-meta text-ink-subtle">
       <Link href="/" className="hover:text-sky-deep transition-colors">
         Smart Library
       </Link>
@@ -211,7 +211,7 @@ export function AppShell({
             {navGroups.map((group) => (
               <div key={group.group} className="space-y-1">
                 {!collapsed ? (
-                  <p className="px-3 pb-1 text-[11px] font-bold tracking-wider text-ink-subtle uppercase font-mono">
+                  <p className="px-3 pb-1 text-meta font-bold tracking-wider text-ink-subtle uppercase font-mono">
                     {group.group}
                   </p>
                 ) : (
@@ -231,8 +231,8 @@ export function AppShell({
             {!collapsed ? (
               <div className="flex items-center justify-between rounded-lg p-2 hover:bg-surface transition-colors">
                 <div className="min-w-0 pr-2">
-                  <p className="truncate text-xs font-bold text-ink">{userName}</p>
-                  <p className="text-[11px] text-ink-subtle">{ROLE_LABEL[role]}</p>
+                  <p className="truncate text-label font-bold text-ink">{userName}</p>
+                  <p className="text-meta text-ink-subtle">{ROLE_LABEL[role]}</p>
                 </div>
                 <form action={logout}>
                   <button
@@ -300,12 +300,12 @@ export function AppShell({
               <button
                 type="button"
                 onClick={() => setSearchOpen(true)}
-                className="flex h-10 items-center gap-2 rounded-lg border border-outline bg-surface-sunken/40 px-3 text-xs text-ink-subtle hover:border-outline-strong hover:bg-surface hover:text-ink transition-all cursor-pointer"
+                className="flex h-10 items-center gap-2 rounded-lg border border-outline bg-surface-sunken/40 px-3 text-meta text-ink-subtle hover:border-outline-strong hover:bg-surface hover:text-ink transition-all cursor-pointer"
               >
                 <Search className="size-4 text-ink-subtle" />
                 <span className="hidden sm:inline">Cari buku, siswa, transaksi...</span>
                 <span className="inline sm:hidden">Cari...</span>
-                <kbd className="hidden sm:inline-flex items-center rounded border border-outline bg-background px-1.5 py-0.5 font-mono text-[10px] text-ink-subtle shadow-2xs">
+                <kbd className="hidden sm:inline-flex items-center rounded border border-outline bg-background px-1.5 py-0.5 font-mono text-meta text-ink-subtle shadow-2xs">
                   Ctrl K
                 </kbd>
               </button>
@@ -315,12 +315,12 @@ export function AppShell({
 
               {/* User quick badge */}
               <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-outline">
-                <div className="flex size-9 items-center justify-center rounded-full bg-sky-soft text-sky-deep font-bold text-xs">
+                <div className="flex size-9 items-center justify-center rounded-full bg-sky-soft text-sky-deep font-bold text-label">
                   {userName.charAt(0).toUpperCase()}
                 </div>
-                <div className="text-left text-xs leading-tight">
+                <div className="text-left text-label leading-tight">
                   <span className="block font-semibold text-ink">{userName}</span>
-                  <span className="text-[11px] text-ink-subtle">{ROLE_LABEL[role]}</span>
+                  <span className="text-meta text-ink-subtle">{ROLE_LABEL[role]}</span>
                 </div>
               </div>
             </div>
@@ -360,7 +360,7 @@ export function AppShell({
                 <div className="mt-4 space-y-4 overflow-y-auto max-h-[70vh]">
                   {navGroups.map((group) => (
                     <div key={group.group}>
-                      <p className="px-2 pb-1 text-[11px] font-bold text-ink-subtle uppercase font-mono">
+                      <p className="px-2 pb-1 text-meta font-bold text-ink-subtle uppercase font-mono">
                         {group.group}
                       </p>
                       <div className="space-y-0.5">
@@ -382,7 +382,7 @@ export function AppShell({
                 <form action={logout}>
                   <button
                     type="submit"
-                    className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold text-ink-muted hover:bg-coral-soft hover:text-coral-deep"
+                    className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-body font-semibold text-ink-muted hover:bg-coral-soft hover:text-coral-deep"
                   >
                     <LogOut className="size-5" />
                     Keluar ({userName})

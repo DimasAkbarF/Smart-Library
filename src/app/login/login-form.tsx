@@ -15,7 +15,7 @@ export function LoginForm() {
   return (
     <form action={action} className="grid gap-5 [@media(max-height:720px)]:gap-4">
       <div className="grid gap-2">
-        <label htmlFor="identifier" className="text-sm font-semibold text-ink">
+        <label htmlFor="identifier" className="text-body font-semibold text-ink">
           NIS / Username
         </label>
         <div className="relative">
@@ -41,7 +41,7 @@ export function LoginForm() {
       </div>
 
       <div className="grid gap-2">
-        <label htmlFor="password" className="text-sm font-semibold text-ink">
+        <label htmlFor="password" className="text-body font-semibold text-ink">
           Password
         </label>
         <div className="relative">
@@ -82,7 +82,7 @@ export function LoginForm() {
       {state.message && (
         <p
           role="alert"
-          className="flex items-start gap-2 rounded-md bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-deep"
+          className="flex items-start gap-2 rounded-md bg-coral-soft px-4 py-3 text-body font-semibold text-coral-deep"
         >
           <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
           {state.message}
@@ -91,7 +91,7 @@ export function LoginForm() {
 
       <SubmitButton
         size="lg"
-        className="w-full rounded-lg text-lg"
+        className="w-full rounded-lg text-title"
       >
         Masuk ke Smart Library
       </SubmitButton>

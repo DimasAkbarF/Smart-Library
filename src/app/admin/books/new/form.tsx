@@ -54,12 +54,12 @@ export function BookCreateForm({ categories }: { categories: Category[] }) {
       </div>
 
       {state?.message && (
-        <p role="alert" className="text-sm font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-coral-deep">
           {state.message}
         </p>
       )}
       {state?.ok && (
-        <p role="status" className="rounded-md bg-leaf-soft px-4 py-3 text-sm font-semibold text-leaf-deep">
+        <p role="status" className="rounded-md bg-leaf-soft px-4 py-3 text-body font-semibold text-leaf-deep">
           Buku berhasil disimpan.{" "}
           <Link href="/admin/books" className="underline">
             Kembali ke daftar buku

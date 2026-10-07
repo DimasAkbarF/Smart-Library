@@ -21,13 +21,13 @@ export function BookCard({ book, href }: { book: Book; href: string }) {
       ) : (
         <span
           aria-hidden
-          className="flex h-28 w-20 shrink-0 items-center justify-center rounded-sm bg-sky-soft font-display text-2xl font-bold text-sky-deep"
+          className="flex h-28 w-20 shrink-0 items-center justify-center rounded-sm bg-sky-soft font-display text-display-sm font-bold text-sky-deep"
         >
           {initials}
         </span>
       )}
       <span className="grid min-w-0 content-start gap-1.5">
-        <span className="font-display text-lg leading-snug font-bold group-hover:text-sky-deep">
+        <span className="font-display text-title leading-snug font-bold group-hover:text-sky-deep">
           {book.title}
         </span>
         <span className="truncate text-ink-muted">{book.author}</span>
@@ -37,11 +37,11 @@ export function BookCard({ book, href }: { book: Book; href: string }) {
           ) : (
             <CopyStatusChip status="BORROWED" />
           )}
-          <span className="font-mono text-sm text-ink-subtle">
+          <span className="font-mono text-body text-ink-subtle">
             {book.available_copies}/{book.total_copies}
           </span>
           {book.category_name && (
-            <span className="text-sm text-ink-subtle">{book.category_name}</span>
+            <span className="text-body text-ink-subtle">{book.category_name}</span>
           )}
         </span>
       </span>

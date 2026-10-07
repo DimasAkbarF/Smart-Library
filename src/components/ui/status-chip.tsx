@@ -17,7 +17,7 @@ export function StatusChip({ tone, icon, label, className }: { tone: Tone; icon?
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold [&_svg]:size-4",
+        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-body font-semibold [&_svg]:size-4",
         tones[tone],
         className,
       )}

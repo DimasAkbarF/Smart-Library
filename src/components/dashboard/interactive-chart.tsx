@@ -52,16 +52,16 @@ export function InteractiveChart({
             <span className="flex size-7 items-center justify-center rounded-md bg-sky-soft text-sky-deep">
               <ArrowLeftRight className="size-4" />
             </span>
-            <h2 className="font-display text-base font-bold text-ink">Aktivitas Sirkulasi</h2>
+            <h2 className="font-display text-body font-bold text-ink">Aktivitas Sirkulasi</h2>
           </div>
-          <p className="mt-1 text-xs text-ink-muted">
+          <p className="mt-1 text-meta text-ink-muted">
             Tren sirkulasi buku aktual · Rata-rata <strong className="text-ink font-semibold">{avgDaily}</strong> transaksi/hari
           </p>
         </div>
 
         {/* Filter Tabs & Legend */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-3 text-xs">
+          <div className="flex items-center gap-3 text-label">
             <span className="flex items-center gap-1.5 font-medium text-ink-muted">
               <span className="size-2.5 rounded-full bg-sky" />
               Pinjam ({totalPinjam})
@@ -87,7 +87,7 @@ export function InteractiveChart({
                   setHoveredIdx(null);
                 }}
                 className={cn(
-                  "rounded-xs px-2.5 py-1 text-xs font-semibold transition-colors cursor-pointer",
+                  "rounded-xs px-2.5 py-1 text-label font-semibold transition-colors cursor-pointer",
                   period === tab.id
                     ? "bg-background text-sky-deep shadow-xs font-bold"
                     : "text-ink-muted hover:text-ink"
@@ -125,7 +125,7 @@ export function InteractiveChart({
                   x="30"
                   y={y + 4}
                   textAnchor="end"
-                  className="text-[11px] fill-ink-subtle font-mono"
+                  className="text-meta fill-ink-subtle font-mono"
                 >
                   {val}
                 </text>
@@ -209,7 +209,7 @@ export function InteractiveChart({
                   y={chartHeight - 6}
                   textAnchor="middle"
                   className={cn(
-                    "text-[11px] font-medium transition-colors",
+                    "text-meta font-medium transition-colors",
                     isHovered ? "fill-ink font-bold" : "fill-ink-muted"
                   )}
                 >
@@ -228,10 +228,10 @@ export function InteractiveChart({
               left: `${((hoveredIdx + 0.5) / data.length) * 90 + 5}%`,
             }}
           >
-            <p className="font-bold text-ink text-xs border-b border-outline pb-1 font-mono">
+            <p className="font-bold text-ink text-label border-b border-outline pb-1 font-mono">
               {data[hoveredIdx].date}
             </p>
-            <div className="mt-1 space-y-1 text-xs">
+            <div className="mt-1 space-y-1 text-label">
               <div className="flex items-center justify-between gap-4">
                 <span className="flex items-center gap-1.5 text-sky-deep">
                   <span className="size-2 rounded-full bg-sky" />

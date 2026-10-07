@@ -67,7 +67,7 @@ export function StudentsSection({
       </div>
 
       {msg && (
-        <p role="alert" className="rounded-md bg-coral-soft px-4 py-2.5 text-xs font-semibold text-coral-deep">
+        <p role="alert" className="rounded-md bg-coral-soft px-4 py-2.5 text-meta font-semibold text-coral-deep">
           {msg}
         </p>
       )}
@@ -101,7 +101,7 @@ export function StudentsSection({
           {
             header: "NIS",
             cell: (s) => (
-              <span className="font-mono text-xs font-semibold bg-surface-sunken px-2 py-0.5 rounded-sm border border-outline/70 text-ink">
+              <span className="font-mono text-label font-semibold bg-surface-sunken px-2 py-0.5 rounded-sm border border-outline/70 text-ink">
                 {s.nis}
               </span>
             ),
@@ -120,13 +120,13 @@ export function StudentsSection({
                 <div className="flex items-center gap-3">
                   <span
                     aria-hidden
-                    className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sky-soft text-sky-deep font-display text-xs font-bold border border-sky/20"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sky-soft text-sky-deep font-display text-label font-bold border border-sky/20"
                   >
                     {initials}
                   </span>
                   <div>
-                    <span className="block font-semibold text-ink text-sm">{s.name}</span>
-                    <span className="block text-xs text-ink-muted">
+                    <span className="block font-semibold text-ink text-body">{s.name}</span>
+                    <span className="block text-meta text-ink-muted">
                       {s.class_name ? `Kelas ${s.class_name}` : "Tanpa rombel"}
                     </span>
                   </div>
@@ -147,7 +147,7 @@ export function StudentsSection({
             header: "Kartu / QR",
             cell: (s) => (
               <span className="flex items-center gap-2">
-                <span className="font-mono text-xs text-ink-muted">{s.qr_token}</span>
+                <span className="font-mono text-meta text-ink-muted">{s.qr_token}</span>
                 <DownloadQrButton token={s.qr_token} label={s.qr_token} />
               </span>
             ),
@@ -159,14 +159,14 @@ export function StudentsSection({
                 <button
                   type="button"
                   onClick={() => setEdit(s)}
-                  className="rounded-md border border-outline px-2.5 py-1 text-xs font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+                  className="rounded-md border border-outline px-2.5 py-1 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
                 >
                   Ubah
                 </button>
                 <button
                   type="button"
                   onClick={() => toggle(s)}
-                  className="rounded-md border border-outline px-2.5 py-1 text-xs font-semibold text-ink hover:bg-surface transition-colors"
+                  className="rounded-md border border-outline px-2.5 py-1 text-label font-semibold text-ink hover:bg-surface transition-colors"
                 >
                   {s.status === "active" ? "Nonaktifkan" : "Aktifkan"}
                 </button>
@@ -243,7 +243,7 @@ function StudentForm({
         </Select>
       </Field>
       {state?.message && (
-        <p role="alert" className="text-sm font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-coral-deep">
           {state.message}
         </p>
       )}

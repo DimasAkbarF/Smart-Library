@@ -33,14 +33,14 @@ export function DataTable<T extends { id: string }>({
     <div className="space-y-3">
       {/* Table Container with Sticky Header */}
       <div className="overflow-x-auto rounded-card border border-outline bg-background shadow-xs">
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="w-full min-w-[640px] text-left text-body">
           <thead>
             <tr className="sticky top-0 z-10 border-b border-outline bg-surface-sunken">
               {columns.map((c) => (
                 <th
                   key={c.header}
                   className={cn(
-                    "px-4 py-3 text-xs font-bold text-ink-subtle uppercase tracking-wider font-mono",
+                    "px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono",
                     c.className
                   )}
                 >
@@ -54,7 +54,7 @@ export function DataTable<T extends { id: string }>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-8 text-center text-sm text-ink-subtle"
+                  className="px-4 py-8 text-center text-body text-ink-subtle"
                 >
                   Tidak ada data untuk ditampilkan.
                 </td>
@@ -79,10 +79,10 @@ export function DataTable<T extends { id: string }>({
 
       {/* Pagination & Counter Footer */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-        <p className="text-xs text-ink-subtle font-medium">{totalLabel}</p>
+        <p className="text-meta text-ink-subtle font-medium">{totalLabel}</p>
         <nav className="flex items-center gap-1.5" aria-label="Paginasi">
           <PageLink href={href(page - 1)} disabled={page <= 1} icon={ChevronLeft} label="Sebelumnya" />
-          <span className="px-3 py-1 rounded-md bg-surface border border-outline font-mono text-xs font-semibold text-ink" aria-current="page">
+          <span className="px-3 py-1 rounded-md bg-surface border border-outline font-mono text-label font-semibold text-ink" aria-current="page">
             {page} / {pageCount}
           </span>
           <PageLink href={href(page + 1)} disabled={page >= pageCount} icon={ChevronRight} label="Berikutnya" />
@@ -105,7 +105,7 @@ function PageLink({
 }) {
   if (disabled) {
     return (
-      <span aria-disabled className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs text-ink-faint border border-outline/40 cursor-not-allowed">
+      <span aria-disabled className="flex items-center gap-1 rounded-md px-3 py-1.5 text-label text-ink-faint border border-outline/40 cursor-not-allowed">
         <Icon className="size-3.5" />
         <span className="hidden sm:inline">{label}</span>
       </span>
@@ -114,7 +114,7 @@ function PageLink({
   return (
     <Link
       href={href}
-      className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+      className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
     >
       <Icon className="size-3.5" />
       <span className="hidden sm:inline">{label}</span>

@@ -10,7 +10,7 @@ export default async function StudentHistory() {
   return (
     <div className="grid gap-5">
       <header>
-        <h1 className="font-display text-2xl font-bold">Riwayat Peminjaman</h1>
+        <h1 className="font-display text-display-sm font-bold">Riwayat Peminjaman</h1>
         <p className="text-ink-muted">
           {history.length > 0
             ? `${history.length} buku sudah kamu kembalikan.`
@@ -30,7 +30,7 @@ export default async function StudentHistory() {
         />
       ) : (
         <div className="overflow-x-auto rounded-card border border-outline bg-surface shadow-card">
-          <table className="w-full min-w-[560px] text-left text-sm">
+          <table className="w-full min-w-[560px] text-left text-body">
             <thead>
               <tr className="border-b border-outline text-ink-muted">
                 <th scope="col" className="px-4 py-3 font-semibold">Judul</th>
@@ -44,7 +44,7 @@ export default async function StudentHistory() {
                 <tr key={loan.id} className="border-b border-outline last:border-0">
                   <td className="px-4 py-3">
                     <p className="font-semibold">{loan.book_title}</p>
-                    <p className="font-mono text-xs text-ink-muted">{loan.inventory_code}</p>
+                    <p className="font-mono text-meta text-ink-muted">{loan.inventory_code}</p>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">{formatTanggal(loan.borrowed_at)}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{formatTanggal(loan.returned_at)}</td>

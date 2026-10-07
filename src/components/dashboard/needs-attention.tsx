@@ -26,17 +26,17 @@ export function NeedsAttention({
           <span className="flex size-7 items-center justify-center rounded-md bg-coral-soft text-coral-deep">
             <AlertCircle className="size-4" />
           </span>
-          <h2 id="needs-attention-heading" className="font-display text-base font-bold text-ink">
+          <h2 id="needs-attention-heading" className="font-display text-body font-bold text-ink">
             Perlu Perhatian
           </h2>
         </div>
-        <span className="rounded-full bg-surface-sunken px-2.5 py-0.5 text-xs font-semibold text-ink-muted">
+        <span className="rounded-full bg-surface-sunken px-2.5 py-0.5 text-meta font-semibold text-ink-muted">
           {activeItems.length} tindakan diperlukan
         </span>
       </div>
 
       {activeItems.length === 0 ? (
-        <div className="flex items-center gap-3 py-6 px-2 text-sm text-ink-muted">
+        <div className="flex items-center gap-3 py-6 px-2 text-body text-ink-muted">
           <CheckCircle2 className="size-5 text-leaf-deep shrink-0" />
           <p>Semua operasional berjalan optimal. Tidak ada peringatan yang memerlukan tindakan segera.</p>
         </div>
@@ -65,17 +65,17 @@ export function NeedsAttention({
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-bold text-ink group-hover:text-ink transition-colors text-sm">
+                    <span className="font-bold text-ink group-hover:text-ink transition-colors text-body">
                       {item.count} {item.title}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-xs text-ink-muted truncate">
+                  <p className="mt-0.5 text-meta text-ink-muted truncate">
                     {item.description}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0 text-xs font-semibold">
+              <div className="flex items-center gap-1.5 shrink-0 text-label font-semibold">
                 <span
                   className={cn(
                     "hidden sm:inline",

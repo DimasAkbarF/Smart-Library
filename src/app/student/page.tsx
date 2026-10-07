@@ -31,14 +31,14 @@ export default async function StudentDashboard() {
     <div className="space-y-8 animate-in fade-in duration-200">
       {/* Header */}
       <header className="border-b border-outline/70 pb-6">
-        <div className="flex items-center gap-2 text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+        <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
           <span className="size-2 rounded-full bg-leaf" />
           <span>Perpustakaan Siswa · SMP Negeri 17 Tangerang Selatan</span>
         </div>
-        <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+        <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
           {sapa}, {nama}!
         </h1>
-        <p className="mt-1 text-sm text-ink-muted">
+        <p className="mt-1 text-body text-ink-muted">
           Yuk lihat buku yang sedang kamu pinjam dan temukan bacaan seru berikutnya.
         </p>
       </header>
@@ -88,16 +88,16 @@ export default async function StudentDashboard() {
               <QrCode className="size-6" />
             </span>
             <div>
-              <p className="font-display font-bold text-ink text-sm sm:text-base">
+              <p className="font-display font-bold text-ink text-body sm:text-body">
                 Kartu Anggota Perpustakaan Digital
               </p>
-              <p className="text-xs text-ink-muted">
+              <p className="text-meta text-ink-muted">
                 NIS: <span className="font-mono font-semibold">{profile.student.nis}</span> · Tunjukkan QR saat meminjam buku ke petugas
               </p>
             </div>
           </div>
           <Link href="/student/profile" className="shrink-0">
-            <Button variant="secondary" size="sm" className="gap-1.5 text-xs bg-white">
+            <Button variant="secondary" size="sm" className="gap-1.5 text-label bg-white">
               <span>Buka Kartu QR</span>
               <ArrowRight className="size-3.5" />
             </Button>
@@ -107,7 +107,7 @@ export default async function StudentDashboard() {
 
       {/* Quick Search */}
       <section className="rounded-card border border-outline bg-background p-5 shadow-xs">
-        <h2 className="font-display text-sm font-bold text-ink">Cari Koleksi Buku</h2>
+        <h2 className="font-display text-body font-bold text-ink">Cari Koleksi Buku</h2>
         <form action="/student/books" method="GET" className="mt-2.5 flex gap-2">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-ink-subtle" aria-hidden />
@@ -115,7 +115,7 @@ export default async function StudentDashboard() {
               name="q"
               placeholder="Cari judul novel, buku pelajaran, atau pengarang…"
               aria-label="Cari buku"
-              className="pl-10 text-xs sm:text-sm"
+              className="pl-10 text-label sm:text-body"
             />
           </div>
           <Button type="submit" size="md" className="shrink-0">
@@ -127,9 +127,9 @@ export default async function StudentDashboard() {
       {/* Active Loans */}
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-outline pb-2">
-          <h2 className="font-display text-base font-bold text-ink">Buku yang Sedang Dipinjam</h2>
+          <h2 className="font-display text-body font-bold text-ink">Buku yang Sedang Dipinjam</h2>
           {active.length > 0 && (
-            <Link href="/student/loans" className="text-xs font-semibold text-sky-deep hover:underline">
+            <Link href="/student/loans" className="text-label font-semibold text-sky-deep hover:underline">
               Lihat semua ({active.length}) →
             </Link>
           )}
@@ -157,17 +157,17 @@ export default async function StudentDashboard() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">
-                      <p className="font-display font-bold text-ink text-sm sm:text-base line-clamp-1">
+                      <p className="font-display font-bold text-ink text-body sm:text-body line-clamp-1">
                         {loan.book_title}
                       </p>
                       <LoanStatusChip status={telat > 0 ? "OVERDUE" : loan.status} />
                     </div>
-                    <p className="mt-1 font-mono text-xs text-sky-deep font-semibold">
+                    <p className="mt-1 font-mono text-label text-sky-deep font-semibold">
                       {loan.inventory_code}
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-outline/60 flex items-center justify-between text-xs">
+                  <div className="mt-4 pt-3 border-t border-outline/60 flex items-center justify-between text-label">
                     <span className="text-ink-subtle">Jatuh tempo:</span>
                     <span className="font-semibold text-ink">
                       {formatTanggal(loan.due_at)}

@@ -256,13 +256,13 @@ export function ImportClient() {
           ============================================================ */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline pb-5">
         <div>
-          <span className="text-xs font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <span className="text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
             Administrasi Data · SMP Negeri 17 Tangerang Selatan
           </span>
-          <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+          <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
             Impor Data Perpustakaan
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-body text-ink-muted">
             Tambahkan atau perbarui data koleksi buku dan anggota perpustakaan melalui file spreadsheet Excel atau CSV.
           </p>
         </div>
@@ -297,7 +297,7 @@ export function ImportClient() {
               <li key={s.num} className="flex items-center gap-2">
                 <span
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-full text-xs font-bold font-mono transition-colors",
+                    "flex size-7 items-center justify-center rounded-full text-label font-bold font-mono transition-colors",
                     isDone
                       ? "bg-leaf text-white"
                       : isCurrent
@@ -310,7 +310,7 @@ export function ImportClient() {
                 </span>
                 <span
                   className={cn(
-                    "text-xs font-semibold hidden sm:inline",
+                    "text-label font-semibold hidden sm:inline",
                     isCurrent ? "text-ink font-bold" : isDone ? "text-ink-muted" : "text-ink-subtle"
                   )}
                 >
@@ -335,7 +335,7 @@ export function ImportClient() {
             onClick={() => switchTab("buku")}
             disabled={busy}
             className={cn(
-              "flex items-center gap-2 rounded-md px-4 py-2 text-xs font-semibold transition-colors cursor-pointer",
+              "flex items-center gap-2 rounded-md px-4 py-2 text-label font-semibold transition-colors cursor-pointer",
               tab === "buku"
                 ? "bg-background text-ink shadow-xs font-bold"
                 : "text-ink-muted hover:text-ink"
@@ -351,7 +351,7 @@ export function ImportClient() {
             onClick={() => switchTab("siswa")}
             disabled={busy}
             className={cn(
-              "flex items-center gap-2 rounded-md px-4 py-2 text-xs font-semibold transition-colors cursor-pointer",
+              "flex items-center gap-2 rounded-md px-4 py-2 text-label font-semibold transition-colors cursor-pointer",
               tab === "siswa"
                 ? "bg-background text-ink shadow-xs font-bold"
                 : "text-ink-muted hover:text-ink"
@@ -362,7 +362,7 @@ export function ImportClient() {
           </button>
         </div>
 
-        <span className="text-xs text-ink-muted">
+        <span className="text-meta text-ink-muted">
           Format kolom wajib: <span className="font-mono text-ink font-semibold">{headers.slice(0, 3).join(", ")}...</span>
         </span>
       </div>
@@ -381,10 +381,10 @@ export function ImportClient() {
           FILE SIZE ERROR ALERT
           ============================================================ */}
       {tooBig && (
-        <div role="alert" className="flex items-start gap-3 rounded-lg border border-coral/30 bg-coral-soft p-4 text-xs font-semibold text-coral-deep">
+        <div role="alert" className="flex items-start gap-3 rounded-lg border border-coral/30 bg-coral-soft p-4 text-meta font-semibold text-coral-deep">
           <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
           <div>
-            <p className="font-bold text-sm">Ukuran File Terlalu Besar</p>
+            <p className="font-bold text-body">Ukuran File Terlalu Besar</p>
             <p className="mt-0.5 text-coral-deep/90">
               File &ldquo;{file?.name}&rdquo; melebihi batas maksimal 5 MB. Silakan bagi file menjadi beberapa bagian yang lebih kecil.
             </p>
@@ -428,10 +428,10 @@ export function ImportClient() {
           <span className="flex size-14 items-center justify-center rounded-xl bg-sky-soft text-sky-deep shadow-2xs">
             <Upload className="size-7" aria-hidden />
           </span>
-          <h2 className="mt-4 font-display text-base sm:text-lg font-bold text-ink">
+          <h2 className="mt-4 font-display text-body sm:text-title font-bold text-ink">
             Seret file ke sini atau pilih dari perangkat
           </h2>
-          <p className="mt-1 text-xs text-ink-muted">
+          <p className="mt-1 text-meta text-ink-muted">
             Mendukung file spreadsheet <strong className="text-ink">.xlsx</strong> atau format teks <strong className="text-ink">.csv</strong> (Maksimal 5 MB)
           </p>
 
@@ -463,8 +463,8 @@ export function ImportClient() {
                 <FileSpreadsheet className="size-6" />
               </span>
               <div className="min-w-0">
-                <p className="truncate font-display text-sm font-bold text-ink">{file.name}</p>
-                <p className="text-xs text-ink-muted">
+                <p className="truncate font-display text-body font-bold text-ink">{file.name}</p>
+                <p className="text-meta text-ink-muted">
                   {totalRowsInFile.toLocaleString("id-ID")} baris data terdeteksi · {(file.size / 1024).toFixed(1)} KB
                 </p>
               </div>
@@ -485,14 +485,14 @@ export function ImportClient() {
 
           {/* Validation Alert */}
           {errCount === 0 ? (
-            <div className="flex items-center gap-3 rounded-lg border border-leaf/30 bg-leaf-soft/50 p-4 text-xs font-semibold text-leaf-deep">
+            <div className="flex items-center gap-3 rounded-lg border border-leaf/30 bg-leaf-soft/50 p-4 text-label font-semibold text-leaf-deep">
               <CheckCircle2 className="size-5 shrink-0" />
               <span>Seluruh {validCount} baris data berhasil divalidasi dan siap diimpor ke sistem.</span>
             </div>
           ) : (
-            <div className="rounded-lg border border-sun-deep/30 bg-sun-soft/50 p-4 text-xs">
+            <div className="rounded-lg border border-sun-deep/30 bg-sun-soft/50 p-4 text-label">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5 font-bold text-sun-deep text-sm">
+                <div className="flex items-center gap-2.5 font-bold text-sun-deep text-body">
                   <AlertTriangle className="size-5 shrink-0" />
                   <span>
                     {validCount} baris valid · {errCount} baris bermasalah (akan dilewati)
@@ -511,7 +511,7 @@ export function ImportClient() {
               {showErrorDetails && (
                 <ul className="mt-3 max-h-48 overflow-y-auto divide-y divide-sun-deep/20 border-t border-sun-deep/20 pt-2 text-ink">
                   {data.errors.slice(0, 30).map((err, i) => (
-                    <li key={i} className="py-1 text-xs flex items-center justify-between gap-2">
+                    <li key={i} className="py-1 text-label flex items-center justify-between gap-2">
                       <span className="font-mono font-semibold text-coral-deep">Baris {err.row}</span>
                       <span className="text-ink-muted text-right">{err.reason}</span>
                     </li>
@@ -526,10 +526,10 @@ export function ImportClient() {
 
           {/* Column Mapping Summary */}
           <div className="rounded-xl border border-outline bg-background p-4 sm:p-5 shadow-xs">
-            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-ink-subtle font-mono">
+            <h3 className="font-display text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono">
               Pemetaan Kolom Sistem
             </h3>
-            <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-label">
               {headers.map((h) => (
                 <div key={h} className="flex items-center gap-1.5 rounded-md border border-outline/70 bg-surface px-2.5 py-1.5">
                   <Check className="size-3.5 text-leaf-deep shrink-0" />
@@ -544,17 +544,17 @@ export function ImportClient() {
           {/* Data Preview Table (5-10 rows) */}
           <div className="rounded-xl border border-outline bg-background overflow-hidden shadow-xs">
             <div className="flex items-center justify-between border-b border-outline px-4 py-3 bg-surface-sunken">
-              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-ink-subtle font-mono">
+              <h3 className="font-display text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono">
                 Pratinjau Data ({Math.min(10, data.rows.length)} dari {validCount} Baris Valid)
               </h3>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
+              <table className="w-full min-w-[640px] text-left text-body">
                 <thead>
                   <tr className="border-b border-outline text-ink-muted">
                     {headers.map((h) => (
-                      <th key={h} className="px-4 py-2.5 font-mono text-xs uppercase text-ink-subtle">
+                      <th key={h} className="px-4 py-2.5 font-mono text-meta uppercase text-ink-subtle">
                         {h}
                       </th>
                     ))}
@@ -564,7 +564,7 @@ export function ImportClient() {
                   {data.rows.slice(0, 10).map((r, i) => (
                     <tr key={i} className="hover:bg-surface/60 transition-colors">
                       {headers.map((h) => (
-                        <td key={h} className="px-4 py-2.5 text-xs text-ink truncate max-w-48">
+                        <td key={h} className="px-4 py-2.5 text-label text-ink truncate max-w-48">
                           {String(((r as unknown) as Record<string, unknown>)[h] || "—")}
                         </td>
                       ))}
@@ -615,10 +615,10 @@ export function ImportClient() {
               <CheckCircle2 className="size-7" />
             </span>
             <div>
-              <h2 className="font-display text-lg font-bold text-ink">
+              <h2 className="font-display text-title font-bold text-ink">
                 Impor Data Selesai
               </h2>
-              <p className="mt-1 text-sm text-ink-muted">
+              <p className="mt-1 text-body text-ink-muted">
                 {report.inserted.toLocaleString("id-ID")} data {tab === "buku" ? "buku" : "siswa"} berhasil ditambahkan ke database perpustakaan.
                 {report.addedCopies != null && ` (${report.newTitles} judul baru, ${report.addedCopies} eksemplar fisik didaftarkan).`}
               </p>
@@ -626,8 +626,8 @@ export function ImportClient() {
           </div>
 
           {report.failed.length > 0 && (
-            <div className="rounded-lg border border-coral/30 bg-coral-soft/50 p-4 text-xs text-coral-deep">
-              <p className="font-bold text-sm">
+            <div className="rounded-lg border border-coral/30 bg-coral-soft/50 p-4 text-label text-coral-deep">
+              <p className="font-bold text-body">
                 {report.failed.length} Baris Memerlukan Perhatian (Gagal Disimpan):
               </p>
               <ul className="mt-2 max-h-40 overflow-y-auto divide-y divide-coral/20">

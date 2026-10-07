@@ -119,11 +119,11 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
           <div className="rounded-lg border border-leaf/40 bg-leaf-soft/30 p-4 sm:p-5 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-leaf-deep font-mono">
+                <span className="text-meta font-bold uppercase tracking-wider text-leaf-deep font-mono">
                   Siswa Teridentifikasi
                 </span>
-                <p className="font-display text-lg font-bold text-ink mt-0.5">{ctx.student.name}</p>
-                <p className="text-xs text-ink-muted mt-0.5">
+                <p className="font-display text-title font-bold text-ink mt-0.5">{ctx.student.name}</p>
+                <p className="text-meta text-ink-muted mt-0.5">
                   NIS: <span className="font-mono font-semibold">{ctx.student.nis}</span> ·{" "}
                   {ctx.student.class_name ? `Kelas ${ctx.student.class_name}` : "Tanpa kelas"} ·{" "}
                   <span className={ctx.student.status === "active" ? "text-leaf-deep font-semibold" : "text-coral-deep font-semibold"}>
@@ -138,13 +138,13 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
                   setCtx(null);
                   setStep1Msg("");
                 }}
-                className="text-xs h-8"
+                className="text-label h-8"
               >
                 Ganti Siswa
               </Button>
             </div>
 
-            <div className="flex items-center gap-2 pt-2 border-t border-leaf/20 text-xs text-ink-muted">
+            <div className="flex items-center gap-2 pt-2 border-t border-leaf/20 text-meta text-ink-muted">
               <span>Pinjaman aktif saat ini:</span>
               <strong className="font-mono text-ink">
                 {ctx.activeCount} dari {maxLoans} buku
@@ -153,12 +153,12 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
 
             {ctx.loans.length > 0 && (
               <div className="pt-2 border-t border-leaf/20">
-                <span className="text-[11px] text-ink-subtle block mb-1">Buku yang masih dibawa:</span>
-                <ul className="space-y-1 text-xs text-ink-muted">
+                <span className="text-meta text-ink-subtle block mb-1">Buku yang masih dibawa:</span>
+                <ul className="space-y-1 text-meta text-ink-muted">
                   {ctx.loans.map((l) => (
                     <li key={l.loan_id} className="flex justify-between">
                       <span className="truncate max-w-xs">· {l.book_title}</span>
-                      <span className="font-mono text-[11px] text-ink-subtle">
+                      <span className="font-mono text-meta text-ink-subtle">
                         Tempo: {formatTanggal(l.due_at)}
                       </span>
                     </li>
@@ -174,11 +174,11 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
           <div className="rounded-lg border border-sky/40 bg-sky-soft/30 p-4 sm:p-5 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-sky-deep font-mono">
+                <span className="text-meta font-bold uppercase tracking-wider text-sky-deep font-mono">
                   Buku Teridentifikasi
                 </span>
-                <p className="font-display text-lg font-bold text-ink mt-0.5">{copy.book_title}</p>
-                <p className="text-xs text-ink-muted mt-0.5">
+                <p className="font-display text-title font-bold text-ink mt-0.5">{copy.book_title}</p>
+                <p className="text-meta text-ink-muted mt-0.5">
                   Kode: <span className="font-mono font-semibold text-sky-deep">{copy.inventory_code}</span>
                   {copy.location ? ` · Rak ${copy.location}` : ""}
                 </p>
@@ -190,7 +190,7 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
                   setCopy(null);
                   setStep2Msg("");
                 }}
-                className="text-xs h-8"
+                className="text-label h-8"
               >
                 Ganti Buku
               </Button>
@@ -199,7 +199,7 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
             <div className="flex items-center gap-2 pt-2 border-t border-sky/20">
               <CopyStatusChip status={copy.status} />
               {copy.status !== "AVAILABLE" && (
-                <span className="text-xs text-coral-deep font-semibold">
+                <span className="text-label text-coral-deep font-semibold">
                   (Eksemplar ini tidak dapat dipinjam)
                 </span>
               )}
@@ -211,10 +211,10 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
         {(!ctx || !copy) && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-base font-bold text-ink">
+              <h2 className="font-display text-body font-bold text-ink">
                 {!ctx ? "Langkah 1: Pindai Kartu Siswa" : "Langkah 2: Pindai Buku yang Dipinjam"}
               </h2>
-              <span className="text-xs font-mono font-semibold text-sky-deep bg-sky-soft px-2.5 py-0.5 rounded-full">
+              <span className="text-label font-mono font-semibold text-sky-deep bg-sky-soft px-2.5 py-0.5 rounded-full">
                 {!ctx ? "Fase 1/2" : "Fase 2/2"}
               </span>
             </div>
@@ -230,15 +230,15 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
               onDetected={!ctx ? onStudent : onBook}
             />
 
-            {busy1 && <p role="status" className="text-xs text-ink-muted">Memeriksa data siswa…</p>}
-            {busy2 && <p role="status" className="text-xs text-ink-muted">Memeriksa data buku…</p>}
+            {busy1 && <p role="status" className="text-meta text-ink-muted">Memeriksa data siswa…</p>}
+            {busy2 && <p role="status" className="text-meta text-ink-muted">Memeriksa data buku…</p>}
             {step1Msg && (
-              <p role="alert" className="rounded-md bg-sun-soft p-3 text-xs font-semibold text-sun-deep">
+              <p role="alert" className="rounded-md bg-sun-soft p-3 text-meta font-semibold text-sun-deep">
                 {step1Msg}
               </p>
             )}
             {step2Msg && (
-              <p role="alert" className="rounded-md bg-sun-soft p-3 text-xs font-semibold text-sun-deep">
+              <p role="alert" className="rounded-md bg-sun-soft p-3 text-meta font-semibold text-sun-deep">
                 {step2Msg}
               </p>
             )}
@@ -248,35 +248,35 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
 
       {/* Circulation Summary Sidebar */}
       <aside aria-label="Ringkasan Transaksi" className="rounded-lg border border-outline bg-surface p-5 space-y-4 lg:sticky lg:top-20">
-        <h2 className="font-display text-base font-bold text-ink border-b border-outline/70 pb-3">
+        <h2 className="font-display text-body font-bold text-ink border-b border-outline/70 pb-3">
           Ringkasan Sirkulasi
         </h2>
 
-        <dl className="space-y-3 text-xs">
+        <dl className="space-y-3 text-label">
           <div>
             <dt className="text-ink-subtle">Peminjam (Siswa)</dt>
-            <dd className="font-semibold text-ink text-sm mt-0.5">
+            <dd className="font-semibold text-ink text-body mt-0.5">
               {ctx ? `${ctx.student.name} (${ctx.student.nis})` : <span className="text-ink-subtle font-normal">Belum dipindai</span>}
             </dd>
           </div>
           <div>
             <dt className="text-ink-subtle">Buku & Kode</dt>
-            <dd className="font-semibold text-ink text-sm mt-0.5">
+            <dd className="font-semibold text-ink text-body mt-0.5">
               {copy ? `${copy.book_title} [${copy.inventory_code}]` : <span className="text-ink-subtle font-normal">Belum dipindai</span>}
             </dd>
           </div>
         </dl>
 
         {invalidReason && (
-          <p role="alert" className="rounded-md bg-coral-soft p-3 text-xs font-semibold text-coral-deep leading-relaxed">
+          <p role="alert" className="rounded-md bg-coral-soft p-3 text-meta font-semibold text-coral-deep leading-relaxed">
             {invalidReason}
           </p>
         )}
 
         {err && (
-          <div className="rounded-md bg-coral-soft p-3 text-xs font-semibold text-coral-deep space-y-2">
+          <div className="rounded-md bg-coral-soft p-3 text-label font-semibold text-coral-deep space-y-2">
             <p role="alert">{err}</p>
-            <Button variant="secondary" size="sm" onClick={() => setErr("")} className="text-xs">
+            <Button variant="secondary" size="sm" onClick={() => setErr("")} className="text-label">
               Ulangi
             </Button>
           </div>

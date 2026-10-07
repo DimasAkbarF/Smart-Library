@@ -49,12 +49,12 @@ export function BookEditForm({ book, categories }: { book: Book; categories: Cat
         <Input name="cover_url" defaultValue={book.cover_url ?? ""} />
       </Field>
       {state?.message && (
-        <p role="alert" className="text-sm font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-coral-deep">
           {state.message}
         </p>
       )}
       {state?.ok && (
-        <p role="status" className="text-sm font-semibold text-leaf-deep">
+        <p role="status" className="text-body font-semibold text-leaf-deep">
           Perubahan berhasil disimpan.
         </p>
       )}
@@ -94,7 +94,7 @@ export function AddCopiesForm({ bookId }: { bookId: string }) {
         </Field>
       </div>
       {msg && (
-        <p role="alert" className="text-sm font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-coral-deep">
           {msg}
         </p>
       )}
@@ -127,11 +127,11 @@ export function DeleteBookButton({ bookId }: { bookId: string }) {
         Hapus buku
       </Button>
       {msg && (
-        <p role="alert" className="mt-2 text-sm font-semibold text-coral-deep">
+        <p role="alert" className="mt-2 text-body font-semibold text-coral-deep">
           {msg}
         </p>
       )}
-      <p className="mt-2 text-sm text-ink-subtle">
+      <p className="mt-2 text-body text-ink-subtle">
         <Link href="/admin/books" className="underline">
           Kembali ke daftar
         </Link>
