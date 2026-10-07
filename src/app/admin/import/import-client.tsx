@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import * as XLSX from "xlsx";
 import {
   Upload,
   FileSpreadsheet,
@@ -60,7 +59,7 @@ interface Parsed<T> {
 }
 
 function sheetToRows(file: File): Promise<string[][]> {
-  return file.arrayBuffer().then((buf) => {
+  return Promise.all([file.arrayBuffer(), import("xlsx")]).then(([buf, XLSX]) => {
     const wb = XLSX.read(buf);
     const ws = wb.Sheets[wb.SheetNames[0]];
     return XLSX.utils.sheet_to_json<string[]>(ws, { header: 1, defval: "" });
@@ -201,7 +200,8 @@ export function ImportClient() {
     }
   }
 
-  function downloadTemplate() {
+  async function downloadTemplate() {
+    const XLSX = await import("xlsx");
     const isBook = tab === "buku";
     const sampleData = isBook
       ? [
@@ -529,7 +529,7 @@ export function ImportClient() {
             <h3 className="font-display text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono">
               Pemetaan Kolom Sistem
             </h3>
-            <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-label">
+            <div className="mt-3 grid grid-cols-2 gap-2 text-label sm:grid-cols-4">
               {headers.map((h) => (
                 <div key={h} className="flex items-center gap-1.5 rounded-md border border-outline/70 bg-surface px-2.5 py-1.5">
                   <Check className="size-3.5 text-leaf-deep shrink-0" />

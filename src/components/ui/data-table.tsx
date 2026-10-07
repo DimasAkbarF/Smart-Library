@@ -32,15 +32,15 @@ export function DataTable<T extends { id: string }>({
   return (
     <div className="space-y-3">
       {/* Table Container with Sticky Header */}
-      <div className="overflow-x-auto rounded-card border border-outline bg-background shadow-xs">
-        <table className="w-full min-w-[640px] text-left text-body">
+      <div className="overflow-x-auto overscroll-x-contain rounded-card border border-outline bg-background shadow-xs">
+        <table className="w-full min-w-[640px] snap-x snap-mandatory text-left text-body">
           <thead>
             <tr className="sticky top-0 z-10 border-b border-outline bg-surface-sunken">
               {columns.map((c) => (
                 <th
                   key={c.header}
                   className={cn(
-                    "px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono",
+                    "px-3 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono sm:px-4",
                     c.className
                   )}
                 >
@@ -63,10 +63,10 @@ export function DataTable<T extends { id: string }>({
               rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="hover:bg-surface/80 transition-colors duration-100"
+                  className="snap-start hover:bg-surface/80 transition-colors duration-100"
                 >
                   {columns.map((c) => (
-                    <td key={c.header} className={cn("px-4 py-3.5 align-middle", c.className)}>
+                    <td key={c.header} className={cn("px-3 py-3 align-middle sm:px-4 sm:py-3.5", c.className)}>
                       {c.cell(row)}
                     </td>
                   ))}
@@ -76,6 +76,10 @@ export function DataTable<T extends { id: string }>({
           </tbody>
         </table>
       </div>
+
+      <p className="text-meta text-ink-subtle sm:hidden">
+        Geser ke samping untuk melihat kolom lainnya.
+      </p>
 
       {/* Pagination & Counter Footer */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">

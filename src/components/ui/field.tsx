@@ -18,7 +18,7 @@ export function Field({
 }) {
   const err = Array.isArray(error) ? error[0] : error;
   return (
-    <div className={cn("grid gap-1.5", className)}>
+    <div className={cn("grid min-w-0 gap-1.5", className)}>
       <label className="text-label font-semibold text-ink uppercase tracking-wider font-mono">
         {label}
       </label>

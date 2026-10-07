@@ -223,7 +223,7 @@ export function InteractiveChart({
         {/* Floating Tooltip Detail on Hover */}
         {hoveredIdx !== null && data[hoveredIdx] && (
           <div
-            className="pointer-events-none absolute -top-3 z-30 transform -translate-x-1/2 rounded-lg border border-outline bg-background px-3 py-2 shadow-modal animate-in fade-in zoom-in-95 duration-100"
+            className="pointer-events-none absolute -top-3 z-30 transform -translate-x-1/2 rounded-lg border border-outline bg-background px-3 py-2 shadow-modal fade-in-key"
             style={{
               left: `${((hoveredIdx + 0.5) / data.length) * 90 + 5}%`,
             }}

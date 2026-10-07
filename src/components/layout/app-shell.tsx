@@ -85,11 +85,39 @@ function NavItemLink({
 
       {/* Floating tooltip when collapsed */}
       {collapsed && (
-        <div className="pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 z-50 hidden rounded-md bg-ink px-2.5 py-1 text-label font-medium text-white shadow-md group-hover:block whitespace-nowrap animate-in fade-in zoom-in-95 duration-150">
+        <div className="pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 z-50 hidden rounded-md bg-ink px-2.5 py-1 text-label font-medium text-white shadow-md group-hover:block whitespace-nowrap fade-in-key">
           {item.label}
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Item bottom-nav siswa. Terpisah dari NavItemLink karena yang ini butuh
+ * label selalu terlihat: collapsed hanya menyisakan kotak ikon 40px yang
+ * tidak bisa ditebak, dan itu masalah nyata di layar HP.
+ */
+function BottomNavItem({ item }: { item: NavItem }) {
+  const pathname = usePathname();
+  const active =
+    item.href === "/student"
+      ? pathname === "/student"
+      : pathname === item.href || pathname.startsWith(item.href + "/");
+  const Icon = item.icon;
+
+  return (
+    <Link
+      href={item.href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "flex min-h-tap-lg flex-col items-center justify-center gap-1 rounded-md px-1 py-2 text-tap transition-colors",
+        active ? "text-sky-deep" : "text-ink-muted"
+      )}
+    >
+      <Icon className="size-5 shrink-0" aria-hidden />
+      <span className="w-full truncate text-center">{item.label}</span>
+    </Link>
   );
 }
 
@@ -189,7 +217,7 @@ export function AppShell({
             ============================================================ */}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-outline bg-background transition-[width] duration-220 ease-in-out md:flex",
+            "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-outline bg-background transition-[width] duration-200 ease-in-out md:flex",
             collapsed ? "w-[72px]" : "w-[260px]"
           )}
         >
@@ -200,7 +228,7 @@ export function AppShell({
               type="button"
               onClick={() => setCollapsed(!collapsed)}
               aria-label={collapsed ? "Buka sidebar" : "Tutup sidebar"}
-              className="flex size-7 items-center justify-center rounded-md text-ink-subtle hover:bg-surface hover:text-ink transition-colors"
+              className="flex size-9 items-center justify-center rounded-md text-ink-subtle hover:bg-surface hover:text-ink transition-colors"
             >
               {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
             </button>
@@ -238,7 +266,7 @@ export function AppShell({
                   <button
                     type="submit"
                     aria-label="Keluar"
-                    className="flex size-8 items-center justify-center rounded-md text-ink-muted hover:bg-coral-soft hover:text-coral-deep transition-colors"
+                    className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-md text-ink-muted hover:bg-coral-soft hover:text-coral-deep transition-colors"
                   >
                     <LogOut className="size-4" />
                   </button>
@@ -264,7 +292,7 @@ export function AppShell({
             ============================================================ */}
         <div
           className={cn(
-            "flex flex-col min-h-screen transition-[padding] duration-220 ease-in-out",
+            "flex flex-col min-h-screen transition-[padding] duration-200 ease-in-out",
             collapsed ? "md:pl-[72px]" : "md:pl-[260px]"
           )}
         >
@@ -279,7 +307,7 @@ export function AppShell({
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
                 aria-label="Buka menu navigasi"
-                className="flex size-10 items-center justify-center rounded-lg border border-outline text-ink-muted hover:bg-surface hover:text-ink md:hidden"
+                className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-lg border border-outline text-ink-muted hover:bg-surface hover:text-ink md:hidden"
               >
                 <Menu className="size-5" />
               </button>
@@ -397,13 +425,13 @@ export function AppShell({
         {isStudent && (
           <nav
             aria-label="Navigasi cepat"
-            className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-outline bg-background px-2 pt-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] md:hidden"
+            className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-outline bg-background px-2 py-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] md:hidden"
           >
             {navGroups
               .flatMap((g) => g.items)
               .slice(0, 4)
               .map((item) => (
-                <NavItemLink key={item.href} item={item} collapsed={true} />
+                <BottomNavItem key={item.href} item={item} />
               ))}
           </nav>
         )}

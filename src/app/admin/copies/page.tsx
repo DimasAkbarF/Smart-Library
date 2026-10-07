@@ -60,13 +60,13 @@ export default async function CopiesPage({
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin/qr"
-            className="inline-flex min-h-10 items-center justify-center rounded-md border border-outline bg-background px-4 text-label font-semibold text-ink hover:bg-surface transition-colors"
+            className="inline-flex min-h-tap-min items-center justify-center rounded-md border border-outline bg-background px-4 text-label font-semibold text-ink hover:bg-surface transition-colors"
           >
             Cetak Label QR
           </Link>
           <Link
             href="/admin/books"
-            className="inline-flex min-h-10 items-center justify-center rounded-md bg-sky px-4 text-label font-display font-semibold text-white hover:bg-sky-deep transition-colors"
+            className="inline-flex min-h-tap-min items-center justify-center rounded-md bg-sky px-4 text-label font-display font-semibold text-white hover:bg-sky-deep transition-colors"
           >
             Katalog Buku
           </Link>

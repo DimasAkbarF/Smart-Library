@@ -133,8 +133,8 @@ export function QrScanner({
 
             {/* Detected Success State Animation */}
             {phase === "detected" && (
-              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-leaf-deep/20 animate-in fade-in duration-150">
-                <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-5 text-center shadow-modal animate-in zoom-in-95 duration-200">
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-leaf-deep/20 fade-in-key">
+                <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-5 text-center shadow-modal fade-in-key">
                   <span className="flex size-12 items-center justify-center rounded-full bg-leaf text-white shadow-xs">
                     <CheckCircle2 className="size-7" />
                   </span>

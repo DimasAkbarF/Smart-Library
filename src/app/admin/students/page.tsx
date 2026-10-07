@@ -48,7 +48,7 @@ export default async function StudentsPage({
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin/import"
-            className="inline-flex min-h-10 items-center justify-center rounded-md border border-outline bg-background px-4 text-label font-semibold text-ink hover:bg-surface transition-colors"
+            className="inline-flex min-h-tap-min items-center justify-center rounded-md border border-outline bg-background px-4 text-label font-semibold text-ink hover:bg-surface transition-colors"
           >
             Impor CSV / Excel
           </Link>

@@ -49,7 +49,7 @@ export function Drawer({
     <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-ink/50 transition-opacity duration-240 animate-in fade-in"
+        className="fixed inset-0 bg-ink/50 transition-opacity duration-200 fade-in-key"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -58,12 +58,12 @@ export function Drawer({
         <div
           ref={panelRef}
           className={cn(
-            "w-screen max-w-md transform border-l border-outline bg-background shadow-modal transition-transform duration-240 ease-out animate-in slide-in-from-right",
+            "w-screen max-w-md transform border-l border-outline bg-background shadow-modal transition-transform duration-200 ease-out slide-in-right-key",
             className
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-outline px-6 py-5">
+          <div className="flex items-center justify-between border-b border-outline px-4 py-4 sm:px-6">
             <div>
               <h2 className="font-display text-title font-bold text-ink">{title}</h2>
               {description && <p className="mt-0.5 text-meta text-ink-muted">{description}</p>}
@@ -72,18 +72,18 @@ export function Drawer({
               type="button"
               onClick={onClose}
               aria-label="Tutup panel detail"
-              className="flex size-9 items-center justify-center rounded-md text-ink-muted hover:bg-surface hover:text-ink transition-colors"
+              className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-md text-ink-muted hover:bg-surface hover:text-ink transition-colors"
             >
               <X className="size-5" aria-hidden />
             </button>
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-5 text-body">{children}</div>
+          <div className="flex-1 overflow-y-auto px-4 py-4 text-body sm:px-6 sm:py-5">{children}</div>
 
           {/* Footer */}
           {footer && (
-            <div className="border-t border-outline bg-surface-sunken/50 px-6 py-4">
+            <div className="border-t border-outline bg-surface-sunken/50 px-4 py-4 sm:px-6">
               {footer}
             </div>
           )}

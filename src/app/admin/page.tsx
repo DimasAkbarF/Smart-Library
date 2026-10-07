@@ -43,7 +43,7 @@ export default async function AdminPage() {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <div className="space-y-8 fade-in-key">
       {/* ============================================================
           SECTION 1 & 5: DASHBOARD HERO WITH CLEAR HIERARCHY
           Page Context -> Title & Greeting -> Primary Actions

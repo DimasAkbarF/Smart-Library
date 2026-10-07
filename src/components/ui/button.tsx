@@ -12,10 +12,12 @@ const button = cva(
         ghost: "text-ink-muted hover:bg-surface hover:text-ink active:bg-surface-sunken",
       },
       size: {
-        sm: "min-h-10 px-3 text-body [&_svg]:size-4 [&_svg]:shrink-0",
-        md: "min-h-12 px-5 text-body [&_svg]:size-5 [&_svg]:shrink-0",
-        // Big Friendly Button (PRD §14.1): min 56px untuk aksi utama
-        lg: "min-h-14 px-6 text-title [&_svg]:size-5 [&_svg]:shrink-0",
+        // min-h-10 (40px) ada di sini sebelumnya — di bawah floor WCAG 2.5.8
+        // dan di bawah minimum 44px yang dipakai untuk kontrol toolbar.
+        sm: "min-h-tap-min px-3 text-label [&_svg]:size-4 [&_svg]:shrink-0",
+        md: "min-h-12 px-4 text-body sm:px-5 [&_svg]:size-5 [&_svg]:shrink-0",
+        // Big Friendly Button (PRD §14.1): 56px untuk aksi utama siswa
+        lg: "min-h-tap-lg px-5 text-title sm:px-6 [&_svg]:size-5 [&_svg]:shrink-0",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },

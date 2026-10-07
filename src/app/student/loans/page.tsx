@@ -34,11 +34,11 @@ export default async function StudentLoans() {
           {active.map((loan) => {
             const telat = hariTelat(loan.due_at);
             return (
-              <li key={loan.id} className="grid gap-2 rounded-card border border-outline bg-surface p-5 shadow-card">
+              <li key={loan.id} className="grid gap-2 rounded-card border border-outline bg-surface p-4 shadow-card sm:p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-display text-title font-bold">{loan.book_title}</p>
-                    <p className="font-mono text-body text-ink-muted">{loan.inventory_code}</p>
+                    <p className="truncate font-display text-title font-bold">{loan.book_title}</p>
+                    <p className="truncate font-mono text-label text-ink-muted">{loan.inventory_code}</p>
                   </div>
                   <LoanStatusChip status={telat > 0 ? "OVERDUE" : loan.status} />
                 </div>

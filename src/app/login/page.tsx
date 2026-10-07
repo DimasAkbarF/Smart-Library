@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { SchoolBrandLockup, SchoolBrandPanel } from "@/components/login/school-brand-panel";
 import { LoginCard } from "@/components/login/login-card";
 import { SchoolFooter } from "@/components/login/school-footer";
+
+// /login satu-satunya halaman yang boleh terindex, jadi metadata-nya yang
+// paling spesifik. Area auth lain tidak diberi metadata — halaman terindex
+// yang isinya salah lebih buruk daripada tidak ada metadata sama sekali.
+export const metadata: Metadata = {
+  title: "Masuk",
+  description:
+    "Masuk ke Smart Library SMPN 17 Tangerang Selatan untuk meminjaman, mengembalikan, atau menjelajahi katalog buku.",
+};
 
 /**
  * Contained responsive layout (PRD 14A–14H):

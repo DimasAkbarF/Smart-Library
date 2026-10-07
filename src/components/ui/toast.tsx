@@ -65,7 +65,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               key={t.id}
               role={isError ? "alert" : "status"}
               className={cn(
-                "pointer-events-auto flex items-start gap-3 rounded-lg border p-4 shadow-modal transition-all animate-in fade-in slide-in-from-bottom-3 duration-200",
+                "pointer-events-auto flex items-start gap-3 rounded-lg border p-4 shadow-modal transition-all slide-in-up-key",
                 t.type === "success" && "border-leaf-deep/30 bg-background text-ink shadow-leaf/10",
                 t.type === "error" && "border-coral-deep/30 bg-background text-ink shadow-coral/10",
                 t.type === "warning" && "border-sun-deep/30 bg-background text-ink shadow-sun/10",

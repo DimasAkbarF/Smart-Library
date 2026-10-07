@@ -87,7 +87,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
             </div>
 
             <div className="space-y-3 border-t border-outline/70 pt-4 text-body">
-              <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-3">
                 <div className="rounded-md bg-background border border-outline/80 p-2">
                   <span className="block font-mono text-title font-bold text-ink">{book.total_copies}</span>
                   <span className="block text-meta text-ink-muted">Total</span>

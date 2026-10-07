@@ -112,6 +112,52 @@ h1, h2, h3 {
   animation: rise 240ms ease-out both;
 }
 
+/* Keyframes native menggantikan kelas dari plugin tailwindcss-animate yang
+   tidak pernah terinstall — animate-in, fade-in, zoom-in-95, dan
+   slide-in-from-right menghasilkan CSS kosong, jadi drawer, toast, command
+   palette, dan scanner selama ini tidak pernah beranimasi.
+   Nama berakhiran -key supaya tidak bentrok dengan utility standar Tailwind. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.fade-in-key {
+  animation: fade-in 200ms ease-out both;
+}
+
+.slide-in-right-key {
+  animation: slide-in-right 220ms ease-out both;
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.slide-in-up-key {
+  animation: slide-in-up 200ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

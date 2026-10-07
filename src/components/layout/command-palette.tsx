@@ -89,12 +89,12 @@ export function CommandPalette({
     <div className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 md:p-20" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-ink/50 transition-opacity duration-200 animate-in fade-in"
+        className="fixed inset-0 bg-ink/50 transition-opacity duration-200 fade-in-key"
         onClick={handleClose}
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto max-w-2xl transform rounded-card border border-outline bg-background shadow-modal transition-all duration-200 animate-in fade-in zoom-in-95">
+      <div className="relative mx-auto max-w-2xl transform rounded-card border border-outline bg-background shadow-modal transition-all duration-200 fade-in-key">
         {/* Search Input Bar */}
         <div className="flex items-center border-b border-outline px-4 py-3">
           <Search className="size-5 shrink-0 text-ink-subtle" aria-hidden />

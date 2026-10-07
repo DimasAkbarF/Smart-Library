@@ -9,7 +9,7 @@ export default async function LibrarianHome() {
   const d = await librarianDashboard();
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <div className="space-y-8 fade-in-key">
       {/* Header */}
       <header className="border-b border-outline/70 pb-6">
         <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
