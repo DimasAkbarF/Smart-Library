@@ -86,13 +86,8 @@ export const metadata: Metadata = {
     images: ["/logo-smpn17.png"],
   },
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
-    ],
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
   },
 };
 
