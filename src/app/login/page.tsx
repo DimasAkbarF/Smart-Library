@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   title: "Masuk",
   description:
     "Masuk ke Smart Library SMP Negeri 17 Tangerang Selatan untuk peminjaman, pengembalian, dan katalog koleksi perpustakaan.",
+  keywords: [
+    "masuk perpustakaan smpn 17",
+    "login smart library smpn 17 tangsel",
+    "perpustakaan smpn 17 tangsel",
+    "perpustakaan smp negeri 17 tangerang selatan",
+  ],
 };
 
 /**
