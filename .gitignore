@@ -40,3 +40,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# data & sensitive files
+*.xlsx
+*.xls
+*.csv
+*.tsv
+*.doc
+*.docx
+*.bak
+*.dump
+*.sql.bak
+*.db
+*.sqlite
+*.sqlite3
+*.key
+*.cert
+*.p12
+*.pfx
