@@ -19,7 +19,7 @@ export default function LoginPage() {
     "@context": "https://schema.org",
     "@type": "School",
     "name": "SMP Negeri 17 Tangerang Selatan",
-    "url": "https://smartlibrary.smpn17.sch.id",
+    "url": "http://perpustakaansmp17tangsel.web.id",
     "description": "Sistem perpustakaan sekolah berbasis QR untuk SMP Negeri 17 Tangerang Selatan.",
     "address": {
       "@type": "PostalAddress",

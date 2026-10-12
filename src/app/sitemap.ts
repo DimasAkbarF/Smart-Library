@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // TODO: Update URL base to match the real domain before production deployment
-  const baseUrl = "https://smartlibrary.smpn17.sch.id";
+  const baseUrl = "http://perpustakaansmp17tangsel.web.id";
 
   return [
     {

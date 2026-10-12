@@ -1,5 +1,7 @@
 # Smart Library — SMP Negeri 17 Tangerang Selatan
 
+> 🌐 **Domain Resmi:** [http://perpustakaansmp17tangsel.web.id/](http://perpustakaansmp17tangsel.web.id/)
+
 Sistem otomasi dan manajemen perpustakaan sekolah modern berbasis **Next.js 16 (App Router)** dan **Supabase (PostgreSQL)** dengan identifikasi cepat menggunakan **QR Code** untuk sirkulasi buku dan kartu anggota digital siswa.
 
 Dirancang dengan prinsip **Academic Editorial Design System**: tipografi institusi yang berwibawa (*Newsreader*, *IBM Plex Sans*, *IBM Plex Mono*), palet warna resmi sekolah (`#1B2F5B`), tata letak responsif hingga perangkat mobile 390px, serta kepatuhan aksesibilitas kontras WCAG AA.

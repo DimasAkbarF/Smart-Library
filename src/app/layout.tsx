@@ -48,7 +48,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   // TODO ganti dengan domain sebenarnya sebelum deploy. metadataBase yang
   // salah membuat URL openGraph salah untuk seluruh halaman.
-  metadataBase: new URL("https://smartlibrary.smpn17.sch.id"),
+  metadataBase: new URL("http://perpustakaansmp17tangsel.web.id"),
   title: {
     default: "Smart Library — SMPN 17 Tangerang Selatan",
     template: "%s — Smart Library",
