@@ -17,15 +17,29 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "School",
-    "name": "SMP Negeri 17 Tangerang Selatan",
+    "@type": "Library",
+    "name": "Perpustakaan SMP Negeri 17 Tangerang Selatan",
+    "alternateName": ["Smart Library SMPN 17 Tangsel", "SMP Negeri 17 Tangerang Selatan"],
     "url": "https://perpustakaansmp17tangsel.web.id",
-    "description": "Sistem perpustakaan sekolah berbasis QR untuk SMP Negeri 17 Tangerang Selatan.",
+    "logo": "https://perpustakaansmp17tangsel.web.id/logo-smpn17.png",
+    "image": "https://perpustakaansmp17tangsel.web.id/logo-smpn17.png",
+    "description": "Sistem perpustakaan sekolah dan sirkulasi digital berbasis QR untuk SMP Negeri 17 Tangerang Selatan.",
+    "email": "perpustakaan@smpn17tangsel.sch.id",
     "address": {
       "@type": "PostalAddress",
+      "streetAddress": "Jl. Lengkong Gudang Timur, Serpong",
       "addressLocality": "Tangerang Selatan",
+      "addressRegion": "Banten",
       "addressCountry": "ID",
     },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "07:00",
+        "closes": "15:00",
+      },
+    ],
   };
 
   return (
