@@ -1,8 +1,11 @@
 "use server";
 
+import { unstable_cache } from "next/cache";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole } from "@/lib/auth";
 import type { Book, Category } from "@/lib/types";
+
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 const PAGE_SIZE = 12;
 
@@ -20,7 +23,7 @@ export async function searchBooks(opts: {
   availableOnly?: boolean;
   page?: number;
 }): Promise<CatalogResult> {
-  await assertRole("student", "librarian", "admin");
+  await assertRole("student", "admin");
   const svc = serviceClient();
   const page = Math.max(1, opts.page ?? 1);
 
@@ -28,7 +31,7 @@ export async function searchBooks(opts: {
     .from("books")
     .select("id, isbn, title, author, publisher, publication_year, category_id, cover_url, categories(name)", { count: "exact" });
 
-  const q = opts.q?.trim();
+  const q = opts.q ? sanitizeSearchTerm(opts.q) : "";
   if (q) {
     const like = `%${q}%`;
     query = query.or(`title.ilike.${like},author.ilike.${like},isbn.ilike.${like}`);
@@ -76,7 +79,7 @@ export async function searchBooks(opts: {
 }
 
 export async function getBookDetail(id: string): Promise<Book | null> {
-  await assertRole("student", "librarian", "admin");
+  await assertRole("student", "admin");
   const svc = serviceClient();
   const { data: b } = await svc
     .from("books")
@@ -102,9 +105,20 @@ export async function getBookDetail(id: string): Promise<Book | null> {
   };
 }
 
+const getCachedCategories = unstable_cache(
+  async () => {
+    const svc = serviceClient();
+    const { data } = await svc.from("categories").select("id, name").order("name");
+    return data ?? [];
+  },
+  ["categories-list-cache"],
+  {
+    revalidate: 3600,
+    tags: ["categories"],
+  },
+);
+
 export async function listCategories(): Promise<Category[]> {
-  await assertRole("student", "librarian", "admin");
-  const svc = serviceClient();
-  const { data } = await svc.from("categories").select("id, name").order("name");
-  return data ?? [];
+  await assertRole("student", "admin");
+  return getCachedCategories();
 }

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Library · System Architecture (2 Roles)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #eb6c36;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1160px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 2.4vw + 0.8rem, 2.2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      color: var(--color-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 960px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Architecture &middot; 2 Roles &middot; SMPN 17 Tangsel</p>
+    <h1>Smart Library System: Arsitektur 2 Peran (Siswa &amp; Admin)</h1>
+    <p class="subtitle">Sistem yang disederhanakan: Admin mengelola sirkulasi dan data master, Siswa mengakses kartu QR &amp; katalog</p>
+
+    <svg viewBox="0 0 1120 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="smartlib-arch-title smartlib-arch-desc">
+      <title id="smartlib-arch-title">Smart Library System Architecture 2 Roles</title>
+      <desc id="smartlib-arch-desc">Diagram arsitektur sistem Smart Library dengan 2 peran: Siswa dan Admin, terhubung ke Next.js Server Tier dan PostgreSQL Engine.</desc>
+      <defs>
+        <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1" fill="rgba(45,49,66,0.08)"/>
+        </pattern>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.6"/>
+
+      <!-- ZONE 1: Client & Presentation (2 Roles) -->
+      <rect x="40" y="80" width="280" height="460" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="100" y="84" width="160" height="14" rx="2" fill="#f5f5f5"/>
+      <text x="180" y="94" fill="rgba(45,49,66,0.50)" font-size="7.5" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">2 ROLES (CLIENT TIER)</text>
+
+      <!-- ZONE 2: Application & Server Actions -->
+      <rect x="360" y="80" width="360" height="460" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="444" y="84" width="192" height="14" rx="2" fill="#f5f5f5"/>
+      <text x="540" y="94" fill="rgba(45,49,66,0.50)" font-size="7.5" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">NEXT.JS 16 SERVER &amp; ACTIONS</text>
+
+      <!-- ZONE 3: Supabase PostgreSQL Engine -->
+      <rect x="760" y="80" width="320" height="460" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="836" y="84" width="168" height="14" rx="2" fill="#f5f5f5"/>
+      <text x="920" y="94" fill="rgba(45,49,66,0.50)" font-size="7.5" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">SUPABASE POSTGRESQL ENGINE</text>
+
+      <!-- CONNECTORS FIRST (z-index behind nodes) -->
+
+      <!-- Siswa -> Auth Gate -->
+      <line x1="296" y1="172" x2="384" y2="172" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="312" y="154" width="56" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="340" y="163" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">HTTPS</text>
+
+      <!-- Admin -> Loans Actions (Primary Circulation Flow) -->
+      <path d="M 296,336 H 340 Q 348,336 348,328 V 288 Q 348,280 356,280 H 384"
+            fill="none" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <rect x="306" y="298" width="68" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="340" y="307" fill="#eb6c36" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">SCAN &amp; PINJAM</text>
+
+      <!-- Admin -> Admin Handlers (Master Data Flow) -->
+      <line x1="296" y1="400" x2="384" y2="400" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="308" y="382" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="340" y="391" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MUTATION</text>
+
+      <!-- Auth Gate -> Loans Actions (assertRole guard) -->
+      <line x1="540" y1="200" x2="540" y2="240" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="496" y="210" width="88" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="540" y="219" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">assertRole()</text>
+
+      <!-- Loans Actions -> Atomic RPC Engine (Orthogonal two-bend, destination above source) -->
+      <path d="M 696,268 H 736 Q 744,268 744,260 V 216 Q 744,208 752,208 H 784"
+            fill="none" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <rect x="704" y="194" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="744" y="203" fill="#eb6c36" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RPC EXECUTE</text>
+
+      <!-- Loans Actions -> Library Tables (Read copies / resolve QR) -->
+      <path d="M 696,296 H 736 Q 744,296 744,304 V 332 Q 744,340 752,340 H 784"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="704" y="348" width="76" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="742" y="357" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RESOLVE QR</text>
+
+      <!-- Admin Handlers -> Library Tables (Direct Service Client) -->
+      <line x1="696" y1="400" x2="784" y2="368" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="706" y="388" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="742" y="397" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">BATCH CRUD</text>
+
+      <!-- Atomic RPC -> Library Tables (Mutate status) -->
+      <line x1="920" y1="256" x2="920" y2="296" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="876" y="268" width="88" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="920" y="277" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">UPDATE COPIES</text>
+
+      <!-- Atomic RPC -> Audit Ledger (Append log) -->
+      <line x1="920" y1="384" x2="920" y2="424" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="880" y="396" width="80" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="920" y="405" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">WRITE AUDIT</text>
+
+
+      <!-- NODES: ZONE 1 (2 ROLES) -->
+
+      <!-- Node 1.1: Siswa Portal -->
+      <rect x="64" y="132" width="232" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="132" width="232" height="88" rx="6" fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="72" y="140" width="56" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="100" y="149" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ROLE 1</text>
+      <text x="180" y="170" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Siswa (Portal Mobile)</text>
+      <text x="180" y="188" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">src/app/student</text>
+      <text x="180" y="204" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">Kartu QR Digital &middot; Katalog &middot; Riwayat</text>
+
+      <!-- Node 1.2: Admin Console (Merged Operator & Admin) -->
+      <rect x="64" y="280" width="232" height="152" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="280" width="232" height="152" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1.2"/>
+      <rect x="72" y="288" width="56" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="100" y="297" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ROLE 2</text>
+      <text x="180" y="320" fill="#2d3142" font-size="13" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Admin Perpustakaan</text>
+      <text x="180" y="338" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">src/app/admin/*</text>
+      <line x1="80" y1="352" x2="280" y2="352" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <text x="180" y="370" fill="#2d3142" font-size="8" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">&bull; Sirkulasi: Pinjam &amp; Kembali (Scan QR)</text>
+      <text x="180" y="388" fill="#4f5d75" font-size="8" font-family="'Geist', sans-serif" text-anchor="middle">&bull; Koleksi: Buku &amp; Eksemplar Fisik</text>
+      <text x="180" y="406" fill="#4f5d75" font-size="8" font-family="'Geist', sans-serif" text-anchor="middle">&bull; Master Data: Siswa, Import, Audit</text>
+
+
+      <!-- NODES: ZONE 2 (NEXT.JS SERVER) -->
+
+      <!-- Node 2.1: Session & RBAC Gate (Focal 1) -->
+      <rect x="384" y="120" width="312" height="80" rx="6" fill="#f5f5f5"/>
+      <rect x="384" y="120" width="312" height="80" rx="6" fill="rgba(235,108,54,0.06)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="392" y="128" width="40" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="412" y="137" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SECURITY</text>
+      <text x="540" y="156" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">RBAC Gate &amp; Data Access Layer</text>
+      <text x="540" y="174" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">src/lib/auth.ts (getSession, requireRole)</text>
+
+      <!-- Node 2.2: Circulation Server Actions -->
+      <rect x="384" y="240" width="312" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="384" y="240" width="312" height="88" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="392" y="248" width="48" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="416" y="257" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ACTIONS</text>
+      <text x="540" y="276" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Loans &amp; Circulation Actions</text>
+      <text x="540" y="294" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">src/features/loans/actions.ts</text>
+      <text x="540" y="312" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">resolveQr &middot; borrowCopy &middot; returnCopy</text>
+
+      <!-- Node 2.3: Admin & Catalog Services -->
+      <rect x="384" y="360" width="312" height="80" rx="6" fill="#f5f5f5"/>
+      <rect x="384" y="360" width="312" height="80" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="392" y="368" width="48" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="416" y="377" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MODULES</text>
+      <text x="540" y="396" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Catalog, Import &amp; Admin Services</text>
+      <text x="540" y="414" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">src/features/admin/* &middot; catalog/queries.ts</text>
+
+
+      <!-- NODES: ZONE 3 (SUPABASE DATABASE) -->
+
+      <!-- Node 3.1: Atomic Transaction RPCs (Focal 2) -->
+      <rect x="784" y="160" width="272" height="96" rx="6" fill="#f5f5f5"/>
+      <rect x="784" y="160" width="272" height="96" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.2"/>
+      <rect x="792" y="168" width="56" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.60)" stroke-width="0.8"/>
+      <text x="820" y="177" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ATOMIC RPC</text>
+      <text x="920" y="200" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PostgreSQL RPC Procedures</text>
+      <text x="920" y="218" fill="#eb6c36" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">borrow_book() &middot; return_book()</text>
+      <text x="920" y="236" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">FOR UPDATE Row-Lock &middot; Anti Double-Borrow</text>
+
+      <!-- Node 3.2: Library Relational Tables -->
+      <rect x="784" y="296" width="272" height="88" rx="6" fill="#f5f5f5"/>
+      <rect x="784" y="296" width="272" height="88" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="792" y="304" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="812" y="313" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TABLES</text>
+      <text x="920" y="332" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Relational Schema &amp; Policies</text>
+      <text x="920" y="350" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">students, books, book_copies, loans</text>
+      <text x="920" y="366" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">library_policies &middot; categories &middot; classes</text>
+
+      <!-- Node 3.3: Audit Trail & Security -->
+      <rect x="784" y="424" width="272" height="80" rx="6" fill="#f5f5f5"/>
+      <rect x="784" y="424" width="272" height="80" rx="6" fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="792" y="432" width="36" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="810" y="441" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">AUDIT</text>
+      <text x="920" y="460" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Audit Logs &amp; RLS Defense</text>
+      <text x="920" y="478" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">audit_logs &middot; actor, action, metadata</text>
+
+
+      <!-- LEGEND STRIP -->
+      <line x1="40" y1="568" x2="1080" y2="568" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <text x="40" y="584" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="596" width="14" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="62" y="604" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Focal (Security Gate / Atomic RPC)</text>
+
+      <rect x="260" y="596" width="14" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="282" y="604" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Core Application &amp; Schema</text>
+
+      <rect x="460" y="596" width="14" height="10" rx="2" fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1"/>
+      <text x="482" y="604" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Client / Audit Surface</text>
+
+      <line x1="650" y1="601" x2="680" y2="601" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="688" y="604" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Alur Transaksi Utama</text>
+
+      <line x1="820" y1="601" x2="850" y2="601" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="858" y="604" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">HTTP / API Request</text>
+
+      <line x1="970" y1="601" x2="1000" y2="601" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="1008" y="604" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Internal Flow</text>
+    </svg>
+  </div>
+</body>
+</html>

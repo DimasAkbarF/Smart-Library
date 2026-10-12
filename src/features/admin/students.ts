@@ -1,10 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
 import { normalisasiKode } from "@/lib/format";
+import { sanitizeSearchTerm } from "@/lib/utils";
 import type { Student } from "@/lib/types";
 
 const StudentSchema = z.object({
@@ -16,6 +17,13 @@ const StudentSchema = z.object({
 export interface StudentFormState {
   message?: string;
   ok?: boolean;
+  student?: {
+    id: string;
+    nis: string;
+    name: string;
+    qr_token: string;
+    class_name?: string | null;
+  };
 }
 
 function qrSiswa(nis: string) {
@@ -34,6 +42,7 @@ export async function createStudent(
   });
   if (!parsed.success) return { message: parsed.error.issues[0]?.message };
   const nis = normalisasiKode(parsed.data.nis);
+  const token = qrSiswa(nis);
   const svc = serviceClient();
   const { data, error } = await svc
     .from("students")
@@ -41,9 +50,9 @@ export async function createStudent(
       nis,
       name: parsed.data.name,
       class_id: parsed.data.class_id || null,
-      qr_token: qrSiswa(nis),
+      qr_token: token,
     })
-    .select("id")
+    .select("id, nis, name, qr_token, classes(name)")
     .single();
   if (error) {
     if (error.code === "23505") return { message: `NIS ${nis} sudah terdaftar.` };
@@ -51,7 +60,19 @@ export async function createStudent(
   }
   await tulisAudit(session.userId, "student.create", "student", data.id, { nis });
   revalidatePath("/admin");
-  return { ok: true };
+  revalidatePath("/admin/students");
+  revalidateTag("admin-dashboard", { expire: 0 });
+  return {
+    ok: true,
+    student: {
+      id: data.id,
+      nis: data.nis,
+      name: data.name,
+      qr_token: data.qr_token,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      class_name: (data.classes as any)?.name ?? null,
+    },
+  };
 }
 
 export async function updateStudent(
@@ -83,6 +104,8 @@ export async function updateStudent(
   }
   await tulisAudit(session.userId, "student.update", "student", id, { nis });
   revalidatePath("/admin");
+  revalidatePath("/admin/students");
+  revalidateTag("admin-dashboard", { expire: 0 });
   return { ok: true };
 }
 
@@ -93,10 +116,12 @@ export async function setStudentStatus(id: string, status: Student["status"]) {
   if (error) throw new Error("Gagal mengubah status siswa.");
   await tulisAudit(session.userId, "student.status", "student", id, { status });
   revalidatePath("/admin");
+  revalidatePath("/admin/students");
+  revalidateTag("admin-dashboard", { expire: 0 });
 }
 
 export async function listStudents(opts: { q?: string; classId?: string; page?: number; pageSize?: number }) {
-  await assertRole("librarian", "admin");
+  await assertRole("admin");
   const svc = serviceClient();
   const page = Math.max(1, opts.page ?? 1);
   const pageSize = opts.pageSize ?? 25;
@@ -104,7 +129,7 @@ export async function listStudents(opts: { q?: string; classId?: string; page?: 
     .from("students")
     .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)", { count: "exact" });
   if (opts.classId) query = query.eq("class_id", opts.classId);
-  const q = opts.q?.trim();
+  const q = opts.q ? sanitizeSearchTerm(opts.q) : "";
   if (q) {
     const like = `%${q}%`;
     query = query.or(`nis.ilike.${like},name.ilike.${like}`);
@@ -127,11 +152,22 @@ export async function listStudents(opts: { q?: string; classId?: string; page?: 
   return { rows, total, page, pageCount: Math.max(1, Math.ceil(total / pageSize)) };
 }
 
+export const getCachedClasses = unstable_cache(
+  async () => {
+    const svc = serviceClient();
+    const { data } = await svc.from("classes").select("id, name").order("name");
+    return data ?? [];
+  },
+  ["classes-list-cache"],
+  {
+    revalidate: 3600,
+    tags: ["classes"],
+  },
+);
+
 export async function listClasses() {
-  await assertRole("librarian", "admin");
-  const svc = serviceClient();
-  const { data } = await svc.from("classes").select("id, name").order("name");
-  return data ?? [];
+  await assertRole("admin");
+  return getCachedClasses();
 }
 
 // ---------- Import siswa (baris valid dari client, validasi ulang di server) ----------
@@ -149,6 +185,8 @@ export interface ImportReport {
 
 export async function importStudents(rows: ImportStudentRow[]): Promise<ImportReport> {
   const session = await assertRole("admin");
+  if (!Array.isArray(rows)) throw new Error("Format data impor tidak valid.");
+  if (rows.length > 2000) throw new Error("Batas impor maksimal 2.000 baris per file.");
   const svc = serviceClient();
   const report: ImportReport = { inserted: 0, failed: [] };
 
@@ -201,5 +239,8 @@ export async function importStudents(rows: ImportStudentRow[]): Promise<ImportRe
     failed: report.failed.length,
   });
   revalidatePath("/admin");
+  revalidatePath("/admin/students");
+  revalidateTag("admin-dashboard", { expire: 0 });
+  revalidateTag("classes", { expire: 0 });
   return report;
 }

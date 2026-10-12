@@ -34,25 +34,25 @@ export default async function StudentBookDetail({
             <ArrowLeft className="size-4" aria-hidden /> Kembali ke katalog
           </Button>
         </Link>
-        <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
-          <span className="size-2 rounded-full bg-leaf" />
+        <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono tracking-wider uppercase">
+          <span className="size-1.5 rounded-chip bg-primary" />
           <span>Koleksi Buku Perpustakaan · SMP Negeri 17 Tangerang Selatan</span>
         </div>
       </div>
 
       {/* Availability Banner Callout */}
       {isAvailable ? (
-        <div className="rounded-card border border-leaf/40 bg-leaf-soft p-4 sm:p-5 flex items-start gap-3.5 shadow-xs">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-leaf text-white mt-0.5">
+        <div className="rounded-panel border border-success/30 bg-success-bg p-4 sm:p-5 flex items-start gap-3.5 font-plex-sans">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-btn bg-success text-white mt-0.5">
             <CheckCircle2 className="size-5" />
           </div>
           <div className="space-y-1">
-            <h2 className="font-display font-bold text-leaf-deep text-body sm:text-body">
+            <h2 className="font-serif text-base font-medium text-success">
               Buku Tersedia untuk Dipinjam ({book.available_copies} dari {book.total_copies} eksemplar)
             </h2>
-            <p className="text-meta sm:text-body text-ink-muted leading-relaxed">
-              Kunjungi meja sirkulasi perpustakaan saat jam istirahat. Buka menu{" "}
-              <Link href="/student/profile" className="font-semibold text-leaf-deep underline hover:text-ink">
+            <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
+              Kunjungi meja sirkulasi perpustakaan saat jam layanan. Buka menu{" "}
+              <Link href="/student/profile" className="font-semibold text-primary underline hover:text-ink">
                 Kartu Anggota Digital
               </Link>{" "}
               lalu tunjukkan QR Code kamu kepada petugas untuk meminjam buku ini.
@@ -60,12 +60,12 @@ export default async function StudentBookDetail({
           </div>
         </div>
       ) : (
-        <div className="rounded-card border border-sun/40 bg-sun-soft p-4 sm:p-5 flex items-start gap-3.5 shadow-xs">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sun-deep text-white mt-0.5">
+        <div className="rounded-panel border border-warning/30 bg-warning-bg p-4 sm:p-5 flex items-start gap-3.5 font-plex-sans">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-btn bg-warning text-white mt-0.5">
             <Clock className="size-5" />
           </div>
           <div className="space-y-1">
-            <h2 className="font-display font-bold text-sun-deep text-body sm:text-body">
+            <h2 className="font-serif text-base font-medium text-warning">
               Seluruh Eksemplar Sedang Dipinjam
             </h2>
             <p className="text-meta sm:text-body text-ink-muted leading-relaxed">
@@ -100,17 +100,17 @@ export default async function StudentBookDetail({
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
               {book.category_name && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken border border-outline px-2.5 py-0.5 text-label font-semibold text-ink">
-                  <Tag className="size-3 text-sky-deep" />
+                <span className="inline-flex items-center gap-1 rounded-chip border border-rule bg-surface-sunken-ed px-2.5 py-0.5 text-xs font-medium text-ink">
+                  <Tag className="size-3 text-primary" />
                   {book.category_name}
                 </span>
               )}
               {isAvailable ? <CopyStatusChip status="AVAILABLE" /> : <CopyStatusChip status="BORROWED" />}
             </div>
-            <h1 className="font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
+            <h1 className="font-serif text-2xl font-bold tracking-tight text-ink">
               {book.title}
             </h1>
-            <p className="text-body font-medium text-ink-muted mt-1">oleh {book.author}</p>
+            <p className="text-sm font-medium text-ink-muted mt-1">oleh {book.author}</p>
           </div>
 
           <div className="border-t border-outline/70 pt-4">

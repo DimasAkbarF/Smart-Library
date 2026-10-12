@@ -4,6 +4,7 @@ import { ArrowLeft, BookOpen, Layers, ShieldAlert } from "lucide-react";
 import { getBookDetail, listCategories } from "@/features/catalog/queries";
 import { listCopies } from "@/features/admin/books";
 import { CopyStatusChip } from "@/components/ui/status-chip";
+import { QrQuickViewButton } from "@/components/library/qr-modal";
 import { BookEditForm, AddCopiesForm, DeleteBookButton } from "./forms";
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -38,23 +39,23 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
         </Link>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline/70 pb-5">
           <div>
-            <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
-              <span className="size-2 rounded-full bg-sky" />
+            <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono tracking-wider uppercase">
+              <span className="size-1.5 rounded-chip bg-primary" />
               <span>Detail Koleksi · SMP Negeri 17 Tangerang Selatan</span>
             </div>
-            <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
+            <h1 className="mt-1 font-serif text-2xl font-bold tracking-tight text-ink">
               {book.title}
             </h1>
-            <p className="mt-1 text-body text-ink-muted">
+            <p className="mt-1 text-sm text-ink-muted">
               {book.author} · {book.category_name ?? "Tanpa kategori"}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-sunken border border-outline px-3 py-1.5 text-label font-medium text-ink">
-              <Layers className="size-3.5 text-sky-deep" />
+            <span className="inline-flex items-center gap-1.5 rounded-chip bg-surface-sunken-ed border border-rule px-2.5 py-1 text-xs font-medium text-ink font-plex-sans">
+              <Layers className="size-3.5 text-primary" />
               <span>
-                <strong className="font-mono">{book.available_copies}</strong> dari{" "}
-                <strong className="font-mono">{book.total_copies}</strong> eksemplar tersedia
+                <strong className="font-plex-mono">{book.available_copies}</strong> dari{" "}
+                <strong className="font-plex-mono">{book.total_copies}</strong> eksemplar tersedia
               </span>
             </span>
           </div>
@@ -130,12 +131,12 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Danger Zone */}
-          <div className="rounded-card border border-coral/40 bg-coral-soft/20 p-5 shadow-card space-y-3">
-            <div className="flex items-center gap-2 text-coral-deep">
+          <div className="rounded-panel border border-danger/30 bg-danger-bg/25 p-5 space-y-3 font-plex-sans">
+            <div className="flex items-center gap-2 text-danger">
               <ShieldAlert className="size-5 shrink-0" />
-              <h2 className="font-bold text-body">Zona Berbahaya</h2>
+              <h2 className="font-serif font-medium text-base text-ink">Zona Berbahaya</h2>
             </div>
-            <p className="text-meta text-ink-muted leading-relaxed">
+            <p className="text-xs text-ink-muted leading-relaxed">
               Menghapus judul buku ini akan menghapus seluruh data bibliografi serta seluruh eksemplar fisik yang terkait dari sistem.
             </p>
             <DeleteBookButton bookId={book.id} />
@@ -185,35 +186,46 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
               <p className="py-6 text-center text-body text-ink-muted">Belum ada eksemplar fisik untuk buku ini.</p>
             ) : (
               <div className="overflow-x-auto rounded-lg border border-outline">
-                <table className="w-full min-w-[500px] text-left text-body">
+                <table className="w-full min-w-[500px] snap-x snap-mandatory text-left text-body">
                   <thead className="bg-surface-sunken text-meta font-semibold uppercase tracking-wider text-ink-muted border-b border-outline">
                     <tr>
-                      <th className="px-4 py-2.5">Kode Inventaris</th>
-                      <th className="px-4 py-2.5">Status</th>
-                      <th className="px-4 py-2.5">Lokasi Rak</th>
-                      <th className="px-4 py-2.5 text-right">QR Token</th>
+                      <th className="px-3 py-2.5 sm:px-4">Kode Inventaris</th>
+                      <th className="px-3 py-2.5 sm:px-4">Status</th>
+                      <th className="px-3 py-2.5 sm:px-4">Lokasi Rak</th>
+                      <th className="px-3 py-2.5 sm:px-4 text-right">Label QR</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline">
                     {copies.rows.map((c) => (
                       <tr key={c.id} className="hover:bg-surface/50 transition-colors">
-                        <td className="px-4 py-3 font-mono font-semibold text-label text-ink">
+                        <td className="px-3 py-3 sm:px-4 font-mono font-semibold text-label text-ink">
                           {c.inventory_code || "—"}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3 sm:px-4">
                           <CopyStatusChip status={c.status} />
                         </td>
-                        <td className="px-4 py-3 text-meta text-ink-muted">
+                        <td className="px-3 py-3 sm:px-4 text-meta text-ink-muted">
                           {c.location ? (
-                            <span className="inline-flex rounded-full bg-surface-sunken px-2 py-0.5 font-mono text-ink">
+                            <span className="inline-flex rounded-chip border border-rule bg-surface-sunken-ed px-2 py-0.5 font-plex-mono text-xs text-ink">
                               {c.location}
                             </span>
                           ) : (
                             "—"
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-meta text-ink-subtle">
-                          {c.qr_token}
+                        <td className="px-3 py-3 sm:px-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <span className="font-mono text-meta text-ink-muted">{c.qr_token}</span>
+                            <QrQuickViewButton
+                              title={book.title}
+                              subtitle={`Penulis: ${book.author}`}
+                              code={c.inventory_code}
+                              token={c.qr_token}
+                              meta={c.location ? `Rak: ${c.location}` : undefined}
+                              type="book"
+                              label="QR"
+                            />
+                          </div>
                         </td>
                       </tr>
                     ))}

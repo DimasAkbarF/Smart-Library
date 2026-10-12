@@ -2,22 +2,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const button = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-display font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50",
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-btn font-plex-sans font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        primary: "bg-sky text-white hover:bg-sky-deep active:bg-sky-deep",
-        secondary: "border border-outline bg-background text-ink hover:border-outline-strong hover:bg-surface active:bg-surface-sunken",
-        danger: "bg-coral text-white hover:bg-coral-deep active:bg-coral-deep",
-        ghost: "text-ink-muted hover:bg-surface hover:text-ink active:bg-surface-sunken",
+        primary: "bg-primary text-white hover:bg-primary-hover active:bg-[#13234A]",
+        secondary: "border border-rule-strong bg-white text-ink hover:bg-surface-sunken-ed active:bg-[#E5E2D9]",
+        ghost: "bg-transparent text-ink hover:bg-surface-sunken-ed active:bg-[#E5E2D9]",
+        danger: "bg-danger text-white hover:bg-[#8A2424] active:bg-[#721E1E]",
       },
       size: {
-        // min-h-10 (40px) ada di sini sebelumnya — di bawah floor WCAG 2.5.8
-        // dan di bawah minimum 44px yang dipakai untuk kontrol toolbar.
-        sm: "min-h-tap-min px-3 text-label [&_svg]:size-4 [&_svg]:shrink-0",
-        md: "min-h-12 px-4 text-body sm:px-5 [&_svg]:size-5 [&_svg]:shrink-0",
-        // Big Friendly Button (PRD §14.1): 56px untuk aksi utama siswa
-        lg: "min-h-tap-lg px-5 text-title sm:px-6 [&_svg]:size-5 [&_svg]:shrink-0",
+        sm: "h-9 px-3 text-[13px] [&_svg]:size-4 [&_svg]:shrink-0",
+        md: "h-10 px-4 text-sm [&_svg]:size-4.5 [&_svg]:shrink-0",
+        lg: "h-11 px-6 text-base [&_svg]:size-5 [&_svg]:shrink-0",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },

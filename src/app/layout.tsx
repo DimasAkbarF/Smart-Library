@@ -1,18 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Hubot_Sans, Atkinson_Hyperlegible, JetBrains_Mono } from "next/font/google";
+import {
+  Plus_Jakarta_Sans,
+  JetBrains_Mono,
+  Newsreader,
+  IBM_Plex_Sans,
+  IBM_Plex_Mono,
+} from "next/font/google";
 import "./globals.css";
 
-const display = Hubot_Sans({
-  variable: "--font-display",
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
-  preload: true,
 });
 
-const body = Atkinson_Hyperlegible({
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-ibm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
   preload: true,
 });
@@ -61,9 +82,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="id"
-      className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
+      className={`${plusJakarta.variable} ${mono.variable} ${newsreader.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full antialiased font-sans`}
     >
-      <body className="min-h-full bg-background text-ink">{children}</body>
+      <body className="min-h-full bg-background text-ink font-sans">{children}</body>
     </html>
   );
 }

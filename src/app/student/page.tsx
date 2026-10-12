@@ -28,31 +28,31 @@ export default async function StudentDashboard() {
   });
 
   return (
-    <div className="space-y-8 fade-in-key">
+    <div className="space-y-6 fade-in-key sm:space-y-8">
       {/* Header */}
       <header className="border-b border-outline/70 pb-6">
-        <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
-          <span className="size-2 rounded-full bg-leaf" />
-          <span>Perpustakaan Siswa · SMP Negeri 17 Tangerang Selatan</span>
+        <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono">
+          <span className="size-1.5 shrink-0 rounded-chip bg-success" aria-hidden />
+          <span className="truncate">Perpustakaan Siswa · SMPN 17 Tangsel</span>
         </div>
-        <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
-          {sapa}, {nama}!
+        <h1 className="mt-1.5 font-serif text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          {sapa}, {nama}
         </h1>
-        <p className="mt-1 text-body text-ink-muted">
-          Yuk lihat buku yang sedang kamu pinjam dan temukan bacaan seru berikutnya.
+        <p className="mt-1 text-sm text-ink-muted">
+          Pantau status buku pinjamanmu dan temukan referensi belajar berikutnya.
         </p>
       </header>
 
       {/* KPI Cards */}
       <section aria-labelledby="student-stats">
         <h2 id="student-stats" className="sr-only">Ringkasan Pinjaman Saya</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
           <KpiCard
             label="Sedang Dipinjam"
             value={active.length}
             secondary={active.length > 0 ? "Buku aktif kamu bawa pulang" : "Kamu belum meminjam buku"}
             icon="book"
-            tone="sky"
+            tone="info"
             badge="Pinjaman"
           />
           <KpiCard
@@ -66,7 +66,7 @@ export default async function StudentDashboard() {
                 : "Tidak ada batas mendesak"
             }
             icon="clock"
-            tone={terlambat.length > 0 ? "coral" : segera.length > 0 ? "sun" : "neutral"}
+            tone={terlambat.length > 0 ? "danger" : segera.length > 0 ? "warning" : "neutral"}
             badge={terlambat.length > 0 ? "Terlambat" : segera.length > 0 ? "Perhatian" : "Aman"}
           />
           <KpiCard
@@ -74,7 +74,7 @@ export default async function StudentDashboard() {
             value={history.length}
             secondary="Total buku yang telah kamu kembalikan"
             icon="check"
-            tone="leaf"
+            tone="success"
             badge="Selesai"
           />
         </div>
@@ -172,9 +172,9 @@ export default async function StudentDashboard() {
                     <span className="font-semibold text-ink">
                       {formatTanggal(loan.due_at)}
                       {telat > 0 ? (
-                        <span className="ml-1.5 text-coral-deep font-bold">(Telat {telat} hari)</span>
+                        <span className="ml-1.5 text-danger font-semibold">(Telat {telat} hari)</span>
                       ) : sisa <= 3 ? (
-                        <span className="ml-1.5 text-sun-deep font-bold">(Sisa {sisa} hari)</span>
+                        <span className="ml-1.5 text-warning font-semibold">(Sisa {sisa} hari)</span>
                       ) : null}
                     </span>
                   </div>

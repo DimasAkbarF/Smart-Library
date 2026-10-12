@@ -37,17 +37,17 @@ export function TransactionReceipt({
         </div>
       </div>
 
-      <dl className="grid gap-x-8 gap-y-3 rounded-card border border-outline p-5 sm:grid-cols-2">
+      <dl className="grid gap-x-8 gap-y-3 rounded-panel border border-rule bg-white p-5 sm:grid-cols-2 font-plex-sans">
         <div><dt className="text-body text-ink-subtle">Buku</dt><dd className="font-semibold">{receipt.book_title}</dd></div>
-        <div><dt className="text-body text-ink-subtle">Kode eksemplar</dt><dd className="font-mono font-semibold">{receipt.inventory_code}</dd></div>
+        <div><dt className="text-body text-ink-subtle">Kode eksemplar</dt><dd className="font-plex-mono font-semibold">{receipt.inventory_code}</dd></div>
         <div><dt className="text-body text-ink-subtle">Siswa</dt><dd className="font-semibold">{receipt.student_name}</dd></div>
-        <div><dt className="text-body text-ink-subtle">NIS</dt><dd className="font-mono font-semibold">{receipt.student_nis}</dd></div>
+        <div><dt className="text-body text-ink-subtle">NIS</dt><dd className="font-plex-mono font-semibold">{receipt.student_nis}</dd></div>
         {kind === "borrow" && (
           <div><dt className="text-body text-ink-subtle">Jatuh tempo</dt><dd className="font-semibold">{formatTanggal(receipt.due_at)}</dd></div>
         )}
         {kind === "return" && (receipt.late_days ?? 0) > 0 && (
           <>
-            <div><dt className="text-body text-ink-subtle">Keterlambatan</dt><dd className="font-semibold text-coral-deep">{receipt.late_days} hari</dd></div>
+            <div><dt className="text-body text-ink-subtle">Keterlambatan</dt><dd className="font-semibold text-danger">{receipt.late_days} hari</dd></div>
             <div><dt className="text-body text-ink-subtle">Denda</dt><dd className="font-semibold">{formatRupiah(receipt.fine ?? 0)}</dd></div>
           </>
         )}

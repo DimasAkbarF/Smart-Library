@@ -6,6 +6,7 @@ import { CopyStatusChip } from "@/components/ui/status-chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { CopyStatusButtons } from "./copy-status-buttons";
+import { QrQuickViewButton } from "@/components/library/qr-modal";
 import type { BookCopy } from "@/lib/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -46,27 +47,27 @@ export default async function CopiesPage({
     <div className="space-y-6 animate-rise">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline/70 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
-            <span className="size-2 rounded-full bg-sky" />
+          <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono tracking-wider uppercase">
+            <span className="size-1.5 rounded-chip bg-primary" />
             <span>Inventaris Fisik · SMP Negeri 17 Tangerang Selatan</span>
           </div>
-          <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
+          <h1 className="mt-1 font-serif text-2xl font-bold tracking-tight text-ink">
             Manajemen Eksemplar
           </h1>
-          <p className="mt-1 text-body text-ink-muted">
+          <p className="mt-1 text-sm text-ink-muted">
             Pantau status fisik, penempatan rak, dan status operasional ({total.toLocaleString("id-ID")} unit tercatat).
           </p>
         </div>
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin/qr"
-            className="inline-flex min-h-tap-min items-center justify-center rounded-md border border-outline bg-background px-4 text-label font-semibold text-ink hover:bg-surface transition-colors"
+            className="inline-flex h-9 items-center justify-center rounded-btn border border-rule bg-white px-3 text-xs font-medium text-ink hover:bg-surface-sunken-ed hover:border-rule-strong transition-colors"
           >
             Cetak Label QR
           </Link>
           <Link
             href="/admin/books"
-            className="inline-flex min-h-tap-min items-center justify-center rounded-md bg-sky px-4 text-label font-display font-semibold text-white hover:bg-sky-deep transition-colors"
+            className="inline-flex h-9 items-center justify-center rounded-btn bg-primary px-3 text-xs font-medium text-white hover:bg-primary-hover transition-colors"
           >
             Katalog Buku
           </Link>
@@ -82,10 +83,10 @@ export default async function CopiesPage({
               href={chipHref(f.value)}
               aria-current={isActive ? "true" : undefined}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-label font-semibold transition-colors",
+                "rounded-chip border px-3 py-1 text-xs font-medium transition-colors",
                 isActive
-                  ? "border-sky bg-sky-soft text-sky-deep shadow-xs font-bold"
-                  : "border-outline text-ink-muted hover:border-outline-strong hover:bg-surface",
+                  ? "border-primary bg-primary-soft text-primary font-semibold"
+                  : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:bg-surface-sunken-ed",
               )}
             >
               {f.label}
@@ -94,7 +95,7 @@ export default async function CopiesPage({
         })}
       </div>
 
-      <Suspense>
+      <Suspense fallback={null}>
         <SearchInput placeholder="Cari kode inventaris atau token QR…" />
       </Suspense>
 
@@ -145,6 +146,22 @@ export default async function CopiesPage({
                 <span className="text-meta font-mono text-ink-muted">
                   {c.location ?? "—"}
                 </span>
+              ),
+            },
+            {
+              header: "Label QR",
+              cell: (c) => (
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono text-meta text-ink-muted">{c.qr_token}</span>
+                  <QrQuickViewButton
+                    title={c.book_title}
+                    code={c.inventory_code}
+                    token={c.qr_token}
+                    meta={c.location ? `Rak: ${c.location}` : undefined}
+                    type="book"
+                    label="QR"
+                  />
+                </div>
               ),
             },
             {

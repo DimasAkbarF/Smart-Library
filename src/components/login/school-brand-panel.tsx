@@ -1,61 +1,107 @@
-import { BookOpen } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-/** Rak buku minimal — dekoratif, bukan ilustrasi. */
-const RAK = [
-  { h: "h-14", w: "w-3", c: "bg-white/30" },
-  { h: "h-20", w: "w-4", c: "bg-white/50" },
-  { h: "h-10", w: "w-3", c: "bg-sun/70" },
-  { h: "h-24", w: "w-5", c: "bg-white/40" },
-  { h: "h-16", w: "w-3", c: "bg-white/25" },
-];
-
-/** Branding ringkas di atas card (mobile & tablet). */
+/**
+ * Branding ringkas di atas card (tampilan HP dan tablet < 1024px).
+ * Sesuai PRD §8.1: logo resmi + nama unit ringkas.
+ */
 export function SchoolBrandLockup({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-3", className)}>
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-sky-deep text-white">
-        <BookOpen className="size-6" aria-hidden />
-      </span>
+    <div className={cn("flex items-center gap-3.5", className)}>
+      <div className="relative size-12 shrink-0 overflow-hidden rounded-[4px] bg-white p-1 border border-rule">
+        <Image
+          src="/logo-smpn17.png"
+          alt="Logo SMP Negeri 17 Tangerang Selatan"
+          width={48}
+          height={48}
+          className="size-full object-contain"
+          priority
+        />
+      </div>
       <div className="min-w-0">
-        <p className="font-display text-title leading-tight font-bold">Smart Library</p>
-        <p className="truncate text-body text-ink-muted">SMP Negeri 17 Tangerang Selatan</p>
+        <p className="font-serif text-[18px] font-semibold tracking-tight text-[#161B26] leading-tight">
+          Perpustakaan SMPN 17
+        </p>
+        <p className="text-[12px] font-plex-sans text-[#4A5160] leading-snug">
+          SMP Negeri 17 Kota Tangerang Selatan
+        </p>
       </div>
     </div>
   );
 }
 
-/** Panel brand biru — hanya pada mode desktop (≥1024px). */
+/**
+ * Panel informasi institusi (desktop ≥ 1024px, 5/12 kolom).
+ * Sesuai design.md §6 & PRD §8.1: latar primary (#1B2F5B), teks putih,
+ * logo asli, 3 fakta layanan, jam layanan, alamat, dan kontak.
+ * Tanpa rak buku CSS sintetis, tanpa slogan AI.
+ */
 export function SchoolBrandPanel() {
   return (
-    <section className="hidden bg-sky-deep px-12 py-12 text-white [@media(max-height:720px)]:py-8 lg:flex lg:flex-col lg:justify-center min-[1440px]:px-14">
-      <div className="flex items-center gap-3">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-white/30 bg-white/10">
-          <BookOpen className="size-6" aria-hidden />
-        </span>
-        <div>
-          <p className="font-display text-title leading-tight font-bold">Smart Library</p>
-          <p className="text-body text-white/70">SMP Negeri 17 Tangerang Selatan</p>
+    <section className="hidden bg-[#1B2F5B] p-8 text-white lg:flex lg:flex-col lg:justify-between min-[1440px]:p-10">
+      {/* Bagian Atas: Identitas Lembaga Resmi */}
+      <div>
+        <div className="flex items-center gap-3.5">
+          <div className="relative size-14 shrink-0 overflow-hidden rounded-[4px] bg-white p-1.5 shadow-sm">
+            <Image
+              src="/logo-smpn17.png"
+              alt="Logo Resmi SMP Negeri 17 Tangerang Selatan"
+              width={56}
+              height={56}
+              className="size-full object-contain"
+              priority
+            />
+          </div>
+          <div>
+            <p className="font-plex-sans text-xs font-semibold tracking-[0.08em] text-white/70 uppercase">
+              Perpustakaan Sekolah
+            </p>
+            <h2 className="font-serif text-[20px] font-semibold leading-tight text-white tracking-wide">
+              SMP NEGERI 17
+            </h2>
+            <p className="font-plex-sans text-xs text-white/80">
+              Kota Tangerang Selatan
+            </p>
+          </div>
+        </div>
+
+        {/* Seksi Layanan Fakta */}
+        <div className="mt-8 border-t border-white/20 pt-6">
+          <p className="font-plex-sans text-xs font-semibold uppercase tracking-[0.08em] text-white/70">
+            Layanan
+          </p>
+          <ul className="mt-3 space-y-2.5 font-plex-sans text-[13.5px] text-white/90">
+            <li className="flex items-center gap-2.5">
+              <span className="size-1.5 rounded-chip bg-accent" aria-hidden />
+              <span>Pinjam & kembali via QR</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <span className="size-1.5 rounded-chip bg-accent" aria-hidden />
+              <span>Katalog koleksi perpustakaan</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <span className="size-1.5 rounded-chip bg-accent" aria-hidden />
+              <span>Kartu anggota digital siswa</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Seksi Jam Layanan Asli */}
+        <div className="mt-8 border-t border-white/20 pt-6">
+          <p className="font-plex-sans text-xs font-semibold uppercase tracking-[0.08em] text-white/80">
+            Jam Layanan
+          </p>
+          <div className="mt-2.5 font-plex-sans text-[13px] text-white/90 space-y-1">
+            <p className="font-medium text-white">Senin – Jumat: 07.00 – 15.00 WIB</p>
+            <p className="text-white/85 text-xs">Sabtu, Minggu & Hari Libur: Tutup</p>
+          </div>
         </div>
       </div>
 
-      {/* Ilustrasi disembunyikan pada layar pendek agar form tetap utuh */}
-      <div
-        aria-hidden
-        className="mt-8 flex items-end gap-2 border-b border-white/25 pb-2 [@media(max-height:720px)]:hidden"
-      >
-        {RAK.map((b) => (
-          <span key={b.h + b.w} className={`${b.h} ${b.w} rounded-t-sm ${b.c}`} />
-        ))}
-      </div>
-
-      <div className="mt-8 [@media(max-height:720px)]:mt-6">
-        <p className="font-display text-title font-bold [@media(max-height:720px)]:text-title">
-          Belajar. Membaca. Berkembang.
-        </p>
-        <p className="mt-2 max-w-sm text-body text-white/80 leading-relaxed">
-          Peminjaman sirkulasi buku, pencarian katalog koleksi, dan kartu anggota digital siswa.
-        </p>
+      {/* Bagian Bawah: Metadata Alamat & Kontak Resmi */}
+      <div className="border-t border-white/20 pt-6 font-plex-sans text-xs text-white/90 space-y-1.5">
+        <p className="text-white font-medium">Jl. Lengkong Gudang Timur, Serpong, Tangerang Selatan</p>
+        <p className="text-white/90">Kontak: perpustakaan@smpn17tangsel.sch.id</p>
       </div>
     </section>
   );

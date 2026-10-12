@@ -11,7 +11,7 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
 import { StatusChip } from "@/components/ui/status-chip";
-import { DownloadQrButton } from "@/components/library/download-qr-button";
+import { QrQuickViewButton, QrModal } from "@/components/library/qr-modal";
 import { SearchInput } from "@/components/ui/search-input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { pesanRamah, kodeDariError } from "@/lib/errors";
@@ -36,6 +36,13 @@ export function StudentsSection({
 }) {
   const router = useRouter();
   const [addOpen, setAddOpen] = useState(false);
+  const [createdStudent, setCreatedStudent] = useState<{
+    id: string;
+    nis: string;
+    name: string;
+    qr_token: string;
+    class_name?: string | null;
+  } | null>(null);
   const [edit, setEdit] = useState<Student | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -67,7 +74,7 @@ export function StudentsSection({
       </div>
 
       {msg && (
-        <p role="alert" className="rounded-md bg-coral-soft px-4 py-2.5 text-meta font-semibold text-coral-deep">
+        <p role="alert" className="rounded-btn bg-danger-bg px-4 py-2.5 text-meta font-semibold text-danger border border-danger/25">
           {msg}
         </p>
       )}
@@ -101,7 +108,7 @@ export function StudentsSection({
           {
             header: "NIS",
             cell: (s) => (
-              <span className="font-mono text-label font-semibold bg-surface-sunken px-2 py-0.5 rounded-sm border border-outline/70 text-ink">
+              <span className="font-mono text-label font-semibold bg-surface-sunken-ed px-2 py-0.5 rounded-chip border border-rule text-ink">
                 {s.nis}
               </span>
             ),
@@ -120,7 +127,7 @@ export function StudentsSection({
                 <div className="flex items-center gap-3">
                   <span
                     aria-hidden
-                    className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sky-soft text-sky-deep font-display text-label font-bold border border-sky/20"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-btn bg-primary-soft text-primary font-display text-label font-bold border border-primary/20"
                   >
                     {initials}
                   </span>
@@ -138,17 +145,25 @@ export function StudentsSection({
             header: "Status",
             cell: (s) =>
               s.status === "active" ? (
-                <StatusChip tone="leaf" label="Aktif" />
+                <StatusChip tone="success" label="Aktif" />
               ) : (
                 <StatusChip tone="muted" label={s.status === "graduated" ? "Lulus" : "Nonaktif"} />
               ),
           },
           {
-            header: "Kartu / QR",
+            header: "Kartu Pelajar & QR",
             cell: (s) => (
               <span className="flex items-center gap-2">
                 <span className="font-mono text-meta text-ink-muted">{s.qr_token}</span>
-                <DownloadQrButton token={s.qr_token} label={s.qr_token} />
+                <QrQuickViewButton
+                  title={s.name}
+                  subtitle={`NIS: ${s.nis}`}
+                  code={s.nis}
+                  token={s.qr_token}
+                  meta={s.class_name ? `Kelas ${s.class_name}` : undefined}
+                  type="student"
+                  label="Kartu Siswa"
+                />
               </span>
             ),
           },
@@ -182,16 +197,38 @@ export function StudentsSection({
       />
       )}
 
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Tambah siswa">
+      {/* Dialog Form Tambah Siswa */}
+      <Dialog open={addOpen} onClose={() => setAddOpen(false)} title="Tambah Siswa Baru">
         <StudentForm
           classes={classes}
+          onSuccess={(newStudent) => {
+            setAddOpen(false);
+            setCreatedStudent(newStudent);
+            router.refresh();
+          }}
           onDone={() => {
             setAddOpen(false);
             router.refresh();
           }}
         />
       </Dialog>
-      <Dialog open={!!edit} onClose={() => setEdit(null)} title="Ubah siswa">
+
+      {/* Dialog Konfirmasi QR Siswa Baru yang dibuat otomatis */}
+      {createdStudent && (
+        <QrModal
+          open={!!createdStudent}
+          onClose={() => setCreatedStudent(null)}
+          title={createdStudent.name}
+          subtitle={`NIS: ${createdStudent.nis}`}
+          code={createdStudent.nis}
+          token={createdStudent.qr_token}
+          meta={createdStudent.class_name ? `Kelas ${createdStudent.class_name}` : undefined}
+          type="student"
+        />
+      )}
+
+      {/* Dialog Form Ubah Siswa */}
+      <Dialog open={!!edit} onClose={() => setEdit(null)} title="Ubah Siswa">
         {edit && (
           <StudentForm
             key={edit.id}
@@ -211,30 +248,47 @@ export function StudentsSection({
 function StudentForm({
   classes,
   student,
+  onSuccess,
   onDone,
 }: {
   classes: ClassRow[];
   student?: Student;
+  onSuccess?: (student: {
+    id: string;
+    nis: string;
+    name: string;
+    qr_token: string;
+    class_name?: string | null;
+  }) => void;
   onDone: () => void;
 }) {
   const bound = student ? updateStudent.bind(null, student.id) : createStudent;
   const [state, formAction] = useActionState(async (prev: { message?: string; ok?: boolean }, fd: FormData) => {
     const res = await bound(prev, fd);
-    if (res.ok) onDone();
+    if (res.ok) {
+      if (res.student && onSuccess) {
+        onSuccess(res.student);
+      } else {
+        onDone();
+      }
+    }
     return res;
   }, {});
 
   return (
     <form action={formAction} className="grid gap-4">
-      <Field label="NIS">
-        <Input name="nis" required defaultValue={student?.nis ?? ""} placeholder="Nomor induk siswa" />
+      <Field label="NIS (Nomor Induk Siswa)">
+        <Input name="nis" required defaultValue={student?.nis ?? ""} placeholder="Contoh: 20260012" />
+        <span className="text-meta text-ink-subtle">
+          Kode QR kartu sirkulasi akan otomatis dibuat berbasis NIS ({student?.nis ? `SIS-${student.nis}` : "SIS-[NIS]"}).
+        </span>
       </Field>
-      <Field label="Nama">
-        <Input name="name" required defaultValue={student?.name ?? ""} placeholder="Nama lengkap" />
+      <Field label="Nama Lengkap">
+        <Input name="name" required defaultValue={student?.name ?? ""} placeholder="Nama lengkap siswa" />
       </Field>
-      <Field label="Kelas">
+      <Field label="Rombel Kelas">
         <Select name="class_id" defaultValue={student?.class_id ?? ""}>
-          <option value="">Tanpa kelas</option>
+          <option value="">Tanpa kelas / Belum ditentukan</option>
           {classes.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -243,11 +297,11 @@ function StudentForm({
         </Select>
       </Field>
       {state?.message && (
-        <p role="alert" className="text-body font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-danger">
           {state.message}
         </p>
       )}
-      <SubmitButton>{student ? "Simpan perubahan" : "Tambah siswa"}</SubmitButton>
+      <SubmitButton>{student ? "Simpan perubahan" : "Daftarkan Siswa & Buat QR"}</SubmitButton>
     </form>
   );
 }

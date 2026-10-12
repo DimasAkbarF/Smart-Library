@@ -47,43 +47,45 @@ export function Drawer({
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true">
-      {/* Backdrop */}
+      {/* Backdrop tanpa blur, warna ink/45 */}
       <div
-        className="fixed inset-0 bg-ink/50 transition-opacity duration-200 fade-in-key"
+        className="fixed inset-0 bg-[#161B26]/45 transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
+      <div className="fixed inset-y-0 right-0 flex max-w-full">
         <div
           ref={panelRef}
           className={cn(
-            "w-screen max-w-md transform border-l border-outline bg-background shadow-modal transition-transform duration-200 ease-out slide-in-right-key",
-            className
+            "flex h-full w-full sm:w-[480px] max-w-full flex-col border-l border-rule-strong bg-white shadow-dropdown transition-transform duration-200 ease-out",
+            className,
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-outline px-4 py-4 sm:px-6">
-            <div>
-              <h2 className="font-display text-title font-bold text-ink">{title}</h2>
-              {description && <p className="mt-0.5 text-meta text-ink-muted">{description}</p>}
+          <div className="flex items-start justify-between border-b border-rule px-5 py-4">
+            <div className="min-w-0 pr-4">
+              <h2 className="font-serif text-lg font-medium text-ink truncate">{title}</h2>
+              {description && (
+                <p className="mt-0.5 text-xs text-ink-muted leading-relaxed">{description}</p>
+              )}
             </div>
             <button
               type="button"
               onClick={onClose}
               aria-label="Tutup panel detail"
-              className="flex min-h-tap-min min-w-tap-min items-center justify-center rounded-md text-ink-muted hover:bg-surface hover:text-ink transition-colors"
+              className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-btn text-ink-muted hover:bg-surface-sunken-ed hover:text-ink transition-colors focus-visible:outline-2 focus-visible:outline-primary"
             >
-              <X className="size-5" aria-hidden />
+              <X className="size-4.5" aria-hidden />
             </button>
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 text-body sm:px-6 sm:py-5">{children}</div>
+          <div className="flex-1 overflow-y-auto px-5 py-5 text-sm text-ink">{children}</div>
 
           {/* Footer */}
           {footer && (
-            <div className="border-t border-outline bg-surface-sunken/50 px-4 py-4 sm:px-6">
+            <div className="border-t border-rule bg-surface-sunken-ed/60 px-5 py-3.5">
               {footer}
             </div>
           )}

@@ -34,7 +34,6 @@ try {
 
 const users = [
   { username: "admin", email: "admin@sekolah.local", password: "admin123", full_name: "Admin Perpustakaan", role: "admin" },
-  { username: "penjaga", email: "penjaga@sekolah.local", password: "jaga123", full_name: "Penjaga Perpustakaan", role: "librarian" },
   { username: "20260001", email: "siswa@sekolah.local", password: "siswa123", full_name: "Dimas Pratama", role: "student" },
 ];
 

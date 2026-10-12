@@ -32,7 +32,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         {msg ? (
-          <p role="alert" className="text-body font-semibold text-coral-deep">
+          <p role="alert" className="text-body font-semibold text-danger">
             {msg}
           </p>
         ) : (
@@ -61,10 +61,10 @@ export function UsersSection({ users }: { users: Profile[] }) {
                   <span
                     aria-hidden
                     className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-full font-display text-label font-bold border",
+                      "flex size-8 shrink-0 items-center justify-center rounded-btn font-display text-label font-bold border",
                       isAdmin
-                        ? "bg-berry-soft text-berry border-berry/30"
-                        : "bg-sky-soft text-sky-deep border-sky/20"
+                        ? "bg-primary-soft text-primary border-primary/20"
+                        : "bg-surface-sunken-ed text-ink-muted border-rule"
                     )}
                   >
                     {initials}
@@ -82,20 +82,13 @@ export function UsersSection({ users }: { users: Profile[] }) {
             cell: (u) => {
               if (u.role === "admin") {
                 return (
-                  <span className="inline-flex items-center rounded-full bg-berry-soft border border-berry/30 px-2.5 py-0.5 text-label font-semibold text-berry">
-                    Admin Data
-                  </span>
-                );
-              }
-              if (u.role === "librarian") {
-                return (
-                  <span className="inline-flex items-center rounded-full bg-sky-soft border border-sky/30 px-2.5 py-0.5 text-label font-semibold text-sky-deep">
-                    Petugas Perpustakaan
+                  <span className="inline-flex items-center rounded-chip bg-primary-soft border border-primary/25 px-2 py-0.5 text-label font-semibold text-primary">
+                    Administrator
                   </span>
                 );
               }
               return (
-                <span className="inline-flex items-center rounded-full bg-surface-sunken border border-outline px-2.5 py-0.5 text-label font-medium text-ink">
+                <span className="inline-flex items-center rounded-chip bg-surface-sunken-ed border border-rule px-2 py-0.5 text-label font-medium text-ink">
                   Siswa
                 </span>
               );
@@ -105,7 +98,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
             header: "Status Akun",
             cell: (u) =>
               u.status === "active" ? (
-                <StatusChip tone="leaf" label="Aktif" />
+                <StatusChip tone="success" label="Aktif" />
               ) : (
                 <StatusChip tone="muted" label="Nonaktif" />
               ),
@@ -116,7 +109,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
               <button
                 type="button"
                 onClick={() => toggle(u)}
-                className="rounded-md border border-outline px-2.5 py-1 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+                className="rounded-btn border border-rule px-2.5 py-1 text-label font-semibold text-ink hover:bg-card hover:text-primary transition-colors"
               >
                 {u.status === "active" ? "Nonaktifkan" : "Aktifkan"}
               </button>
@@ -164,13 +157,12 @@ function UserForm({ onDone }: { onDone: () => void }) {
         <Input name="password" type="password" required minLength={6} placeholder="Minimal 6 karakter" />
       </Field>
       <Field label="Peran">
-        <Select name="role" defaultValue="librarian">
-          <option value="librarian">Penjaga</option>
-          <option value="admin">Admin Data</option>
+        <Select name="role" defaultValue="admin">
+          <option value="admin">Administrator</option>
         </Select>
       </Field>
       {state?.message && (
-        <p role="alert" className="text-body font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-danger">
           {state.message}
         </p>
       )}

@@ -1,4 +1,4 @@
-export type Role = "student" | "librarian" | "admin";
+export type Role = "student" | "admin";
 
 export interface Profile {
   id: string;
@@ -94,6 +94,5 @@ export interface AuditLog {
 
 export const ROLE_HOME: Record<Role, string> = {
   student: "/student",
-  librarian: "/librarian",
   admin: "/admin",
 };

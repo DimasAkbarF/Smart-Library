@@ -48,7 +48,7 @@ export default async function StudentBooks({
         </p>
       </header>
 
-      <Suspense>
+      <Suspense fallback={null}>
         <SearchInput placeholder="Cari judul, penulis, atau ISBN…" />
       </Suspense>
 
@@ -56,8 +56,8 @@ export default async function StudentBooks({
         <Link
           href={href(sp, { cat: undefined, page: undefined })}
           className={cn(
-            "rounded-full px-3 py-1.5 text-body font-semibold",
-            !sp.cat ? "bg-sky-soft text-sky-deep" : "bg-surface text-ink-muted hover:text-ink",
+            "rounded-chip px-3 py-1 text-xs font-medium transition-colors",
+            !sp.cat ? "bg-primary-soft text-primary font-semibold border border-primary/20" : "bg-white text-ink-muted hover:text-ink border border-rule",
           )}
         >
           Semua
@@ -68,8 +68,8 @@ export default async function StudentBooks({
             href={href(sp, { cat: sp.cat === c.id ? undefined : c.id, page: undefined })}
             aria-pressed={sp.cat === c.id}
             className={cn(
-              "rounded-full px-3 py-1.5 text-body font-semibold",
-              sp.cat === c.id ? "bg-sky-soft text-sky-deep" : "bg-surface text-ink-muted hover:text-ink",
+              "rounded-chip px-3 py-1 text-xs font-medium transition-colors",
+              sp.cat === c.id ? "bg-primary-soft text-primary font-semibold border border-primary/20" : "bg-white text-ink-muted hover:text-ink border border-rule",
             )}
           >
             {c.name}
@@ -79,10 +79,10 @@ export default async function StudentBooks({
           href={href(sp, { avail: sp.avail === "1" ? undefined : "1", page: undefined })}
           aria-pressed={sp.avail === "1"}
           className={cn(
-            "rounded-full border px-3 py-1.5 text-body font-semibold",
+            "rounded-chip border px-3 py-1 text-xs font-medium transition-colors",
             sp.avail === "1"
-              ? "border-leaf bg-leaf-soft text-leaf-deep"
-              : "border-outline text-ink-muted hover:text-ink",
+              ? "border-success/30 bg-success-bg text-success font-semibold"
+              : "border-rule bg-white text-ink-muted hover:text-ink",
           )}
         >
           Hanya tersedia

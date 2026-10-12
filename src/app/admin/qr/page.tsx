@@ -51,9 +51,9 @@ export default async function QrPage({
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline pb-5">
+      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-5">
         <div>
-          <span className="text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <span className="text-label font-semibold text-primary font-mono tracking-wider uppercase">
             Inventaris & Sirkulasi · Label QR Koleksi
           </span>
           <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
@@ -75,17 +75,17 @@ export default async function QrPage({
               href={chipHref(f.value)}
               aria-current={(status || "") === f.value ? "true" : undefined}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-label font-semibold transition-all",
+                "rounded-chip border px-3 py-1.5 text-label font-semibold transition-all",
                 (status || "") === f.value
-                  ? "border-sky bg-sky-soft text-sky-deep shadow-xs font-bold"
-                  : "border-outline text-ink-muted hover:bg-surface hover:text-ink"
+                  ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
+                  : "border-rule text-ink-muted hover:bg-card hover:text-ink"
               )}
             >
               {f.label}
             </Link>
           ))}
         </div>
-        <Suspense>
+        <Suspense fallback={null}>
           <SearchInput placeholder="Cari kode inventaris, token QR, atau judul buku…" />
         </Suspense>
       </div>

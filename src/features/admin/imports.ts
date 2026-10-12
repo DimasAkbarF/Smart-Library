@@ -25,6 +25,8 @@ export async function importBooks(
   rows: ImportBookRow[],
 ): Promise<ImportReport & { addedCopies: number; newTitles: number }> {
   const session = await assertRole("admin");
+  if (!Array.isArray(rows)) throw new Error("Format data impor tidak valid.");
+  if (rows.length > 2000) throw new Error("Batas impor maksimal 2.000 baris per file.");
   const svc = serviceClient();
   const failed: ImportReport["failed"] = [];
   let newTitles = 0;

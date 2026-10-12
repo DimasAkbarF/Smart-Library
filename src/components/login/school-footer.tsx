@@ -1,9 +1,18 @@
+/**
+ * Footer halaman login (design.md §6 & PRD §8.1).
+ * Pada mobile/HP, menampilkan jam layanan, alamat, dan kontak yang ringkas.
+ */
 export function SchoolFooter() {
   return (
-    <footer className="mt-6 text-center text-body text-ink-subtle lg:mt-10 [@media(max-height:720px)]:mt-4">
-      <p className="font-semibold text-ink-muted">Smart Library</p>
-      <p>SMP Negeri 17 Tangerang Selatan</p>
-      <p className="mt-1">© 2026 SMP Negeri 17 Tangerang Selatan</p>
+    <footer className="mt-8 text-center font-plex-sans text-xs text-[#333842]">
+      <div className="mb-2 space-y-1 text-xs text-[#333842] lg:hidden">
+        <p className="font-medium text-[#161B26]">Jam Layanan: Sen – Jum 07.00 – 15.00 WIB</p>
+        <p>Sabtu, Minggu & Hari Libur: Tutup</p>
+        <p>Jl. Lengkong Gudang Timur, Serpong, Tangerang Selatan</p>
+        <p>Kontak: perpustakaan@smpn17tangsel.sch.id</p>
+      </div>
+      <p className="font-medium text-[#161B26]">Smart Library — SMP Negeri 17 Tangerang Selatan</p>
+      <p className="mt-0.5 text-xs text-[#4A5160]">© 2026 SMP Negeri 17 Tangerang Selatan</p>
     </footer>
   );
 }

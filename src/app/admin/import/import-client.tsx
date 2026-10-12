@@ -15,6 +15,7 @@ import {
   Users,
   ChevronDown,
   ChevronUp,
+  QrCode,
 } from "lucide-react";
 import { importBooks, type ImportBookRow } from "@/features/admin/imports";
 import { importStudents, type ImportStudentRow, type ImportReport } from "@/features/admin/students";
@@ -283,7 +284,7 @@ export function ImportClient() {
           WORKFLOW STEP INDICATOR
           1. Upload -> 2. Periksa -> 3. Import -> 4. Hasil
           ============================================================ */}
-      <nav aria-label="Alur langkah impor data" className="border-b border-outline/70 pb-4">
+      <nav aria-label="Alur langkah impor data" className="snap-start border-b border-outline/70 pb-4">
         <ol className="flex items-center justify-between sm:justify-start sm:gap-6">
           {[
             { num: 1, label: "Upload File" },
@@ -297,12 +298,12 @@ export function ImportClient() {
               <li key={s.num} className="flex items-center gap-2">
                 <span
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-full text-label font-bold font-mono transition-colors",
+                    "flex size-7 items-center justify-center rounded-btn text-label font-bold font-mono transition-colors",
                     isDone
-                      ? "bg-leaf text-white"
+                      ? "bg-success text-white"
                       : isCurrent
-                      ? "bg-sky text-white ring-4 ring-sky-soft"
-                      : "border border-outline bg-surface text-ink-subtle"
+                      ? "bg-primary text-white ring-2 ring-primary/20"
+                      : "border border-rule bg-card text-ink-subtle"
                   )}
                   aria-current={isCurrent ? "step" : undefined}
                 >
@@ -381,11 +382,11 @@ export function ImportClient() {
           FILE SIZE ERROR ALERT
           ============================================================ */}
       {tooBig && (
-        <div role="alert" className="flex items-start gap-3 rounded-lg border border-coral/30 bg-coral-soft p-4 text-meta font-semibold text-coral-deep">
+        <div role="alert" className="flex items-start gap-3 rounded-btn border border-danger/30 bg-danger-bg p-4 text-meta font-semibold text-danger">
           <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
           <div>
             <p className="font-bold text-body">Ukuran File Terlalu Besar</p>
-            <p className="mt-0.5 text-coral-deep/90">
+            <p className="mt-0.5 text-danger/90">
               File &ldquo;{file?.name}&rdquo; melebihi batas maksimal 5 MB. Silakan bagi file menjadi beberapa bagian yang lebih kecil.
             </p>
           </div>
@@ -512,7 +513,7 @@ export function ImportClient() {
                 <ul className="mt-3 max-h-48 overflow-y-auto divide-y divide-sun-deep/20 border-t border-sun-deep/20 pt-2 text-ink">
                   {data.errors.slice(0, 30).map((err, i) => (
                     <li key={i} className="py-1 text-label flex items-center justify-between gap-2">
-                      <span className="font-mono font-semibold text-coral-deep">Baris {err.row}</span>
+                      <span className="font-mono font-semibold text-danger">Baris {err.row}</span>
                       <span className="text-ink-muted text-right">{err.reason}</span>
                     </li>
                   ))}
@@ -550,11 +551,11 @@ export function ImportClient() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-body">
+              <table className="w-full min-w-[640px] snap-x snap-mandatory text-left text-body">
                 <thead>
-                  <tr className="border-b border-outline text-ink-muted">
+                  <tr className="snap-start border-b border-outline text-ink-muted">
                     {headers.map((h) => (
-                      <th key={h} className="px-4 py-2.5 font-mono text-meta uppercase text-ink-subtle">
+                      <th key={h} className="px-3 py-2.5 sm:px-4 font-mono text-meta uppercase text-ink-subtle">
                         {h}
                       </th>
                     ))}
@@ -564,7 +565,7 @@ export function ImportClient() {
                   {data.rows.slice(0, 10).map((r, i) => (
                     <tr key={i} className="hover:bg-surface/60 transition-colors">
                       {headers.map((h) => (
-                        <td key={h} className="px-4 py-2.5 text-label text-ink truncate max-w-48">
+                        <td key={h} className="px-3 py-2.5 sm:px-4 text-label text-ink truncate max-w-48">
                           {String(((r as unknown) as Record<string, unknown>)[h] || "—")}
                         </td>
                       ))}
@@ -626,11 +627,11 @@ export function ImportClient() {
           </div>
 
           {report.failed.length > 0 && (
-            <div className="rounded-lg border border-coral/30 bg-coral-soft/50 p-4 text-label text-coral-deep">
+            <div className="rounded-btn border border-danger/30 bg-danger-bg/50 p-4 text-label text-danger">
               <p className="font-bold text-body">
                 {report.failed.length} Baris Memerlukan Perhatian (Gagal Disimpan):
               </p>
-              <ul className="mt-2 max-h-40 overflow-y-auto divide-y divide-coral/20">
+              <ul className="mt-2 max-h-40 overflow-y-auto divide-y divide-danger/20">
                 {report.failed.slice(0, 20).map((f, i) => (
                   <li key={i} className="py-1">
                     Baris {f.row || "?"} ({f.nis || "tanpa kode"}): {f.reason}
@@ -641,11 +642,23 @@ export function ImportClient() {
             </div>
           )}
 
+          <p className="text-meta text-ink-muted bg-surface-sunken p-3 rounded-lg border border-outline/70">
+            Seluruh data yang berhasil diimpor telah otomatis digenerate kode QR uniknya ({tab === "buku" ? "format BOOK-xxxxxx" : "format SIS-[NIS]"}). Anda dapat langsung menggunakannya di meja sirkulasi atau mencetak stiker label.
+          </p>
+
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Button type="button" onClick={resetFile} className="gap-2">
               <RotateCcw className="size-4" />
               <span>Impor Data Lain</span>
             </Button>
+            {tab === "buku" && (
+              <Link href="/admin/qr">
+                <Button variant="secondary" className="gap-2">
+                  <QrCode className="size-4" />
+                  <span>Cetak Label QR Buku</span>
+                </Button>
+              </Link>
+            )}
             <Link href={tab === "buku" ? "/admin/books" : "/admin/students"}>
               <Button variant="secondary">
                 <span>Buka {tab === "buku" ? "Katalog Buku" : "Data Siswa"}</span>

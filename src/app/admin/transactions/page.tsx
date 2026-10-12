@@ -29,12 +29,12 @@ export default async function TransactionsPage({
     if (q) params.set("q", q);
     if (s) params.set("status", s);
     const s2 = params.toString();
-    return `/librarian/transactions${s2 ? `?${s2}` : ""}`;
+    return `/admin/transactions${s2 ? `?${s2}` : ""}`;
   };
   const baseParams = new URLSearchParams();
   if (q) baseParams.set("q", q);
   if (status) baseParams.set("status", status);
-  const base = `/librarian/transactions${baseParams.toString() ? `?${baseParams.toString()}` : ""}`;
+  const base = `/admin/transactions${baseParams.toString() ? `?${baseParams.toString()}` : ""}`;
   const exportHref = `/api/export?type=loans${status ? `&status=${status}` : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
 
   return (
@@ -67,10 +67,10 @@ export default async function TransactionsPage({
               href={chipHref(f.value)}
               aria-current={(status || "") === f.value ? "true" : undefined}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-label font-semibold transition-all",
+                "rounded-chip border px-3 py-1 text-xs font-medium transition-colors",
                 (status || "") === f.value
-                  ? "border-sky bg-sky-soft text-sky-deep shadow-xs font-bold"
-                  : "border-outline text-ink-muted hover:bg-surface hover:text-ink"
+                  ? "border-primary bg-primary-soft text-primary font-semibold"
+                  : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:bg-surface-sunken-ed",
               )}
             >
               {f.label}
@@ -78,7 +78,7 @@ export default async function TransactionsPage({
           ))}
         </div>
 
-        <Suspense>
+        <Suspense fallback={null}>
           <SearchInput placeholder="Cari nama siswa, NIS, judul buku, atau kode inventaris…" />
         </Suspense>
       </div>

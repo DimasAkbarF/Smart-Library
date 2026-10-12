@@ -24,8 +24,8 @@ export default async function BooksPage({
     <div className="space-y-6 animate-rise">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline/70 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
-            <span className="size-2 rounded-full bg-sky" />
+          <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono tracking-wider uppercase">
+            <span className="size-1.5 rounded-chip bg-primary" />
             <span>Katalog Koleksi · SMP Negeri 17 Tangerang Selatan</span>
           </div>
           <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
@@ -50,7 +50,7 @@ export default async function BooksPage({
         </div>
       </header>
 
-      <Suspense>
+      <Suspense fallback={null}>
         <SearchInput placeholder="Cari judul, penulis, penerbit, atau ISBN…" />
       </Suspense>
 
@@ -117,11 +117,11 @@ export default async function BooksPage({
               header: "Kategori & ISBN",
               cell: (b) => (
                 <div>
-                  <span className="inline-block rounded-full bg-surface-sunken px-2.5 py-0.5 text-label font-medium text-ink">
+                  <span className="inline-block rounded-chip border border-rule bg-surface-sunken-ed px-2 py-0.5 text-xs font-medium text-ink">
                     {b.category_name ?? "Tanpa kategori"}
                   </span>
                   {b.isbn && (
-                    <span className="block font-mono text-meta text-ink-muted mt-0.5">
+                    <span className="block font-plex-mono text-xs text-ink-muted mt-0.5">
                       {b.isbn}
                     </span>
                   )}
@@ -135,22 +135,22 @@ export default async function BooksPage({
                 return (
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-label font-semibold",
+                      "inline-flex items-center gap-1.5 rounded-chip border px-2 py-0.5 text-xs font-semibold font-plex-sans",
                       isAvailable
-                        ? "bg-leaf-soft text-leaf-deep"
+                        ? "bg-success-bg text-success border-success/20"
                         : b.total_copies === 0
-                        ? "bg-surface-sunken text-ink-muted"
-                        : "bg-coral-soft text-coral-deep"
+                        ? "bg-surface-sunken-ed text-ink-muted border-rule"
+                        : "bg-danger-bg text-danger border-danger/25"
                     )}
                   >
                     <span
                       className={cn(
-                        "size-1.5 rounded-full",
-                        isAvailable ? "bg-leaf" : b.total_copies === 0 ? "bg-ink-muted" : "bg-coral"
+                        "size-1.5 rounded-chip",
+                        isAvailable ? "bg-success" : b.total_copies === 0 ? "bg-ink-muted" : "bg-danger"
                       )}
                     />
-                    <span className="font-mono">{b.available_copies}</span> /{" "}
-                    <span className="font-mono">{b.total_copies}</span> Tersedia
+                    <span className="font-plex-mono">{b.available_copies}</span> /{" "}
+                    <span className="font-plex-mono">{b.total_copies}</span> Tersedia
                   </span>
                 );
               },

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, getSession } from "@/lib/auth";
 import { normalisasiKode } from "@/lib/format";
@@ -28,7 +28,7 @@ export interface StudentContext {
 
 /** Resolve QR / kode manual menjadi konteks siswa atau eksemplar. */
 export async function resolveQr(rawToken: string): Promise<ResolveResult> {
-  await assertRole("librarian", "admin");
+  await assertRole("admin");
   const token = normalisasiKode(rawToken);
   // Hanya izinkan karakter kode (A-Z, 0-9, strip) — cegah filter PostgREST
   // dirusak oleh input seperti "a,b" atau "x).or(...)".
@@ -64,9 +64,10 @@ export async function resolveQr(rawToken: string): Promise<ResolveResult> {
 }
 
 export async function getStudentContext(idOrNis: string): Promise<StudentContext> {
-  await assertRole("librarian", "admin");
+  await assertRole("admin");
   const svc = serviceClient();
   const key = idOrNis.trim();
+  if (!key || !/^[A-Za-z0-9-]{1,64}$/.test(key)) throw new Error("STUDENT_NOT_FOUND");
   const { data: s } = await svc
     .from("students")
     .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)")
@@ -107,7 +108,7 @@ export async function borrowAction(
   studentId: string,
   copyId: string,
 ): Promise<{ ok: true; receipt: Receipt } | { ok: false; code: string }> {
-  const session = await assertRole("librarian", "admin");
+  const session = await assertRole("admin");
   const svc = serviceClient();
   try {
     const { data, error } = await svc.rpc("borrow_book", {
@@ -121,14 +122,17 @@ export async function borrowAction(
     return { ok: false, code: kodeDariError(e) || "UNKNOWN" };
   }
   const receipt = await buildReceipt(copyId, studentId);
-  revalidatePath("/librarian");
+  revalidatePath("/admin");
+  revalidatePath("/admin/transactions");
+  revalidatePath("/admin/borrow");
+  revalidateTag("admin-dashboard", { expire: 0 });
   return { ok: true, receipt };
 }
 
 export async function returnAction(
   copyId: string,
 ): Promise<{ ok: true; receipt: Receipt } | { ok: false; code: string }> {
-  const session = await assertRole("librarian", "admin");
+  const session = await assertRole("admin");
   const svc = serviceClient();
   try {
     const { data, error } = await svc.rpc("return_book", {
@@ -138,7 +142,10 @@ export async function returnAction(
     if (error) throw new Error(kodeDariError(error) || "UNKNOWN");
     const r = data as { loan_id: string; student_id: string; late_days: number; fine: number };
     const receipt = await buildReceipt(copyId, r.student_id, r.late_days, Number(r.fine));
-    revalidatePath("/librarian");
+    revalidatePath("/admin");
+    revalidatePath("/admin/transactions");
+    revalidatePath("/admin/return");
+    revalidateTag("admin-dashboard", { expire: 0 });
     return { ok: true, receipt };
   } catch (e) {
     return { ok: false, code: kodeDariError(e) || "UNKNOWN" };
@@ -152,7 +159,7 @@ export interface LoanFilters {
 }
 
 export async function listLoans(f: LoanFilters, pageSize = 15) {
-  await assertRole("librarian", "admin");
+  await assertRole("admin");
   const svc = serviceClient();
   const page = Math.max(1, f.page ?? 1);
   let query = svc.from("loans").select(
@@ -236,8 +243,13 @@ export async function myProfile() {
   return { student: mapStudent(s), activeCount: count ?? 0 };
 }
 
-/** Tandai overdue sebelum menampilkan dashboard/laporan. */
+let lastOverdueCheck = 0;
+
+/** Tandai overdue sebelum menampilkan dashboard/laporan (dibatasi maks 1x per 10 menit agar hemat query ~800ms). */
 export async function refreshOverdue() {
+  const now = Date.now();
+  if (now - lastOverdueCheck < 10 * 60 * 1000) return;
+  lastOverdueCheck = now;
   try {
     await serviceClient().rpc("mark_overdue");
   } catch {

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
@@ -21,7 +21,7 @@ const UserSchema = z.object({
   full_name: z.string().trim().min(1, "Nama wajib diisi."),
   email: z.string().trim().email("Email tidak valid."),
   password: z.string().min(6, "Kata sandi minimal 6 karakter."),
-  role: z.enum(["librarian", "admin"]),
+  role: z.enum(["admin"]),
 });
 
 export async function createUser(
@@ -63,6 +63,8 @@ export async function createUser(
     role: parsed.data.role,
   });
   revalidatePath("/admin");
+  revalidateTag("profiles", { expire: 0 });
+  revalidateTag("admin-dashboard", { expire: 0 });
   return { ok: true };
 }
 
@@ -74,4 +76,6 @@ export async function setUserStatus(id: string, status: "active" | "inactive") {
   if (error) throw new Error("Gagal mengubah status pengguna.");
   await tulisAudit(session.userId, "user.status", "user", id, { status });
   revalidatePath("/admin");
+  revalidateTag("profiles", { expire: 0 });
+  revalidateTag("admin-dashboard", { expire: 0 });
 }

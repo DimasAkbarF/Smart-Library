@@ -10,24 +10,24 @@ import type { AuditLog } from "@/lib/types";
 
 function getActionDetails(action: string): {
   label: string;
-  tone: "leaf" | "sky" | "sun" | "coral" | "berry" | "muted";
+  tone: "success" | "primary" | "warning" | "danger" | "info" | "muted";
 } {
   const lower = action.toLowerCase();
-  if (lower === "loan.create") return { label: "Peminjaman Buku", tone: "sky" };
-  if (lower === "loan.return") return { label: "Pengembalian Buku", tone: "sky" };
-  if (lower === "book.create") return { label: "Tambah Judul Buku", tone: "leaf" };
-  if (lower === "book.update") return { label: "Ubah Data Buku", tone: "sun" };
-  if (lower === "book.delete") return { label: "Hapus Buku", tone: "coral" };
-  if (lower === "copy.create") return { label: "Tambah Eksemplar", tone: "leaf" };
-  if (lower === "student.create") return { label: "Pendaftaran Siswa", tone: "leaf" };
-  if (lower === "student.update") return { label: "Pembaruan Siswa", tone: "sun" };
-  if (lower === "user.create") return { label: "Buat Pengguna", tone: "berry" };
-  if (lower.includes("login") || lower.includes("auth")) return { label: "Autentikasi", tone: "berry" };
-  if (lower.includes("create") || lower.includes("add")) return { label: "Pembuatan Data", tone: "leaf" };
+  if (lower === "loan.create") return { label: "Peminjaman Buku", tone: "primary" };
+  if (lower === "loan.return") return { label: "Pengembalian Buku", tone: "primary" };
+  if (lower === "book.create") return { label: "Tambah Judul Buku", tone: "success" };
+  if (lower === "book.update") return { label: "Ubah Data Buku", tone: "warning" };
+  if (lower === "book.delete") return { label: "Hapus Buku", tone: "danger" };
+  if (lower === "copy.create") return { label: "Tambah Eksemplar", tone: "success" };
+  if (lower === "student.create") return { label: "Pendaftaran Siswa", tone: "success" };
+  if (lower === "student.update") return { label: "Pembaruan Siswa", tone: "warning" };
+  if (lower === "user.create") return { label: "Buat Pengguna", tone: "info" };
+  if (lower.includes("login") || lower.includes("auth")) return { label: "Autentikasi", tone: "info" };
+  if (lower.includes("create") || lower.includes("add")) return { label: "Pembuatan Data", tone: "success" };
   if (lower.includes("delete") || lower.includes("remove") || lower.includes("inactive"))
-    return { label: "Penghapusan / Nonaktif", tone: "coral" };
+    return { label: "Penghapusan / Nonaktif", tone: "danger" };
   if (lower.includes("update") || lower.includes("edit") || lower.includes("status"))
-    return { label: "Pembaruan", tone: "sun" };
+    return { label: "Pembaruan", tone: "warning" };
   return { label: action, tone: "muted" };
 }
 
@@ -45,8 +45,8 @@ export default async function AuditLogsPage({
   return (
     <div className="space-y-6 animate-rise">
       {/* Header */}
-      <header className="border-b border-outline/70 pb-5">
-        <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
+      <header className="border-b border-rule pb-5">
+        <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase">
           <ShieldCheck className="size-4" />
           <span>Keamanan & Transparansi · SMP Negeri 17 Tangerang Selatan</span>
         </div>
@@ -58,7 +58,7 @@ export default async function AuditLogsPage({
         </p>
       </header>
 
-      <Suspense>
+      <Suspense fallback={null}>
         <SearchInput placeholder="Cari aksi (cth. loan.create), entitas, atau ID entitas…" />
       </Suspense>
 
@@ -84,7 +84,7 @@ export default async function AuditLogsPage({
               header: "Pelaku / Pengguna",
               cell: (a) => (
                 <div className="flex items-center gap-2">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-surface-sunken border border-outline text-ink-muted">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-btn bg-surface-sunken-ed border border-rule text-ink-muted">
                     <User className="size-3.5" />
                   </div>
                   <div>
@@ -100,19 +100,19 @@ export default async function AuditLogsPage({
               cell: (a) => {
                 const { label, tone } = getActionDetails(a.action);
                 const toneClasses = {
-                  leaf: "bg-leaf-soft text-leaf-deep border-leaf/30",
-                  sky: "bg-sky-soft text-sky-deep border-sky/30",
-                  sun: "bg-sun-soft text-sun-deep border-sun/30",
-                  coral: "bg-coral-soft text-coral-deep border-coral/30",
-                  berry: "bg-berry-soft text-berry border-berry/30",
-                  muted: "bg-surface-sunken text-ink-muted border-outline",
+                  success: "bg-success-bg text-success border-success-line",
+                  primary: "bg-primary-soft text-primary border-primary/25",
+                  warning: "bg-warning-bg text-warning border-warning-line",
+                  danger: "bg-danger-bg text-danger border-danger-line",
+                  info: "bg-info-bg text-info border-info-line",
+                  muted: "bg-surface-sunken-ed text-ink-muted border-rule",
                 }[tone];
 
                 return (
                   <div>
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-label font-semibold shadow-2xs",
+                        "inline-flex items-center rounded-chip border px-2 py-0.5 text-label font-semibold",
                         toneClasses
                       )}
                     >

@@ -6,31 +6,58 @@ import { supabaseConfigured } from "@/lib/supabase/env";
 import { serviceClient } from "@/lib/supabase/service";
 import { ROLE_HOME, type Profile, type Role } from "@/lib/types";
 
+import { headers } from "next/headers";
+import { unstable_cache } from "next/cache";
+
 export interface Session {
   userId: string;
   profile: Profile;
 }
 
+export const getCachedProfile = unstable_cache(
+  async (userId: string): Promise<Profile | null> => {
+    const svc = serviceClient();
+    const { data: profile } = await svc
+      .from("profiles")
+      .select("id, username, email, full_name, role, status")
+      .eq("id", userId)
+      .single();
+    return (profile as Profile) || null;
+  },
+  ["user-profile-cache"],
+  {
+    revalidate: 300,
+    tags: ["profiles"],
+  },
+);
+
 /**
  * Data Access Layer: satu-satunya jalan membaca sesi + profil.
- * Di-cache per request. Melempar UNAUTHENTICATED bila tidak ada sesi.
+ * Di-cache per request & global profile cache untuk performa < 1ms.
  */
 export const getSession = cache(async (): Promise<Session | null> => {
   if (!supabaseConfigured) return null;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
 
-  const svc = serviceClient();
-  const { data: profile } = await svc
-    .from("profiles")
-    .select("id, username, email, full_name, role, status")
-    .eq("id", user.id)
-    .single();
+  let userId: string | null = null;
+  try {
+    const headerList = await headers();
+    userId = headerList.get("x-user-id");
+  } catch {
+    // Server action atau context tanpa headers
+  }
+
+  if (!userId) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+    userId = user.id;
+  }
+
+  const profile = await getCachedProfile(userId);
   if (!profile || profile.status !== "active") return null;
-  return { userId: user.id, profile: profile as Profile };
+  return { userId, profile };
 });
 
 /** Halaman: wajib login; role di luar daftar dialihkan ke beranda role-nya. */

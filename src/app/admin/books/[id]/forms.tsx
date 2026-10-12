@@ -3,10 +3,12 @@
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { updateBook, deleteBook, addCopies } from "@/features/admin/books";
+import { updateBook, deleteBook, addCopies, type CreatedCopyInfo } from "@/features/admin/books";
 import { Field, Input, Select } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
+import { QrQuickViewButton } from "@/components/library/qr-modal";
+import { CheckCircle2 } from "lucide-react";
 import { pesanRamah, kodeDariError } from "@/lib/errors";
 import type { Book, Category } from "@/lib/types";
 
@@ -49,7 +51,7 @@ export function BookEditForm({ book, categories }: { book: Book; categories: Cat
         <Input name="cover_url" defaultValue={book.cover_url ?? ""} />
       </Field>
       {state?.message && (
-        <p role="alert" className="text-body font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-danger">
           {state.message}
         </p>
       )}
@@ -69,12 +71,14 @@ export function AddCopiesForm({ bookId }: { bookId: string }) {
   const router = useRouter();
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [recentCopies, setRecentCopies] = useState<CreatedCopyInfo[]>([]);
 
   async function onSubmit(formData: FormData) {
     setBusy(true);
     setMsg(null);
     try {
-      await addCopies(bookId, Number(formData.get("count") ?? 1) || 1, String(formData.get("location") ?? ""));
+      const copies = await addCopies(bookId, Number(formData.get("count") ?? 1) || 1, String(formData.get("location") ?? ""));
+      setRecentCopies(copies);
       router.refresh();
     } catch (e) {
       setMsg(pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined));
@@ -94,13 +98,41 @@ export function AddCopiesForm({ bookId }: { bookId: string }) {
         </Field>
       </div>
       {msg && (
-        <p role="alert" className="text-body font-semibold text-coral-deep">
+        <p role="alert" className="text-body font-semibold text-danger">
           {msg}
         </p>
       )}
+
+      {recentCopies.length > 0 && (
+        <div className="rounded-lg border border-leaf/40 bg-leaf-soft/40 p-3.5 space-y-2">
+          <div className="flex items-center gap-2 text-leaf-deep font-semibold text-meta">
+            <CheckCircle2 className="size-4 shrink-0" />
+            <span>{recentCopies.length} Eksemplar baru berhasil ditambahkan beserta QR Code:</span>
+          </div>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {recentCopies.map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center gap-1.5 rounded bg-white px-2.5 py-1 border border-outline text-label"
+              >
+                <span className="font-mono font-bold text-ink">{c.inventory_code}</span>
+                <QrQuickViewButton
+                  title="Eksemplar Buku"
+                  code={c.inventory_code}
+                  token={c.qr_token}
+                  meta={c.location ? `Rak: ${c.location}` : undefined}
+                  type="book"
+                  label="QR"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
         <Button type="submit" variant="secondary" size="sm" disabled={busy}>
-          {busy ? "Memproses…" : "Tambah eksemplar"}
+          {busy ? "Memproses…" : "Tambah eksemplar & buat QR"}
         </Button>
       </div>
     </form>
@@ -127,7 +159,7 @@ export function DeleteBookButton({ bookId }: { bookId: string }) {
         Hapus buku
       </Button>
       {msg && (
-        <p role="alert" className="mt-2 text-body font-semibold text-coral-deep">
+        <p role="alert" className="mt-2 text-body font-semibold text-danger">
           {msg}
         </p>
       )}

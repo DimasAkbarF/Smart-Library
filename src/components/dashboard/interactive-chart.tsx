@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface DailyPoint {
@@ -18,6 +17,12 @@ export function InteractiveChart({
   const [period, setPeriod] = useState<"14d" | "7d">("14d");
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
+  const nf = useMemo(() => new Intl.NumberFormat("id-ID"), []);
+  const nfDec = useMemo(
+    () => new Intl.NumberFormat("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+    []
+  );
+
   // Generate or slice appropriate data based on honest available data
   const data = useMemo(() => {
     if (period === "7d") {
@@ -26,17 +31,33 @@ export function InteractiveChart({
     return initialData;
   }, [initialData, period]);
 
-  const maxVal = useMemo(() => {
-    const highest = Math.max(...data.flatMap((d) => [d.pinjam, d.kembali]), 5);
-    return Math.ceil(highest / 5) * 5; // rounded to nearest 5
+  const maxValRaw = useMemo(() => {
+    return Math.max(...data.flatMap((d) => [d.pinjam, d.kembali]), 0);
   }, [data]);
+
+  // Skala otomatis: nilai bulat 0–5 tanpa lompat (step = 1 jika max <= 5), atau kelipatan bulat menyesuaikan data
+  const { maxVal, ticks } = useMemo(() => {
+    if (maxValRaw <= 5) {
+      return {
+        maxVal: 5,
+        ticks: [0, 1, 2, 3, 4, 5],
+      };
+    }
+    const step = Math.ceil(maxValRaw / 5);
+    return {
+      maxVal: step * 5,
+      ticks: [0, 1, 2, 3, 4, 5].map((i) => i * step),
+    };
+  }, [maxValRaw]);
 
   const totalPinjam = useMemo(() => data.reduce((acc, curr) => acc + curr.pinjam, 0), [data]);
   const totalKembali = useMemo(() => data.reduce((acc, curr) => acc + curr.kembali, 0), [data]);
-  const avgDaily = useMemo(
-    () => ((totalPinjam + totalKembali) / Math.max(1, data.length)).toFixed(1),
-    [totalPinjam, totalKembali, data.length]
-  );
+  const totalActivity = totalPinjam + totalKembali;
+
+  const avgDaily = useMemo(() => {
+    const avg = totalActivity / Math.max(1, data.length);
+    return nfDec.format(avg);
+  }, [totalActivity, data.length, nfDec]);
 
   const chartHeight = 200;
   const paddingBottom = 28;
@@ -44,35 +65,30 @@ export function InteractiveChart({
   const usableHeight = chartHeight - paddingBottom - paddingTop;
 
   return (
-    <div className="rounded-lg border border-outline bg-background p-5 sm:p-6 shadow-xs">
+    <div className="rounded-panel border border-rule bg-white p-5 sm:p-6 font-plex-sans shadow-xs">
       {/* Header with Title and Range Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline/60 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-md bg-sky-soft text-sky-deep">
-              <ArrowLeftRight className="size-4" />
-            </span>
-            <h2 className="font-display text-body font-bold text-ink">Aktivitas Sirkulasi</h2>
-          </div>
-          <p className="mt-1 text-meta text-ink-muted">
+          <h2 className="font-serif text-base font-semibold text-ink">Aktivitas Sirkulasi</h2>
+          <p className="mt-1 text-xs text-ink-muted">
             Tren sirkulasi buku aktual · Rata-rata <strong className="text-ink font-semibold">{avgDaily}</strong> transaksi/hari
           </p>
         </div>
 
         {/* Filter Tabs & Legend */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-3 text-label">
+          <div className="flex items-center gap-3 text-xs">
             <span className="flex items-center gap-1.5 font-medium text-ink-muted">
-              <span className="size-2.5 rounded-full bg-sky" />
-              Pinjam ({totalPinjam})
+              <span className="size-2 rounded-chip bg-primary" />
+              Pinjam ({nf.format(totalPinjam)})
             </span>
             <span className="flex items-center gap-1.5 font-medium text-ink-muted">
-              <span className="size-2.5 rounded-full bg-leaf" />
-              Kembali ({totalKembali})
+              <span className="size-2 rounded-chip bg-success" />
+              Kembali ({nf.format(totalKembali)})
             </span>
           </div>
 
-          <div className="flex rounded-md border border-outline bg-surface p-0.5" role="group" aria-label="Periode grafik">
+          <div className="flex rounded-btn border border-rule bg-surface-sunken-ed p-0.5" role="group" aria-label="Periode grafik">
             {(
               [
                 { id: "14d", label: "14 Hari" },
@@ -89,7 +105,7 @@ export function InteractiveChart({
                 className={cn(
                   "rounded-xs px-2.5 py-1 text-label font-semibold transition-colors cursor-pointer",
                   period === tab.id
-                    ? "bg-background text-sky-deep shadow-xs font-bold"
+                    ? "bg-white text-primary shadow-xs font-bold border border-rule/50"
                     : "text-ink-muted hover:text-ink"
                 )}
               >
@@ -100,18 +116,24 @@ export function InteractiveChart({
         </div>
       </div>
 
-      {/* SVG Chart Area */}
-      <div className="relative mt-4 pt-2">
+      {/* SVG Chart Area or Concise Empty State */}
+      {totalActivity === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center font-plex-sans">
+          <p className="text-sm text-ink-muted">
+            Belum ada transaksi dalam {period === "14d" ? "14 hari terakhir" : "7 hari terakhir"}.
+          </p>
+        </div>
+      ) : (
+        <div className="relative mt-4 pt-2">
         <svg
           viewBox={`0 0 1000 ${chartHeight}`}
           className="w-full h-52 overflow-visible select-none"
         >
           {/* Horizontal Grid lines */}
-          {[0, 0.25, 0.5, 0.75, 1].map((pct, idx) => {
-            const y = paddingTop + usableHeight * (1 - pct);
-            const val = Math.round(maxVal * pct);
+          {ticks.map((val) => {
+            const y = paddingTop + usableHeight * (1 - val / maxVal);
             return (
-              <g key={idx}>
+              <g key={val}>
                 <line
                   x1="40"
                   y1={y}
@@ -177,29 +199,29 @@ export function InteractiveChart({
                   />
                 )}
 
-                {/* Bar Pinjam (Sky) */}
+                {/* Bar Pinjam (Primary) */}
                 <rect
                   x={xGroup - barWidth - 1}
                   y={yPinjam}
                   width={barWidth}
                   height={Math.max(2, pinjamHeight)}
-                  rx="3"
+                  rx="2"
                   className={cn(
                     "transition-all duration-200",
-                    isHovered ? "fill-sky-deep" : "fill-sky"
+                    isHovered ? "fill-primary-hover" : "fill-primary"
                   )}
                 />
 
-                {/* Bar Kembali (Leaf) */}
+                {/* Bar Kembali (Success) */}
                 <rect
                   x={xGroup + 2}
                   y={yKembali}
                   width={barWidth}
                   height={Math.max(2, kembaliHeight)}
-                  rx="3"
+                  rx="2"
                   className={cn(
                     "transition-all duration-200",
-                    isHovered ? "fill-leaf-deep" : "fill-leaf"
+                    isHovered ? "fill-[#145334]" : "fill-success"
                   )}
                 />
 
@@ -223,30 +245,30 @@ export function InteractiveChart({
         {/* Floating Tooltip Detail on Hover */}
         {hoveredIdx !== null && data[hoveredIdx] && (
           <div
-            className="pointer-events-none absolute -top-3 z-30 transform -translate-x-1/2 rounded-lg border border-outline bg-background px-3 py-2 shadow-modal fade-in-key"
+            className="pointer-events-none absolute -top-3 z-30 transform -translate-x-1/2 rounded-btn border border-rule-strong bg-white px-3 py-2 shadow-dropdown font-plex-sans"
             style={{
               left: `${((hoveredIdx + 0.5) / data.length) * 90 + 5}%`,
             }}
           >
-            <p className="font-bold text-ink text-label border-b border-outline pb-1 font-mono">
+            <p className="font-medium text-ink text-xs border-b border-rule pb-1 font-plex-mono">
               {data[hoveredIdx].date}
             </p>
-            <div className="mt-1 space-y-1 text-label">
+            <div className="mt-1 space-y-1 text-xs">
               <div className="flex items-center justify-between gap-4">
-                <span className="flex items-center gap-1.5 text-sky-deep">
-                  <span className="size-2 rounded-full bg-sky" />
+                <span className="flex items-center gap-1.5 text-primary">
+                  <span className="size-2 rounded-chip bg-primary" />
                   Pinjam:
                 </span>
-                <span className="font-bold font-mono text-ink">
+                <span className="font-semibold font-plex-mono text-ink">
                   {data[hoveredIdx].pinjam}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <span className="flex items-center gap-1.5 text-leaf-deep">
-                  <span className="size-2 rounded-full bg-leaf" />
+                <span className="flex items-center gap-1.5 text-success">
+                  <span className="size-2 rounded-chip bg-success" />
                   Kembali:
                 </span>
-                <span className="font-bold font-mono text-ink">
+                <span className="font-semibold font-plex-mono text-ink">
                   {data[hoveredIdx].kembali}
                 </span>
               </div>
@@ -254,6 +276,7 @@ export function InteractiveChart({
           </div>
         )}
       </div>
-    </div>
+    )}
+  </div>
   );
 }

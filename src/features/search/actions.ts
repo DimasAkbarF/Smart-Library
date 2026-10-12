@@ -2,6 +2,7 @@
 
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole } from "@/lib/auth";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 export interface GlobalSearchResult {
   books: {
@@ -32,32 +33,38 @@ export interface GlobalSearchResult {
 }
 
 export async function searchGlobal(q: string): Promise<GlobalSearchResult> {
-  await assertRole("student", "librarian", "admin");
-  const query = q.trim();
+  const session = await assertRole("student", "admin");
+  const query = sanitizeSearchTerm(q);
   if (!query || query.length < 2) {
     return { books: [], students: [], transactions: [] };
   }
 
   const svc = serviceClient();
   const pattern = `%${query}%`;
+  const isAdmin = session.profile.role === "admin";
 
+  // Hanya admin yang berhak mencari data siswa dan transaksi peminjaman
   const [booksRes, studentsRes, loansRes] = await Promise.all([
     svc
       .from("books")
       .select("id, title, author, isbn, categories(name)")
       .or(`title.ilike.${pattern},author.ilike.${pattern},isbn.ilike.${pattern}`)
       .limit(6),
-    svc
-      .from("students")
-      .select("id, nis, name, status, classes(name)")
-      .or(`name.ilike.${pattern},nis.ilike.${pattern}`)
-      .limit(6),
-    svc
-      .from("loans")
-      .select("id, status, due_at, students!inner(name, nis), book_copies!inner(inventory_code, books!inner(title))")
-      .or(`students.name.ilike.${pattern},students.nis.ilike.${pattern},book_copies.inventory_code.ilike.${pattern},book_copies.books.title.ilike.${pattern}`)
-      .order("borrowed_at", { ascending: false })
-      .limit(6),
+    isAdmin
+      ? svc
+          .from("students")
+          .select("id, nis, name, status, classes(name)")
+          .or(`name.ilike.${pattern},nis.ilike.${pattern}`)
+          .limit(6)
+      : Promise.resolve({ data: [] }),
+    isAdmin
+      ? svc
+          .from("loans")
+          .select("id, status, due_at, students!inner(name, nis), book_copies!inner(inventory_code, books!inner(title))")
+          .or(`students.name.ilike.${pattern},students.nis.ilike.${pattern},book_copies.inventory_code.ilike.${pattern},book_copies.books.title.ilike.${pattern}`)
+          .order("borrowed_at", { ascending: false })
+          .limit(6)
+      : Promise.resolve({ data: [] }),
   ]);
 
   // Count copies for matching books

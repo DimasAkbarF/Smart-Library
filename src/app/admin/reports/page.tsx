@@ -10,14 +10,14 @@ export default async function ReportsPage() {
     <div className="grid gap-6 animate-rise">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline/70 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
-            <span className="size-2 rounded-full bg-sky" />
+          <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono tracking-wider uppercase">
+            <span className="size-1.5 rounded-chip bg-primary" />
             <span>Laporan Operasional · SMP Negeri 17 Tangerang Selatan</span>
           </div>
-          <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
+          <h1 className="mt-1 font-serif text-2xl font-bold tracking-tight text-ink">
             Laporan Sirkulasi
           </h1>
-          <p className="mt-1 text-body text-ink-muted">Aktivitas peminjaman dan pengembalian 14 hari terakhir.</p>
+          <p className="mt-1 text-sm text-ink-muted">Aktivitas peminjaman dan pengembalian 14 hari terakhir.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {[
@@ -111,9 +111,9 @@ export default async function ReportsPage() {
                     aria-valuenow={b.count}
                     aria-valuemin={0}
                     aria-valuemax={maxTop}
-                    className="h-2 rounded-full bg-surface-sunken block"
+                    className="h-1.5 rounded-chip bg-surface-sunken-ed block border border-rule/50"
                   >
-                    <span className="block h-full rounded-full bg-berry transition-all duration-300" style={{ width: `${(b.count / maxTop) * 100}%` }} />
+                    <span className="block h-full rounded-chip bg-primary transition-all duration-300" style={{ width: `${(b.count / maxTop) * 100}%` }} />
                   </span>
                 </li>
               ))}

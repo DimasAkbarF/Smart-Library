@@ -46,7 +46,7 @@ export default async function StudentHistory() {
                     <dt className="text-meta text-ink-muted">Denda</dt>
                     <dd className="font-semibold">
                       {loan.fine_amount > 0 ? (
-                        <span className="text-coral-deep">{formatRupiah(loan.fine_amount)}</span>
+                        <span className="text-danger font-medium">{formatRupiah(loan.fine_amount)}</span>
                       ) : (
                         <span className="text-ink-muted">—</span>
                       )}
@@ -57,28 +57,28 @@ export default async function StudentHistory() {
             ))}
           </ul>
 
-          <div className="hidden overflow-x-auto rounded-card border border-outline bg-surface shadow-card sm:block">
-          <table className="w-full min-w-[560px] snap-x snap-mandatory text-left text-body">
+          <div className="hidden overflow-x-auto rounded-panel border border-rule bg-white sm:block">
+          <table className="w-full min-w-[560px] snap-x snap-mandatory text-left text-sm font-plex-sans">
             <thead>
-              <tr className="border-b border-outline text-ink-muted">
-                <th scope="col" className="px-4 py-3 font-semibold">Judul</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Dipinjam</th>
-                <th scope="col" className="px-4 py-3 font-semibold">Dikembalikan</th>
-                <th scope="col" className="px-4 py-3 text-right font-semibold">Denda</th>
+              <tr className="border-b border-rule text-ink-muted bg-surface-sunken-ed">
+                <th scope="col" className="px-4 py-3 font-medium">Judul</th>
+                <th scope="col" className="px-4 py-3 font-medium">Dipinjam</th>
+                <th scope="col" className="px-4 py-3 font-medium">Dikembalikan</th>
+                <th scope="col" className="px-4 py-3 text-right font-medium">Denda</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-rule">
               {history.map((loan) => (
-                <tr key={loan.id} className="snap-start border-b border-outline last:border-0">
+                <tr key={loan.id} className="snap-start hover:bg-primary-soft/30 transition-colors">
                   <td className="px-4 py-3">
-                    <p className="font-semibold">{loan.book_title}</p>
-                    <p className="font-mono text-meta text-ink-muted">{loan.inventory_code}</p>
+                    <p className="font-semibold text-ink">{loan.book_title}</p>
+                    <p className="font-plex-mono text-xs text-ink-muted">{loan.inventory_code}</p>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">{formatTanggal(loan.borrowed_at)}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{formatTanggal(loan.returned_at)}</td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap text-ink-muted">{formatTanggal(loan.borrowed_at)}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-ink-muted">{formatTanggal(loan.returned_at)}</td>
+                  <td className="px-4 py-3 text-right whitespace-nowrap font-plex-mono">
                     {loan.fine_amount > 0 ? (
-                      <span className="font-semibold text-coral-deep">{formatRupiah(loan.fine_amount)}</span>
+                      <span className="font-medium text-danger">{formatRupiah(loan.fine_amount)}</span>
                     ) : (
                       <span className="text-ink-muted">—</span>
                     )}

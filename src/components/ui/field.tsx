@@ -1,7 +1,8 @@
+import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const inputCls =
-  "w-full rounded-md border border-outline bg-background px-4 text-body text-ink placeholder:text-ink-subtle focus:border-sky disabled:bg-surface-sunken disabled:text-ink-subtle";
+  "w-full rounded-btn border border-rule-strong bg-white px-3.5 text-sm text-ink font-plex-sans placeholder:text-ink-subtle transition-colors duration-150 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:border-rule";
 
 export function Field({
   label,
@@ -9,24 +10,41 @@ export function Field({
   hint,
   children,
   className,
+  id,
 }: {
   label: string;
   error?: string | string[];
   hint?: string;
   children: React.ReactNode;
   className?: string;
+  id?: string;
 }) {
   const err = Array.isArray(error) ? error[0] : error;
+  const errorId = id ? `${id}-error` : undefined;
+  const hintId = id ? `${id}-hint` : undefined;
+
   return (
     <div className={cn("grid min-w-0 gap-1.5", className)}>
-      <label className="text-label font-semibold text-ink uppercase tracking-wider font-mono">
+      <label
+        htmlFor={id}
+        className="text-[12px] font-medium uppercase tracking-[0.04em] text-ink-muted-ed font-plex-sans"
+      >
         {label}
       </label>
       <div>{children}</div>
-      {hint && !err && <p className="text-meta text-ink-muted leading-relaxed">{hint}</p>}
+      {hint && !err && (
+        <p id={hintId} className="text-xs text-ink-muted leading-relaxed font-plex-sans">
+          {hint}
+        </p>
+      )}
       {err && (
-        <p role="alert" className="text-meta font-semibold text-coral-deep">
-          {err}
+        <p
+          id={errorId}
+          role="alert"
+          className="flex items-center gap-1.5 text-xs font-medium text-danger font-plex-sans"
+        >
+          <AlertCircle className="size-3.5 shrink-0 text-danger" aria-hidden />
+          <span>{err}</span>
         </p>
       )}
     </div>
@@ -34,16 +52,16 @@ export function Field({
 }
 
 export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(inputCls, "min-h-12", className)} {...props} />;
+  return <input className={cn(inputCls, "h-10 min-h-10", className)} {...props} />;
 }
 
 export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn(inputCls, "min-h-24 py-3", className)} {...props} />;
+  return <textarea className={cn(inputCls, "min-h-24 py-2.5", className)} {...props} />;
 }
 
 export function Select({ className, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select className={cn(inputCls, "min-h-12", className)} {...props}>
+    <select className={cn(inputCls, "h-10 min-h-10", className)} {...props}>
       {children}
     </select>
   );

@@ -32,7 +32,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
   const { msg, busy, run } = useRefOp();
 
   return (
-    <section className="rounded-card border border-outline bg-background p-5 shadow-card">
+    <section className="rounded-card border border-rule bg-card p-5 shadow-card">
       <h2 className="font-bold">Kategori</h2>
       <form
         action={(fd) => run(() => createCategory(String(fd.get("name") ?? "")))}
@@ -48,11 +48,11 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
         </div>
       </form>
       {msg && (
-        <p role="alert" className="mt-2 text-body font-semibold text-coral-deep">
+        <p role="alert" className="mt-2 text-body font-semibold text-danger">
           {msg}
         </p>
       )}
-      <ul className="mt-3 divide-y divide-outline">
+      <ul className="mt-3 divide-y divide-rule">
         {categories.length === 0 && <li className="py-2 text-ink-muted">Belum ada kategori.</li>}
         {categories.map((c) => (
           <li key={c.id} className="flex items-center justify-between gap-2 py-2">
@@ -63,7 +63,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
               onClick={() => {
                 if (window.confirm(`Hapus kategori "${c.name}"?`)) run(() => deleteCategory(c.id));
               }}
-              className="rounded-md border border-outline px-2 py-1 text-label font-semibold text-coral-deep hover:bg-coral-soft disabled:opacity-50"
+              className="rounded-btn border border-rule px-2.5 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50"
             >
               Hapus
             </button>
@@ -78,7 +78,7 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
   const { msg, busy, run } = useRefOp();
 
   return (
-    <section className="rounded-card border border-outline bg-background p-5 shadow-card">
+    <section className="rounded-card border border-rule bg-card p-5 shadow-card">
       <h2 className="font-bold">Kelas</h2>
       <form
         action={(fd) => run(() => createClass(String(fd.get("name") ?? "")))}
@@ -94,11 +94,11 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
         </div>
       </form>
       {msg && (
-        <p role="alert" className="mt-2 text-body font-semibold text-coral-deep">
+        <p role="alert" className="mt-2 text-body font-semibold text-danger">
           {msg}
         </p>
       )}
-      <ul className="mt-3 divide-y divide-outline">
+      <ul className="mt-3 divide-y divide-rule">
         {classes.length === 0 && <li className="py-2 text-ink-muted">Belum ada kelas.</li>}
         {classes.map((c) => (
           <li key={c.id} className="flex items-center justify-between gap-2 py-2">
@@ -109,7 +109,7 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
               onClick={() => {
                 if (window.confirm(`Hapus kelas "${c.name}"?`)) run(() => deleteClass(c.id));
               }}
-              className="rounded-md border border-outline px-2 py-1 text-label font-semibold text-coral-deep hover:bg-coral-soft disabled:opacity-50"
+              className="rounded-btn border border-rule px-2.5 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50"
             >
               Hapus
             </button>

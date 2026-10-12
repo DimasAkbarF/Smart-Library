@@ -66,7 +66,7 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
   if (receipt) {
     return (
       <div className="grid gap-3">
-        <TransactionReceipt kind="return" receipt={receipt} nextHref="/librarian/return" nextLabel="Transaksi berikutnya" />
+        <TransactionReceipt kind="return" receipt={receipt} nextHref="/admin/return" nextLabel="Transaksi berikutnya" />
         <div>
           <Button variant="secondary" onClick={resetAll}>
             Scan lagi tanpa pindah halaman
@@ -97,7 +97,7 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
             <div><dt className="text-ink-subtle">Denda</dt><dd className="font-semibold">{formatRupiah(late * finePerDay)}</dd></div>
           </dl>
           {err && (
-            <div className="grid gap-2 rounded-md bg-coral-soft px-4 py-3 text-body text-coral-deep">
+            <div className="grid gap-2 rounded-btn bg-danger-bg border border-danger/25 px-4 py-3 text-sm text-danger">
               <p role="alert">{err}</p>
               <div><Button variant="secondary" onClick={() => setErr("")}>Ulangi</Button></div>
             </div>

@@ -1,57 +1,74 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Smart Library — Skylearn-adapted design tokens (lihat PRD §12)
-   Terang, hangat, tenang. Tanpa gradient, tanpa glass, tanpa glow.
-   Semantic: sky = aksi primer, leaf = sukses/tersedia,
-   sun = highlight statistik saja (BUKAN tombol), coral = error,
-   berry = info sekunder.
+   Smart Library — Academic Editorial Design System Tokens
+   SMP Negeri 17 Tangerang Selatan (design.md §1–3)
    ============================================================ */
 
 @theme {
-  --color-sky: #3b82f6;
-  --color-sky-bright: #60a5fa;
-  --color-sky-deep: #1d4ed8;
-  --color-sky-soft: #dbeafe;
+  --color-white: #ffffff;
+  --color-black: #000000;
 
-  --color-sun: #fbbf24;
-  --color-sun-bright: #fcd34d;
-  --color-sun-deep: #d97706;
-  --color-sun-soft: #fef3c7;
+  /* Surfaces & Paper (design.md §3) */
+  --color-paper: #F7F6F2;
+  --color-surface-sunken-ed: #EFEDE7;
+  --color-background: #F7F6F2;
+  --color-card: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-surface-sunken: #EFEDE7;
+  --color-surface-cream: #F7F6F2;
 
-  --color-leaf: #22c55e;
-  --color-leaf-soft: #dcfce7;
-  --color-leaf-deep: #16a34a;
+  /* Ink / Typography (design.md §3) */
+  --color-ink: #161B26;
+  --color-ink-muted: #4A5160;
+  --color-ink-subtle: #666C7A;
+  --color-ink-faint: #DAD7CE;
+  --color-ink-ed: #161B26;
+  --color-ink-muted-ed: #4A5160;
+  --color-ink-subtle-ed: #666C7A;
 
-  --color-coral: #f87171;
-  --color-coral-soft: #fee2e2;
-  --color-coral-deep: #dc2626;
+  /* Rule / Borders (design.md §3) */
+  --color-rule: #DAD7CE;
+  --color-rule-strong: #B9B5A8;
+  --color-outline: #DAD7CE;
+  --color-outline-strong: #B9B5A8;
 
-  --color-berry: #a855f7;
-  --color-berry-soft: #f3e8ff;
+  /* Primary (SMP Navy) */
+  --color-primary: #1B2F5B;
+  --color-primary-hover: #13234A;
+  --color-primary-soft: #E6EAF3;
 
-  --color-background: #ffffff;
-  --color-surface: #f8fafc;
-  --color-surface-sunken: #f1f5f9;
-  --color-ink: #0f172a;
-  --color-ink-muted: #475569;
-  --color-ink-subtle: #94a3b8;
-  --color-ink-faint: #cbd5e1;
-  --color-outline: #e2e8f0;
-  --color-outline-strong: #94a3b8;
+  /* Accent (Academic Gold) */
+  --color-accent: #B8892B;
+  --color-accent-ink: #7A5A12;
 
-  --font-display: var(--font-display), "Hubot Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-sans), "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+  /* Status Colors: WCAG AA Compliant (design.md §3) */
+  --color-success: #1E6B45;
+  --color-success-bg: #E8F2EC;
+  --color-success-line: #B7D6C4;
 
-  /* ---------- Typography scale ----------
-     Dinamai menurut PERAN, bukan ukuran. Mengubah satu baris di sini
-     mengubah setiap pemakaian token itu di seluruh aplikasi. Nilai dasar
-     adalah ukuran mobile; ukuran yang lebih besar datang dari varian
-     sm:/lg: di call-site, bukan dari token terpisah.
-     --font-display hanya dipakai display-* dan title; --font-sans untuk
-     body, label, meta. Pemisahan ini yang membuat hierarki terbaca. */
-  --text-display-lg: 1.75rem;   /* angka statistik utama, judul halaman */
+  --color-warning: #8A5300;
+  --color-warning-bg: #FBF1DC;
+  --color-warning-line: #E8CF97;
+
+  --color-danger: #A12B2B;
+  --color-danger-bg: #FBEAEA;
+  --color-danger-line: #E8B9B9;
+
+  --color-info: #1B2F5B;
+  --color-info-bg: #E6EAF3;
+  --color-info-line: #BCC6DE;
+
+  /* Font Families (design.md §2) */
+  --font-serif: var(--font-newsreader), "Newsreader", Georgia, serif;
+  --font-plex-sans: var(--font-ibm-sans), "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-plex-mono: var(--font-ibm-mono), "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: var(--font-ibm-sans), "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: var(--font-newsreader), "Newsreader", Georgia, serif;
+  --font-mono: var(--font-ibm-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Typography scale */
+  --text-display-lg: 2rem;      /* angka statistik utama, judul halaman */
   --text-display-sm: 1.5rem;    /* angka sekunder, judul card */
   --text-title: 1.125rem;       /* judul section, heading dialog */
   --text-body: 0.9375rem;       /* 15px — body text, isi tabel, deskripsi */
@@ -59,20 +76,29 @@
   --text-meta: 0.75rem;         /* 12px — metadata, hint, breadcrumb, timestamp */
   --text-tap: 0.8125rem;        /* 13px — teks di dalam target sentuh */
 
-  /* ---------- Target sentuh ----------
-     44px = floor WCAG 2.5.8 untuk semua target sentuh.
-     56px = aksi utama siswa, PRD §14.1. */
+  /* Target sentuh */
   --spacing-tap-min: 44px;
   --spacing-tap-lg: 56px;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-card: 16px;
-  --radius-modal: 20px;
+  /* Border Radius (design.md §3) */
+  --radius-chip: 2px;
+  --radius-btn: 4px;
+  --radius-panel: 6px;
+  --radius-card: 6px;
+  --radius-modal: 6px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-round: 9999px;
 
-  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.06);
-  --shadow-modal: 0 24px 48px rgba(15, 23, 42, 0.12);
+  /* Elevation (design.md §3) */
+  --shadow-sm: 0 1px 2px rgba(22, 27, 38, 0.05);
+  --shadow-md: 0 4px 12px rgba(22, 27, 38, 0.08);
+  --shadow-lg: 0 8px 24px rgba(22, 27, 38, 0.12);
+  --shadow-card: 0 1px 3px rgba(22, 27, 38, 0.06);
+  --shadow-dropdown: 0 8px 24px rgba(22, 27, 38, 0.12);
+  --shadow-modal: 0 12px 32px rgba(22, 27, 38, 0.16);
+  --shadow-focus: 0 0 0 3px rgba(27, 47, 91, 0.20);
 }
 
 body {
@@ -88,11 +114,21 @@ h1, h2, h3 {
   letter-spacing: -0.01em;
 }
 
-/* Focus ring terlihat (a11y baseline PRD §16) */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 3px solid var(--color-sky-bright);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+/* Focus ring terlihat (a11y baseline PRD §16) untuk tombol utama dan tautan */
+@layer base {
+  :where(a, button:not([type="button"]), [tabindex]):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-btn);
+  }
+
+  :where(input, select, textarea):focus,
+  :where(input, select, textarea):focus-visible,
+  :where(button[type="button"]):focus,
+  :where(button[type="button"]):focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
 }
 
 /* Motion ringan: satu kali saat halaman tampil, 240ms.
@@ -192,3 +228,39 @@ h1, h2, h3 {
 .scan-frame {
   box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.45);
 }
+
+/* Modal Dialog: pastikan selalu di tengah layar (override reset Tailwind v4 margin: 0) */
+dialog {
+  margin: auto !important;
+}
+
+dialog::backdrop {
+  background-color: rgba(22, 27, 38, 0.45);
+}
+
+/* Pastikan seluruh elemen form, tombol, dialog, dan konten di seluruh layout mewarisi tipografi Academic Editorial (design.md §2) */
+:root {
+  --font-display: var(--font-newsreader), "Newsreader", Georgia, serif;
+}
+
+body, button, input, select, textarea, dialog {
+  font-family: var(--font-ibm-sans), "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+code, kbd, pre, samp {
+  font-family: var(--font-ibm-mono), "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* Utilities tipografi spesifik Fase 1 & design.md §2 */
+.font-serif {
+  font-family: var(--font-newsreader), "Newsreader", Georgia, serif !important;
+}
+
+.font-plex-sans {
+  font-family: var(--font-ibm-sans), "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.font-plex-mono {
+  font-family: var(--font-ibm-mono), "IBM Plex Mono", ui-monospace, monospace !important;
+}
+

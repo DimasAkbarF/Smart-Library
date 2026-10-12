@@ -3,38 +3,55 @@ import { SchoolBrandLockup, SchoolBrandPanel } from "@/components/login/school-b
 import { LoginCard } from "@/components/login/login-card";
 import { SchoolFooter } from "@/components/login/school-footer";
 
-// /login satu-satunya halaman yang boleh terindex, jadi metadata-nya yang
-// paling spesifik. Area auth lain tidak diberi metadata — halaman terindex
-// yang isinya salah lebih buruk daripada tidak ada metadata sama sekali.
 export const metadata: Metadata = {
   title: "Masuk",
   description:
-    "Masuk ke Smart Library SMPN 17 Tangerang Selatan untuk meminjaman, mengembalikan, atau menjelajahi katalog buku.",
+    "Masuk ke Smart Library SMP Negeri 17 Tangerang Selatan untuk peminjaman, pengembalian, dan katalog koleksi perpustakaan.",
 };
 
 /**
- * Contained responsive layout (PRD 14A–14H):
- *   <640   mobile   — 1 kolom, branding di atas card
- *   640-1023 tablet — 1 kolom terpusat, card max 460px
- *   1024-1439      — contained split, wrapper max 1180px, 44/56
- *   ≥1440          — contained split, wrapper max 1280px, 46/54
- * Viewport = background; container = permukaan aplikasi.
+ * Halaman Login (design.md §6 & PRD §8.1):
+ * - Desktop: Dua kolom terintegrasi dalam satu container bergaris (5/12 kiri panel brand primary #1B2F5B, 7/12 kanan form surface putih).
+ * - Mobile (<1024px): Satu kolom terpusat, logo resmi + nama unit di atas, form card di tengah, jam layanan & kontak di kaki halaman.
  */
 export default function LoginPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "School",
+    "name": "SMP Negeri 17 Tangerang Selatan",
+    "url": "https://smartlibrary.smpn17.sch.id",
+    "description": "Sistem perpustakaan sekolah berbasis QR untuk SMP Negeri 17 Tangerang Selatan.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Tangerang Selatan",
+      "addressCountry": "ID",
+    },
+  };
+
   return (
-    <main className="min-h-svh bg-surface-sunken px-5 py-6 sm:px-8 sm:py-8 lg:py-8 min-[1440px]:py-12 [@media(max-height:720px)]:py-2">
-      <div className="mx-auto w-full max-w-[1180px] min-[1440px]:max-w-[1280px]">
-        <div className="grid gap-6 lg:grid-cols-[44fr_56fr] lg:gap-0 lg:overflow-hidden lg:rounded-modal lg:border lg:border-outline lg:bg-background lg:shadow-card min-[1440px]:grid-cols-[46fr_54fr]">
+    <main className="flex min-h-svh flex-col justify-center bg-paper px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="mx-auto my-auto w-full max-w-[420px] lg:max-w-[960px] min-[1440px]:max-w-[1020px]">
+        {/* Mobile / Tablet Header Branding (< 1024px) */}
+        <div className="mb-6 flex justify-center lg:hidden">
+          <SchoolBrandLockup />
+        </div>
+
+        {/* Panel Container Terintegrasi (design.md §6): Tanpa double border */}
+        <div className="overflow-hidden rounded-panel border border-rule bg-surface shadow-xs lg:grid lg:grid-cols-[5fr_7fr]">
+          {/* Panel Kiri 5/12: Informasi Institusi & Layanan (Desktop) */}
           <SchoolBrandPanel />
-          <section className="flex flex-col justify-center lg:px-12 lg:py-12 [@media(max-height:720px)]:lg:py-4 min-[1440px]:px-14">
-            <div className="lg:hidden">
-              <SchoolBrandLockup />
-            </div>
-            <div className="mx-auto mt-6 w-full max-w-[460px] animate-rise lg:mt-0">
-              <LoginCard />
-            </div>
+
+          {/* Panel Kanan 7/12: Form Masuk (Surface putih bersih terpusat) */}
+          <section className="flex flex-col items-center justify-center p-6 sm:p-8 lg:p-12">
+            <LoginCard />
           </section>
         </div>
+
+        {/* Kaki Halaman / Footer Faktual */}
         <SchoolFooter />
       </div>
     </main>

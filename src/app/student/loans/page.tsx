@@ -53,7 +53,7 @@ export default async function StudentLoans() {
                   </div>
                 </dl>
                 {telat > 0 ? (
-                  <p className="rounded-md bg-coral-soft px-3 py-2 text-body font-semibold text-coral-deep">
+                  <p className="rounded-btn bg-danger-bg border border-danger/25 px-3 py-2 text-xs font-medium text-danger">
                     Telat {telat} hari. Segera kembalikan bukumu ke perpustakaan.
                   </p>
                 ) : (

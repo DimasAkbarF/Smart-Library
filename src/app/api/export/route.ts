@@ -2,8 +2,12 @@ import { assertRole } from "@/lib/auth";
 import { serviceClient } from "@/lib/supabase/service";
 
 function csvCell(v: unknown): string {
-  const s = String(v ?? "");
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  let s = String(v ?? "");
+  // Netralkan potensi formula injection untuk aplikasi spreadsheet (Excel / Calc)
+  if (/^[=+\-@\t\r]/.test(s)) {
+    s = `'${s}`;
+  }
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 function toCsv(headers: string[], rows: (unknown[] | Record<string, unknown>)[]): string {
@@ -16,7 +20,7 @@ function toCsv(headers: string[], rows: (unknown[] | Record<string, unknown>)[])
 }
 
 export async function GET(req: Request) {
-  const session = await assertRole("librarian", "admin").catch(() => null);
+  const session = await assertRole("admin").catch(() => null);
   if (!session) return new Response("Unauthorized", { status: 401 });
 
   const type = new URL(req.url).searchParams.get("type");

@@ -87,7 +87,7 @@ export function TransactionsClient({
 
       {/* Interactive Table with Checkboxes & Drawer trigger */}
       <div className="overflow-x-auto rounded-card border border-outline bg-background shadow-xs">
-        <table className="w-full min-w-[640px] text-left text-body">
+        <table className="w-full min-w-[640px] snap-x snap-mandatory text-left text-body">
           <thead>
             <tr className="sticky top-0 z-10 border-b border-outline bg-surface-sunken">
               <th className="w-10 px-4 py-3 text-center">
@@ -99,19 +99,19 @@ export function TransactionsClient({
                   className="size-4 rounded border-outline text-sky focus:ring-sky cursor-pointer"
                 />
               </th>
-              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-3 py-3 sm:px-4 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Siswa
               </th>
-              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-3 py-3 sm:px-4 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Buku
               </th>
-              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-3 py-3 sm:px-4 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Dipinjam
               </th>
-              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-3 py-3 sm:px-4 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Jatuh Tempo
               </th>
-              <th className="px-4 py-3 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
+              <th className="px-3 py-3 sm:px-4 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
                 Status
               </th>
             </tr>
@@ -141,7 +141,7 @@ export function TransactionsClient({
                       className="size-4 rounded border-outline text-sky focus:ring-sky cursor-pointer"
                     />
                   </td>
-                  <td className="px-4 py-3.5 align-middle">
+                  <td className="px-3 py-3 sm:px-4.5 align-middle">
                     <div>
                       <span className="block font-semibold text-ink">{r.student_name}</span>
                       <span className="font-mono text-meta text-ink-subtle">
@@ -149,24 +149,24 @@ export function TransactionsClient({
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 align-middle">
+                  <td className="px-3 py-3 sm:px-4.5 align-middle">
                     <div>
                       <span className="block font-semibold text-ink line-clamp-1">{r.book_title}</span>
                       <span className="font-mono text-meta text-ink-subtle">{r.inventory_code}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 align-middle">
+                  <td className="px-3 py-3 sm:px-4.5 align-middle">
                     <span className="text-meta text-ink-muted">{formatTanggal(r.borrowed_at)}</span>
                   </td>
-                  <td className="px-4 py-3.5 align-middle">
+                  <td className="px-3 py-3 sm:px-4.5 align-middle">
                     <div className="text-label">
                       <span className="text-ink-muted">{formatTanggal(r.due_at)}</span>
                       {telat > 0 && r.status === "OVERDUE" && (
-                        <span className="block font-bold text-coral-deep">Telat {telat} hari</span>
+                        <span className="block font-semibold text-danger">Telat {telat} hari</span>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 align-middle">
+                  <td className="px-3 py-3 sm:px-4.5 align-middle">
                     <LoanStatusChip status={r.status} />
                   </td>
                 </tr>
@@ -248,7 +248,7 @@ export function TransactionsClient({
                 </Button>
               </Link>
               <Link
-                href={`/librarian/books?q=${encodeURIComponent(selectedLoan.inventory_code)}`}
+                href={`/admin/copies?q=${encodeURIComponent(selectedLoan.inventory_code)}`}
                 className="flex-1"
               >
                 <Button variant="secondary" size="md" className="w-full gap-2 text-label">
@@ -271,8 +271,8 @@ export function TransactionsClient({
                 </div>
               </div>
               {selectedLoan.status === "OVERDUE" && (
-                <div className="text-right text-label">
-                  <span className="text-coral-deep font-bold flex items-center gap-1">
+                <div className="text-right text-xs">
+                  <span className="text-danger font-semibold flex items-center gap-1">
                     <AlertCircle className="size-3.5" />
                     Telat {hariTelat(selectedLoan.due_at)} hari
                   </span>

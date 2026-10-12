@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Library · Codebase Architecture &amp; Folder Hierarchy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #eb6c36;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1160px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 2.4vw + 0.8rem, 2.2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      color: var(--color-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 960px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Layer Stack &middot; Diagram Design &middot; Code Hierarchy</p>
+    <h1>Smart Library System: Dekomposisi Struktur Folder &amp; Kode</h1>
+    <p class="subtitle">Arsitektur berlapis memisahkan Presentation (App Router), Domain Features, Foundation Libs, dan Database</p>
+
+    <svg viewBox="0 0 1120 740" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="smartlib-code-title smartlib-code-desc">
+      <title id="smartlib-code-title">Smart Library Codebase Hierarchy and Structure</title>
+      <desc id="smartlib-code-desc">Diagram struktur folder dan lapisan kode Smart Library memetakan hubungan antara routing, komponen UI, server actions pada fitur, pustaka pendukung, dan database Supabase.</desc>
+      <defs>
+        <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1" fill="rgba(45,49,66,0.08)"/>
+        </pattern>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+      <rect width="100%" height="100%" fill="url(#dots)" opacity="0.6"/>
+
+      <!-- LAYER 1: PRESENTATION -->
+      <rect x="40" y="60" width="1040" height="136" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="64" y="64" width="216" height="14" rx="2" fill="#f5f5f5"/>
+      <text x="172" y="74" fill="rgba(45,49,66,0.50)" font-size="7.5" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">1. PRESENTATION (APP &amp; COMPONENTS)</text>
+
+      <!-- LAYER 2: DOMAIN & FEATURES -->
+      <rect x="40" y="224" width="1040" height="144" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="64" y="228" width="216" height="14" rx="2" fill="#f5f5f5"/>
+      <text x="172" y="238" fill="rgba(45,49,66,0.50)" font-size="7.5" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">2. DOMAIN &amp; BUSINESS (SRC/FEATURES)</text>
+
+      <!-- LAYER 3: INFRASTRUCTURE & LIB -->
+      <rect x="40" y="396" width="1040" height="136" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="64" y="400" width="224" height="14" rx="2" fill="#f5f5f5"/>
+      <text x="176" y="410" fill="rgba(45,49,66,0.50)" font-size="7.5" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">3. FOUNDATION &amp; ACCESS (SRC/LIB)</text>
+
+      <!-- LAYER 4: DATABASE & PERSISTENCE -->
+      <rect x="40" y="560" width="1040" height="112" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <rect x="64" y="564" width="216" height="14" rx="2" fill="#f5f5f5"/>
+      <text x="172" y="574" fill="rgba(45,49,66,0.50)" font-size="7.5" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">4. DATABASE (SUPABASE POSTGRESQL)</text>
+
+      <!-- INTER-LAYER CONNECTORS (Drawn behind nodes) -->
+      <!-- App Router -> Features (Circulation) -->
+      <line x1="288" y1="172" x2="288" y2="252" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <rect x="252" y="206" width="72" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="288" y="215" fill="#eb6c36" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">Server Action</text>
+
+      <!-- Features (Circulation) -> Lib (Auth & Service) -->
+      <line x1="288" y1="344" x2="288" y2="424" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="256" y="378" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="288" y="387" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">assertRole()</text>
+
+      <!-- Lib (Supabase Service) -> Postgres RPC (Atomic execution) -->
+      <line x1="848" y1="508" x2="848" y2="588" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <rect x="804" y="542" width="88" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="848" y="551" fill="#eb6c36" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">rpc('borrow_book')</text>
+
+      <!-- Lib (Supabase Client/Service) -> Tables -->
+      <line x1="420" y1="508" x2="420" y2="588" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="388" y="542" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="420" y="551" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">from('table')</text>
+
+
+      <!-- NODES: LAYER 1 (PRESENTATION) -->
+      <!-- Node 1.1: src/app (Routes) -->
+      <rect x="64" y="92" width="464" height="80" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="92" width="464" height="80" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="72" y="100" width="56" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="100" y="109" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">SRC/APP</text>
+      <text x="296" y="126" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Role-Based App Router &amp; Layouts</text>
+      <text x="296" y="144" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">/admin (Sirkulasi, Koleksi, Siswa, Laporan) &middot; /student (Portal) &middot; /login</text>
+      <text x="296" y="160" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">Server Components dengan requireRole() guard &middot; API Route /api/export</text>
+
+      <!-- Node 1.2: src/components (UI Library) -->
+      <rect x="552" y="92" width="504" height="80" rx="6" fill="#f5f5f5"/>
+      <rect x="552" y="92" width="504" height="80" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="560" y="100" width="76" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="598" y="109" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">SRC/COMPONENTS</text>
+      <text x="804" y="126" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Komponen UI Terisolasi &amp; Design System</text>
+      <text x="804" y="144" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">ui/ (DataTable, Dialog, Button) &middot; layout/ (AppShell, CommandPalette)</text>
+      <text x="804" y="160" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">library/ (QrScanner html5, QrImg, Receipt) &middot; dashboard/ (KpiCard, Chart)</text>
+
+
+      <!-- NODES: LAYER 2 (DOMAIN FEATURES) -->
+      <!-- Node 2.1: Circulation Engine (Focal 1) -->
+      <rect x="64" y="252" width="320" height="92" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="252" width="320" height="92" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.2"/>
+      <rect x="72" y="260" width="60" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.50)" stroke-width="0.8"/>
+      <text x="102" y="269" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">CIRCULATION</text>
+      <text x="224" y="286" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">features/loans (Sirkulasi &amp; QR)</text>
+      <text x="224" y="304" fill="#eb6c36" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">actions.ts &middot; resolveQr, borrowCopy, returnCopy</text>
+      <text x="224" y="322" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">Perhitungan denda otomatis, receipt struk, renewal</text>
+
+      <!-- Node 2.2: Catalog & Search -->
+      <rect x="408" y="252" width="304" height="92" rx="6" fill="#f5f5f5"/>
+      <rect x="408" y="252" width="304" height="92" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="416" y="260" width="64" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="448" y="269" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">CATALOG</text>
+      <text x="560" y="286" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">features/catalog &amp; search</text>
+      <text x="560" y="304" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">queries.ts &middot; Pencarian Buku &amp; Eksemplar</text>
+      <text x="560" y="322" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">actions.ts &middot; Global quick-search Command Palette</text>
+
+      <!-- Node 2.3: Admin Operations -->
+      <rect x="736" y="252" width="320" height="92" rx="6" fill="#f5f5f5"/>
+      <rect x="736" y="252" width="320" height="92" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="744" y="260" width="56" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.30)" stroke-width="0.8"/>
+      <text x="772" y="269" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">OPERATIONS</text>
+      <text x="896" y="286" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">features/admin &amp; auth</text>
+      <text x="896" y="304" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">students.ts, books.ts, users.ts, imports.ts</text>
+      <text x="896" y="322" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">reports.ts &middot; Agregasi statistik, parsing Excel XLSX</text>
+
+
+      <!-- NODES: LAYER 3 (FOUNDATION & LIB) -->
+      <!-- Node 3.1: src/lib/auth.ts -->
+      <rect x="64" y="424" width="320" height="84" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="424" width="320" height="84" rx="6" fill="rgba(45,49,66,0.03)" stroke="#2d3142" stroke-width="1"/>
+      <rect x="72" y="432" width="52" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="98" y="441" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">SECURITY</text>
+      <text x="224" y="458" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">src/lib/auth.ts &amp; proxy.ts</text>
+      <text x="224" y="476" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">getSession (React cache) &middot; assertRole</text>
+      <text x="224" y="492" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">tulisAudit() &middot; updateSession middleware</text>
+
+      <!-- Node 3.2: src/lib/supabase -->
+      <rect x="408" y="424" width="304" height="84" rx="6" fill="#f5f5f5"/>
+      <rect x="408" y="424" width="304" height="84" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="416" y="432" width="60" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="446" y="441" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">DATABASE</text>
+      <text x="560" y="458" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">src/lib/supabase/*</text>
+      <text x="560" y="476" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">serviceClient (Bypass RLS untuk Server Action)</text>
+      <text x="560" y="492" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">server.ts (Cookie SSR) &middot; client.ts (Browser Anon)</text>
+
+      <!-- Node 3.3: Shared Libs -->
+      <rect x="736" y="424" width="320" height="84" rx="6" fill="#f5f5f5"/>
+      <rect x="736" y="424" width="320" height="84" rx="6" fill="rgba(79,93,117,0.06)" stroke="#7a8399" stroke-width="1"/>
+      <rect x="744" y="432" width="48" height="12" rx="2" fill="transparent" stroke="rgba(122,131,153,0.40)" stroke-width="0.8"/>
+      <text x="768" y="441" fill="#7a8399" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">SHARED</text>
+      <text x="896" y="458" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Types &amp; Utility Helpers</text>
+      <text x="896" y="476" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">types.ts &middot; Domain Entity Models &amp; Role</text>
+      <text x="896" y="492" fill="#7a8399" font-size="7.5" font-family="'Geist Mono', monospace" text-anchor="middle">errors.ts &middot; format.ts &middot; nav.ts &middot; utils.ts</text>
+
+
+      <!-- NODES: LAYER 4 (DATABASE ENGINE) -->
+      <!-- Node 4.1: Relational Schema -->
+      <rect x="64" y="588" width="584" height="68" rx="6" fill="#f5f5f5"/>
+      <rect x="64" y="588" width="584" height="68" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="72" y="596" width="44" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="94" y="605" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">SCHEMA</text>
+      <text x="356" y="618" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PostgreSQL Relational Tables &amp; Constraints</text>
+      <text x="356" y="636" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">profiles, classes, categories, students, books, book_copies, loans, library_policies, audit_logs</text>
+
+      <!-- Node 4.2: Atomic Stored Procedures (Focal 2) -->
+      <rect x="672" y="588" width="384" height="68" rx="6" fill="#f5f5f5"/>
+      <rect x="672" y="588" width="384" height="68" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.2"/>
+      <rect x="680" y="596" width="52" height="12" rx="2" fill="transparent" stroke="rgba(235,108,54,0.60)" stroke-width="0.8"/>
+      <text x="706" y="605" fill="#eb6c36" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle">ATOMIC</text>
+      <text x="864" y="618" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PL/pgSQL Transaction RPCs</text>
+      <text x="864" y="636" fill="#eb6c36" font-size="8.5" font-family="'Geist Mono', monospace" text-anchor="middle">borrow_book() &middot; return_book() &middot; mark_overdue()</text>
+
+
+      <!-- FOOTER STRIP -->
+      <line x1="40" y1="692" x2="1080" y2="692" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+      <text x="40" y="708" fill="#4f5d75" font-size="7.5" font-family="'Geist Mono', monospace" letter-spacing="0.18em">KEY PRINCIPLE</text>
+      <text x="140" y="708" fill="#2d3142" font-size="8.5" font-family="'Geist', sans-serif">QR Code hanya identifier &bull; Kebenaran data berada di Database Server &bull; Transaksi 100% konsisten via Row-Level Locking</text>
+    </svg>
+  </div>
+</body>
+</html>
