@@ -1,142 +1,138 @@
 # Smart Library — SMP Negeri 17 Tangerang Selatan
 
-> 🌐 **Domain Resmi:** [http://perpustakaansmp17tangsel.web.id/](http://perpustakaansmp17tangsel.web.id/)
+Sistem informasi sirkulasi dan manajemen perpustakaan berbasis web untuk SMP Negeri 17 Tangerang Selatan. Platform ini mengotomasi peminjaman, pengembalian, inventaris katalog, dan penerbitan kartu anggota digital dengan identifikasi QR Code serta audit trail aktivitas.
 
-Sistem otomasi dan manajemen perpustakaan sekolah modern berbasis **Next.js 16 (App Router)** dan **Supabase (PostgreSQL)** dengan identifikasi cepat menggunakan **QR Code** untuk sirkulasi buku dan kartu anggota digital siswa.
-
-Dirancang dengan prinsip **Academic Editorial Design System**: tipografi institusi yang berwibawa (*Newsreader*, *IBM Plex Sans*, *IBM Plex Mono*), palet warna resmi sekolah (`#1B2F5B`), tata letak responsif hingga perangkat mobile 390px, serta kepatuhan aksesibilitas kontras WCAG AA.
+Production URL: [http://perpustakaansmp17tangsel.web.id](http://perpustakaansmp17tangsel.web.id)
 
 ---
 
-## ✨ Fitur Utama
+## Arsitektur & Desain Sistem
 
-### 1. 🔄 Meja Sirkulasi Cepat (Peminjaman & Pengembalian)
-- **Pemindai Kamera QR**: Menggunakan kamera perangkat (termasuk kamera belakang smartphone) untuk pemindaian instan kartu siswa dan barcode/QR eksemplar buku.
-- **Pencarian Manual**: Fallback pencarian instan via NIS siswa atau kode inventaris buku.
-- **Transaksi Atomik (PostgreSQL RPC)**: Menjamin integritas data tanpa pinjaman ganda (*anti double-borrow*) menggunakan transaksi database `borrow_book` dan `return_book`.
-- **Struk Digital & Cetak**: Bukti peminjaman dan pengembalian instan dengan tanggal jatuh tempo yang otomatis terhitung.
+### 1. Transaksi Sirkulasi Atomik
+Operasi peminjaman (`borrow_book`) dan pengembalian (`return_book`) diisolasi melalui PostgreSQL Stored Procedures (RPC). Pendekatan ini memastikan konsistensi status eksemplar, batas kuota peminjaman siswa, dan perhitungan denda terlambat dieksekusi dalam satu transaksi atomik guna mencegah *concurrency issues* dan peminjaman ganda (*double-borrowing*).
 
-### 2. 📚 Manajemen Katalog Koleksi & Eksemplar
-- Pencarian dan filter koleksi berdasarkan judul, pengarang, penerbit, kategori, dan nomor ISBN.
-- Pencatatan status inventaris tiap eksemplar fisik (*Tersedia*, *Dipinjam*, *Rusak*, *Hilang*).
-- **Generator & Cetak Label QR**: Pembuatan kode QR vektor SVG otomatis dan stiker label buku siap cetak.
+### 2. Autentikasi & Kontrol Akses (RBAC)
+Sistem memisahkan alur otorisasi ke dalam dua peran utama:
+- **Admin**: Akses meja sirkulasi, manajemen katalog buku, data inventaris eksemplar, master data siswa, laporan sirkulasi, dan log audit.
+- **Siswa**: Portal mandiri untuk memantau status pinjaman aktif, riwayat sirkulasi, tagihan denda, dan kartu perpustakaan digital.
 
-### 3. 🪪 Kartu Anggota Digital Siswa (Standar ID-1)
-- Setiap siswa terdaftar memiliki kartu pelajar/perpustakaan digital dengan QR unik.
-- Format ukuran standar kartu identitas internasional **ID-1 (85.60 × 53.98 mm)** dengan logo resmi sekolah dan watermark, siap cetak dari browser.
-- Portal mandiri siswa untuk melihat daftar buku yang sedang dipinjam, jatuh tempo, denda, dan riwayat sirkulasi.
+Proteksi login mencakup mitigasi brute-force melalui *rate limiting* serta pencatatan audit otomatis (IP address dan geolokasi) pada setiap sesi masuk.
 
-### 4. 📊 Dashboard Admin & Audit Log Real-Time
-- **Panel Metrik Sirkulasi 4-Sel**: *Dipinjam hari ini*, *Dikembalikan hari ini*, *Sedang dipinjam*, dan *Terlambat* (langsung terhubung ke daftar transaksi terfilter).
-- **Visualisasi Tren Sirkulasi**: Grafik interaktif 7 hari & 14 hari dengan skala adaptif dan deteksi transaksi harian.
-- **Pencatatan Audit Keamanan**: Setiap aktivitas login mencatat alamat IP klien dan perkiraan lokasi ke log audit.
-- **Pencegahan Brute-Force**: Proteksi *rate limiting* berbasis IP dan identitas pengguna.
+### 3. Performa & Antarmuka Responsif
+- **React Server Components (RSC)**: Meminimalkan *client-side bundle size* dengan merender katalog dan laporan secara langsung di server.
+- **Client Scanner Isolation**: Pemindai kamera perangkat (`html5-qrcode`) diisolasi pada layer client untuk efisiensi resource. Modul berat seperti pengolah spreadsheet diimpor secara dinamis (*lazy loaded*).
+- **Aksesibilitas & Standar Mobile**: Desain antarmuka mematuhi standar rasio kontras WCAG 2.1 AA, *touch target* minimal 44×44 px, serta layout adaptif untuk viewport desktop hingga mobile (390 px).
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Framework**: [Next.js 16.3 (Turbopack)](https://nextjs.org/)
-- **UI & Styling**: [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/)
-- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL, Row Level Security, RPC Functions)
-- **Tipografi**: `@next/font/google` (*Newsreader*, *IBM Plex Sans*, *IBM Plex Mono*)
-- **QR & Scanner**: `html5-qrcode`, `qrcode` (SVG Vector)
-- **Validasi**: [Zod](https://zod.dev/), `react-hook-form`
-- **Ikonografi**: `lucide-react`
+| Layer | Teknologi | Keterangan |
+|---|---|---|
+| **Framework** | Next.js 16.3 (App Router, Turbopack) | Server Components & Route Handlers |
+| **Runtime & UI** | React 19, Tailwind CSS v4 | UI styling berbasis CSS tokens (@theme) |
+| **Database** | PostgreSQL via Supabase | Row Level Security (RLS) & RPC Functions |
+| **Identifikasi QR** | `html5-qrcode`, `qrcode` | Pemindai kamera client-side & generator SVG |
+| **Validasi Skema** | Zod | Validasi data form dan server actions |
+| **Ikonografi** | Lucide React | Ikon antarmuka terstandarisasi |
 
 ---
 
-## 🚀 Panduan Instalasi & Menjalankan Proyek
+## Struktur Direktori
 
-### 1. Klon Repositori
+```
+Smart-Library/
+├── public/                 # Aset statis publik (logo institusi, manifest)
+├── scripts/
+│   └── seed.mjs            # Script seeder data awal untuk demonstrasi
+├── src/
+│   ├── app/                # Next.js App Router
+│   │   ├── admin/          # Panel kontrol admin (sirkulasi, katalog, siswa, audit)
+│   │   ├── student/        # Portal siswa (katalog, pinjaman aktif, kartu anggota)
+│   │   ├── login/          # Autentikasi dan identifikasi pengguna
+│   │   ├── api/            # Endpoint internal (ekspor laporan, sitemap)
+│   │   ├── globals.css     # Definisi tema, token tipografi, dan variabel CSS
+│   │   └── layout.tsx      # Root layout, metadata global, dan font loader
+│   ├── components/
+│   │   ├── dashboard/      # Panel metrik, grafik tren, dan visualisasi aktivitas
+│   │   ├── layout/         # Shell navigasi (desktop sidebar & mobile bar)
+│   │   ├── library/        # Komponen scanner QR, struk sirkulasi, kartu ID-1
+│   │   ├── login/          # Formulir autentikasi dan layout institusi
+│   │   └── ui/             # Primitif UI (Button, DataTable, Dialog, Drawer, Field)
+│   ├── features/           # Server actions dan query database terisolasi
+│   └── lib/                # Konfigurasi Supabase, utilitas RBAC, dan helper format
+└── supabase/               # Skema basis data, migration scripts, dan RLS policies
+```
+
+---
+
+## Panduan Instalasi Lokal
+
+### Prasyarat
+- Node.js >= 20.x
+- npm >= 10.x
+- Proyek Supabase aktif
+
+### 1. Klon Repositori & Instalasi Dependensi
 ```bash
 git clone https://github.com/DimasAkbarF/Smart-Library.git
 cd Smart-Library
-```
-
-### 2. Pasang Dependensi
-```bash
 npm install
 ```
 
-### 3. Konfigurasi Lingkungan (`.env.local`)
-Salin file `.env.example` menjadi `.env.local`:
+### 2. Konfigurasi Environment Variables
+Salin file `.env.example` ke `.env.local`:
 ```bash
 cp .env.example .env.local
 ```
-Lengkapi variabel lingkungan berikut dari dasbor proyek Supabase Anda:
+
+Lengkapi konfigurasi berikut:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_SUPABASE_URL=https://<project-id>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 ```
 
-### 4. Inisialisasi Database Supabase
-Jalankan berkas migrasi SQL secara berurutan di **SQL Editor** Supabase:
-1. `supabase/schema.sql` (skema tabel, RPC transaksi sirkulasi, RLS, fungsi pemicu)
-2. `supabase/migration_002.sql` (dukungan email profil)
-3. `supabase/migration_003.sql` (kebijakan denda & audit sirkulasi)
-4. `supabase/migration_004.sql` (indeks performa pencarian & nomor inventaris)
-5. `supabase/migration_005.sql` (kebijakan keamanan RLS & peran pengguna)
+### 3. Inisialisasi Skema Basis Data
+Jalankan file SQL berikut secara berurutan di SQL Editor Supabase:
+1. `supabase/schema.sql` (Tabel inti, fungsi RPC transaksi sirkulasi, trigger)
+2. `supabase/migration_002.sql` (Atribut profil dan email)
+3. `supabase/migration_003.sql` (Audit sirkulasi dan aturan denda)
+4. `supabase/migration_004.sql` (Indeks pencarian katalog dan nomor eksemplar)
+5. `supabase/migration_005.sql` (Penguatan kebijakan keamanan RLS)
 
-### 5. Seeding Data Contoh (Opsional)
-Untuk mengisi data pengguna awal, akun demo, dan buku contoh:
+### 4. Seeding Data Demo (Opsional)
+Untuk menginisialisasi akun pengujian dan data contoh:
 ```bash
 npm run seed
 ```
 
-### 6. Jalankan Server Pengembangan
+### 5. Menjalankan Server Pengembangan
 ```bash
 npm run dev
 ```
-Buka peramban di [http://localhost:3000](http://localhost:3000).
+Aplikasi dapat diakses melalui `http://localhost:3000`.
 
 ---
 
-## 🔑 Akun Demo Pengujian
+## Kredensial Pengujian (Demo)
 
-| Peran | Identitas (NIS / Username) | Kata Sandi | Halaman Utama |
+| Peran | Pengenal (NIS / Username) | Kata Sandi | Rute Awal |
 |---|---|---|---|
-| **Admin Perpustakaan** | `admin` | `admin123` | `/admin` |
-| **Siswa Terdaftar** | `20260001` | `siswa123` | `/student` |
+| Admin Perpustakaan | `admin` | `admin123` | `/admin` |
+| Siswa | `20260001` | `siswa123` | `/student` |
 
 ---
 
-## 📁 Struktur Direktori
+## Validasi & Quality Assurance
 
-```
-Smart-Library/
-├── public/                 # Aset publik statis (logo sekolah SMPN 17)
-├── scripts/
-│   └── seed.mjs            # Skrip seeder database demo
-├── src/
-│   ├── app/                # Next.js App Router
-│   │   ├── admin/          # Dasbor, katalog buku, siswa, sirkulasi, audit log
-│   │   ├── student/        # Portal siswa (beranda, buku saya, kartu profil)
-│   │   ├── login/          # Halaman masuk terintegrasi
-│   │   ├── api/            # Route handler (ekspor data, sitemap)
-│   │   ├── globals.css     # Token tema Academic Editorial & Tailwind @theme
-│   │   └── layout.tsx      # Root layout & font loader
-│   ├── components/
-│   │   ├── dashboard/      # Grafik interaktif, aktivitas feed, panel perhatian
-│   │   ├── layout/         # Shell navigasi (sidebar desktop, bottom bar mobile)
-│   │   ├── library/        # QR Scanner, QR Modal, Kartu Siswa, Struk
-│   │   ├── login/          # Panel brand institusi & form kartu masuk
-│   │   └── ui/             # Primitif UI (Button, DataTable, Dialog, Drawer, Field)
-│   ├── features/           # Server actions & data queries per domain
-│   └── lib/                # Autentikasi RBAC, klien Supabase, utilitas format
-└── supabase/               # Skema database & file migrasi SQL
-```
-
----
-
-## 🧪 Validasi Kualitas Kode
+Jalankan perintah berikut sebelum membuka merge request atau rilis produksi:
 
 ```bash
-# Pemeriksaan tipe data TypeScript
+# Validasi tipe statis
 npx tsc --noEmit
 
-# Pemeriksaan linter ESLint
+# Analisis kualitas kode
 npm run lint
 
 # Kompilasi build produksi Next.js
@@ -145,6 +141,6 @@ npm run build
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 
-Didistribusikan di bawah lisensi [MIT](LICENSE). Dibuat untuk sistem otomasi perpustakaan SMP Negeri 17 Tangerang Selatan.
+Proyek ini dirilis di bawah lisensi [MIT](LICENSE). Dikembangkan untuk SMP Negeri 17 Tangerang Selatan.
