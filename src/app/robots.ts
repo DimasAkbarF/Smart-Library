@@ -18,6 +18,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/"],
       },
     ],
-    sitemap: "http://perpustakaansmp17tangsel.web.id/sitemap.xml",
+    sitemap: "https://perpustakaansmp17tangsel.web.id/sitemap.xml",
   };
 }

@@ -46,9 +46,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  // TODO ganti dengan domain sebenarnya sebelum deploy. metadataBase yang
-  // salah membuat URL openGraph salah untuk seluruh halaman.
-  metadataBase: new URL("http://perpustakaansmp17tangsel.web.id"),
+  metadataBase: new URL("https://perpustakaansmp17tangsel.web.id"),
   title: {
     default: "Smart Library — SMPN 17 Tangerang Selatan",
     template: "%s — Smart Library",
@@ -57,15 +55,36 @@ export const metadata: Metadata = {
     "Sistem perpustakaan sekolah berbasis QR: katalog, peminjaman, pengembalian, dan pelaporan.",
   applicationName: "Smart Library",
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: "/",
+  },
+  verification: {
+    google: "moQUHIkJGba0sgC0I_eMpolduulMFTkFLafDnO5YSOI",
+  },
   openGraph: {
     type: "website",
     locale: "id_ID",
+    url: "https://perpustakaansmp17tangsel.web.id",
     siteName: "Smart Library",
     title: "Smart Library — SMPN 17 Tangerang Selatan",
     description:
       "Sistem perpustakaan sekolah berbasis QR: katalog, peminjaman, pengembalian, dan pelaporan.",
+    images: [
+      {
+        url: "/logo-smpn17.png",
+        width: 512,
+        height: 512,
+        alt: "Logo SMP Negeri 17 Tangerang Selatan",
+      },
+    ],
   },
-  twitter: { card: "summary" },
+  twitter: {
+    card: "summary",
+    title: "Smart Library — SMPN 17 Tangerang Selatan",
+    description:
+      "Sistem perpustakaan sekolah berbasis QR: katalog, peminjaman, pengembalian, dan pelaporan.",
+    images: ["/logo-smpn17.png"],
+  },
 };
 
 export const viewport: Viewport = {

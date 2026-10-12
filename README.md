@@ -2,7 +2,7 @@
 
 Sistem informasi sirkulasi dan manajemen perpustakaan berbasis web untuk SMP Negeri 17 Tangerang Selatan. Platform ini mengotomasi peminjaman, pengembalian, inventaris katalog, dan penerbitan kartu anggota digital dengan identifikasi QR Code serta audit trail aktivitas.
 
-Production URL: [http://perpustakaansmp17tangsel.web.id](http://perpustakaansmp17tangsel.web.id)
+Production URL: [https://perpustakaansmp17tangsel.web.id](https://perpustakaansmp17tangsel.web.id)
 
 ---
 
