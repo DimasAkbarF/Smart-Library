@@ -128,3 +128,10 @@ export function recordFailedAttempt(
 export function resetRateLimit(key: string): void {
   store.delete(key);
 }
+
+/**
+ * Menghapus seluruh status lockout (reset darurat).
+ */
+export function clearAllRateLimits(): void {
+  store.clear();
+}

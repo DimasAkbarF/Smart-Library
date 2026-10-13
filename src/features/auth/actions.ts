@@ -14,6 +14,8 @@ import { verifyTurnstile } from "@/lib/turnstile";
 import { isDefaultPassword, validatePassword } from "@/lib/password";
 import { verifyTotpToken } from "@/lib/totp";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+import { validateProductionEnv } from "@/lib/supabase/env";
 
 const GENERIC_ERROR_STUDENT = "NIS atau kata sandi salah. Periksa kembali lalu coba lagi.";
 const GENERIC_ERROR_ADMIN = "Nama pengguna atau kata sandi salah. Periksa kembali lalu coba lagi.";
@@ -56,7 +58,7 @@ async function getClientInfo() {
   try {
     const h = await headers();
     userAgent = h.get("user-agent") || "";
-    host = h.get("host") || "";
+    host = h.get("x-forwarded-host") || h.get("host") || "";
     const cfIp = h.get("cf-connecting-ip");
     const xReal = h.get("x-real-ip");
     const xff = h.get("x-forwarded-for");
@@ -93,6 +95,11 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
 
   if (!supabaseConfigured) {
     return { message: "Server belum terhubung ke database. Hubungi admin perpustakaan." };
+  }
+
+  const envCheck = validateProductionEnv();
+  if (!envCheck.valid && process.env.NODE_ENV === "production") {
+    return { message: "Konfigurasi server perpustakaan belum lengkap. Hubungi administrator." };
   }
 
   const { clientIp, locationStr, userAgent, host } = await getClientInfo();
@@ -192,6 +199,9 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   const usedDefault = isDefaultPassword(parsed.data.password, profile.username);
   if (usedDefault || profile.must_change_password) {
     await svc.from("profiles").update({ must_change_password: true }).eq("id", profile.id);
+    revalidatePath("/change-password");
+    revalidatePath("/", "layout");
+    console.info(`[AUTH DIAGNOSTIC] Siswa '${rawId}' dialihkan ke /change-password. usedDefault: ${usedDefault}, must_change_password: ${profile.must_change_password}`);
     await tulisAudit(profile.id, "auth.force_password_change_required", "user", profile.id, {
       ip: clientIp,
       reason: usedDefault ? "default_password_detected" : "flag_set",
@@ -230,6 +240,11 @@ export async function adminLogin(_prev: LoginState, formData: FormData): Promise
 
   if (!supabaseConfigured) {
     return { message: "Server belum terhubung ke database. Hubungi admin perpustakaan." };
+  }
+
+  const envCheck = validateProductionEnv();
+  if (!envCheck.valid && process.env.NODE_ENV === "production") {
+    return { message: "Konfigurasi server perpustakaan belum lengkap. Hubungi administrator." };
   }
 
   const { clientIp, locationStr, userAgent, host } = await getClientInfo();
@@ -358,6 +373,10 @@ export async function adminLogin(_prev: LoginState, formData: FormData): Promise
   const usedDefault = isDefaultPassword(parsed.data.password, profile.username);
   if (usedDefault || profile.must_change_password) {
     await svc.from("profiles").update({ must_change_password: true }).eq("id", profile.id);
+    revalidatePath("/change-password");
+    revalidatePath("/admin", "layout");
+    revalidatePath("/", "layout");
+    console.info(`[AUTH DIAGNOSTIC] Admin '${rawId}' dialihkan ke /change-password. usedDefault: ${usedDefault}, must_change_password: ${profile.must_change_password}`);
     redirect("/change-password");
   }
 
@@ -370,6 +389,7 @@ export async function adminLogin(_prev: LoginState, formData: FormData): Promise
     user_agent: userAgent,
   });
 
+  console.info(`[AUTH DIAGNOSTIC] Admin login berhasil untuk '${rawId}' dari IP ${clientIp}`);
   redirect(ROLE_HOME.admin);
 }
 
@@ -406,7 +426,7 @@ export async function changePassword(
   });
 
   if (authErr) {
-    console.error("Gagal update kata sandi Supabase:", authErr);
+    console.error("[AUTH DIAGNOSTIC] Gagal update kata sandi Supabase:", authErr);
     return { message: "Gagal memperbarui kata sandi. Coba beberapa saat lagi." };
   }
 
@@ -415,12 +435,31 @@ export async function changePassword(
     .update({ must_change_password: false })
     .eq("id", session.userId);
 
+  // Invalidate cache profil secara menyeluruh agar redirect tidak mengalami loop kembali ke /change-password
+  revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
+  revalidatePath("/student", "layout");
+  revalidatePath("/change-password");
+
   await tulisAudit(session.userId, "auth.password_changed", "user", session.userId, {
     username: session.profile.username,
     role: session.profile.role,
   });
 
+  console.info(`[AUTH DIAGNOSTIC] Kata sandi berhasil diperbarui untuk user @${session.profile.username}. Redirecting to ${ROLE_HOME[session.profile.role]}`);
   redirect(ROLE_HOME[session.profile.role]);
+}
+
+/**
+ * BUKA KUNCI IDENTIFIER (Reset Darurat Rate Limit):
+ * Digunakan jika akun/IP sah terlanjur terkunci akibat percobaan berulang.
+ */
+export async function unlockIdentifier(rawIdentifier: string): Promise<{ ok: boolean; message: string }> {
+  const rawId = rawIdentifier.toLowerCase().trim();
+  resetRateLimit(`login:id:${rawId}`);
+  resetRateLimit(`admin_login:id:${rawId}`);
+  console.info(`[AUTH DIAGNOSTIC] Rate limit reset manual untuk identifier: ${rawId}`);
+  return { ok: true, message: `Status lockout untuk '${rawId}' berhasil direset.` };
 }
 
 /**

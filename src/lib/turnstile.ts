@@ -115,7 +115,9 @@ export async function verifyTurnstile(
     };
 
     if (!data.success) {
-      console.warn("[TURNSTILE REJECTED] Respons verifikasi Cloudflare menolak token:", data["error-codes"]);
+      console.warn(
+        `[TURNSTILE REJECTED] Respons Cloudflare siteverify menolak token. Error-codes: ${JSON.stringify(data["error-codes"] || [])}`,
+      );
       return {
         success: false,
         message: "Verifikasi keamanan Turnstile gagal atau kedaluwarsa. Silakan muat ulang tantangan.",
@@ -135,20 +137,18 @@ export async function verifyTurnstile(
     }
 
     // 6. Validasi Atribut Hostname
-    // Mendukung localhost, 127.0.0.1, example.com (hostname dari Cloudflare test keys), dan domain produksi
-    if (options.expectedHostname && data.hostname) {
-      const cleanExpected = options.expectedHostname.toLowerCase().split(":")[0];
+    // Domain produksi WAJIB cocok dengan domain situs perpustakaan (perpustakaansmp17tangsel.web.id).
+    // Hostname localhost / 127.0.0.1 / example.com HANYA diizinkan jika NODE_ENV === "development" atau menggunakan dummy test key resmi.
+    if (data.hostname) {
       const cleanReceived = data.hostname.toLowerCase().split(":")[0];
+      const cleanExpected = (options.expectedHostname || "perpustakaansmp17tangsel.web.id").toLowerCase().split(":")[0];
+      const isDevOrTest = isDev || isTestKey;
 
       const isMatch =
-        isTestKey ||
-        cleanReceived === "example.com" ||
+        (isDevOrTest && (cleanReceived === "example.com" || cleanReceived === "localhost" || cleanReceived === "127.0.0.1")) ||
         cleanReceived === cleanExpected ||
         cleanExpected.endsWith(`.${cleanReceived}`) ||
-        cleanExpected === "localhost" ||
-        cleanExpected === "127.0.0.1" ||
-        (cleanExpected === "localhost" && cleanReceived === "127.0.0.1") ||
-        (cleanExpected === "127.0.0.1" && cleanReceived === "localhost");
+        cleanReceived === "perpustakaansmp17tangsel.web.id";
 
       if (!isMatch) {
         console.warn(

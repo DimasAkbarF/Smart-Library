@@ -3,9 +3,16 @@ import { updateSession } from "@/lib/supabase/proxy";
 
 export async function proxy(request: NextRequest) {
   // 1. HTTP to HTTPS redirect di environment produksi
+  // Periksa cf-visitor dan x-forwarded-proto untuk mencegah redirect loop di balik Cloudflare proxy
+  const proto = request.headers.get("x-forwarded-proto");
+  const cfVisitor = request.headers.get("cf-visitor");
+  const isCloudflareHttps = cfVisitor?.includes('"scheme":"https"');
+
   if (
     process.env.NODE_ENV === "production" &&
-    request.headers.get("x-forwarded-proto") === "http"
+    proto === "http" &&
+    !isCloudflareHttps &&
+    request.nextUrl.protocol !== "https:"
   ) {
     const httpsUrl = request.nextUrl.clone();
     httpsUrl.protocol = "https:";
@@ -20,9 +27,25 @@ export async function proxy(request: NextRequest) {
 
     if (origin && host) {
       try {
-        const originHost = new URL(origin).host;
-        if (originHost !== host) {
-          console.warn(`[CSRF VIOLATION BLOCKED] Origin "${originHost}" !== Host "${host}"`);
+        const originHost = new URL(origin).host.toLowerCase();
+        const expectedHost = host.toLowerCase().split(":")[0];
+        const appUrlHost = process.env.NEXT_PUBLIC_APP_URL
+          ? new URL(process.env.NEXT_PUBLIC_APP_URL).host.toLowerCase()
+          : "";
+
+        const isAllowed =
+          originHost === expectedHost ||
+          originHost.split(":")[0] === expectedHost ||
+          originHost === "perpustakaansmp17tangsel.web.id" ||
+          (appUrlHost && originHost === appUrlHost) ||
+          (process.env.NODE_ENV !== "production" &&
+            (originHost === "localhost" ||
+              originHost.startsWith("localhost:") ||
+              originHost === "127.0.0.1" ||
+              originHost.startsWith("127.0.0.1:")));
+
+        if (!isAllowed) {
+          console.warn(`[CSRF VIOLATION BLOCKED] Origin "${originHost}" not allowed against host "${expectedHost}"`);
           return new NextResponse(
             JSON.stringify({ error: "Permintaan lintas domain tidak diizinkan (CSRF Protection)." }),
             {
