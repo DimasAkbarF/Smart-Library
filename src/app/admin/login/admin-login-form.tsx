@@ -11,7 +11,11 @@ import { cn } from "@/lib/utils";
  * Form login khusus admin dan petugas sirkulasi.
  * Dilengkapi proteksi Cloudflare Turnstile, anti-brute force, dan verifikasi 2FA TOTP.
  */
-export function AdminLoginForm() {
+export interface AdminLoginFormProps {
+  siteKey?: string;
+}
+
+export function AdminLoginForm({ siteKey }: AdminLoginFormProps = {}) {
   const [state, action, pending] = useActionState(adminLogin, {});
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -121,7 +125,7 @@ export function AdminLoginForm() {
 
       {/* Cloudflare Turnstile Managed Widget */}
       <div className="pt-0.5">
-        <TurnstileWidget onTokenChange={setTurnstileToken} />
+        <TurnstileWidget siteKey={siteKey} onTokenChange={setTurnstileToken} />
       </div>
 
       {/* Error Alert */}

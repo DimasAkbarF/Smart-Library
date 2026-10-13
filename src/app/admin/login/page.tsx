@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
               </p>
 
               <div className="mt-6">
-                <AdminLoginForm />
+                <AdminLoginForm siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
               </div>
             </div>
           </section>

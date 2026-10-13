@@ -4,13 +4,14 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import { AlertTriangle } from "lucide-react";
 
 export interface TurnstileWidgetProps {
+  siteKey?: string;
   onTokenChange: (token: string | null) => void;
   className?: string;
 }
 
-export function TurnstileWidget({ onTokenChange, className }: TurnstileWidgetProps) {
+export function TurnstileWidget({ siteKey: propSiteKey, onTokenChange, className }: TurnstileWidgetProps) {
   // Hanya baca dari variabel lingkungan NEXT_PUBLIC_TURNSTILE_SITE_KEY tanpa fallback kunci tes
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
+  const siteKey = (propSiteKey || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)?.trim();
 
   if (!siteKey) {
     return (

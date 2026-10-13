@@ -11,7 +11,11 @@ import { cn } from "@/lib/utils";
  * Form login siswa dengan standar tata letak design.md §6 & PRD §8.1.
  * Menggunakan Cloudflare Turnstile mode Managed, disabled button sampai widget selesai.
  */
-export function LoginForm() {
+export interface LoginFormProps {
+  siteKey?: string;
+}
+
+export function LoginForm({ siteKey }: LoginFormProps = {}) {
   const [state, action, pending] = useActionState(login, {});
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -89,7 +93,7 @@ export function LoginForm() {
 
       {/* Cloudflare Turnstile Managed Widget */}
       <div className="pt-0.5">
-        <TurnstileWidget onTokenChange={setTurnstileToken} />
+        <TurnstileWidget siteKey={siteKey} onTokenChange={setTurnstileToken} />
       </div>
 
       {/* Error Alert */}
