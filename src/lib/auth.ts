@@ -19,7 +19,7 @@ export const getCachedProfile = unstable_cache(
     const svc = serviceClient();
     const { data: profile } = await svc
       .from("profiles")
-      .select("id, username, email, full_name, role, status")
+      .select("id, username, email, full_name, role, status, must_change_password, totp_enabled, totp_secret")
       .eq("id", userId)
       .single();
     return (profile as Profile) || null;
@@ -65,6 +65,9 @@ export async function requireRole(...roles: Role[]): Promise<Session> {
   const session = await getSession();
   if (!session) redirect("/login");
   if (!roles.includes(session.profile.role)) redirect(ROLE_HOME[session.profile.role]);
+  if (session.profile.must_change_password) {
+    redirect("/change-password");
+  }
   return session;
 }
 
@@ -77,6 +80,26 @@ export async function assertRole(...roles: Role[]): Promise<Session> {
   return session;
 }
 
+/**
+ * Handler khusus API Route untuk memvalidasi sesi dan otorisasi role
+ * tanpa melempar pengecualian redirect Next.js.
+ */
+export async function requireApiRole(...roles: Role[]): Promise<
+  { ok: true; session: Session } | { ok: false; status: 401 | 403; message: string }
+> {
+  const session = await getSession();
+  if (!session) {
+    return { ok: false, status: 401, message: "Autentikasi diperlukan. Sesi tidak valid atau telah berakhir." };
+  }
+  if (!roles.includes(session.profile.role)) {
+    return { ok: false, status: 403, message: "Akses ditolak: role Anda tidak memiliki izin untuk sumber daya ini." };
+  }
+  if (session.profile.status !== "active") {
+    return { ok: false, status: 403, message: "Akun ini dalam status nonaktif." };
+  }
+  return { ok: true, session };
+}
+
 export async function tulisAudit(
   actorId: string | null,
   action: string,
@@ -84,12 +107,16 @@ export async function tulisAudit(
   entityId: string,
   metadata: Record<string, unknown> = {},
 ) {
-  const svc = serviceClient();
-  await svc.from("audit_logs").insert({
-    actor_user_id: actorId,
-    action,
-    entity_type: entityType,
-    entity_id: entityId,
-    metadata,
-  });
+  try {
+    const svc = serviceClient();
+    await svc.from("audit_logs").insert({
+      actor_user_id: actorId,
+      action,
+      entity_type: entityType,
+      entity_id: entityId,
+      metadata,
+    });
+  } catch (err) {
+    console.warn(`[AUDIT LOG WARNING] Gagal menulis audit "${action}":`, err);
+  }
 }

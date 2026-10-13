@@ -7,6 +7,9 @@ export interface Profile {
   full_name: string;
   role: Role;
   status: "active" | "inactive";
+  must_change_password?: boolean;
+  totp_enabled?: boolean;
+  totp_secret?: string | null;
 }
 
 export interface ClassRow {

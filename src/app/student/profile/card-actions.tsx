@@ -59,12 +59,26 @@ export function StudentCardActions({
         .join("")
         .toUpperCase();
 
+      function escapeHtml(str: string): string {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      const safeName = escapeHtml(student.name);
+      const safeNis = escapeHtml(student.nis);
+      const safeClass = student.class_name ? `Kelas ${escapeHtml(student.class_name)}` : "—";
+      const safeToken = escapeHtml(token);
+
       printWin.document.write(`
         <!DOCTYPE html>
         <html>
           <head>
             <meta charset="utf-8">
-            <title>Kartu Pelajar - ${student.name} (${student.nis})</title>
+            <title>Kartu Pelajar - ${safeName} (${safeNis})</title>
             <style>
               @page {
                 size: auto;
@@ -233,20 +247,20 @@ export function StudentCardActions({
                   <div class="info">
                     <div>
                       <div class="info-label">Nama Siswa</div>
-                      <div class="info-value" style="font-size: 6.5pt;">${student.name}</div>
+                      <div class="info-value" style="font-size: 6.5pt;">${safeName}</div>
                     </div>
                     <div style="margin-top: 0.8mm;">
                       <div class="info-label">Nomor Induk (NIS)</div>
-                      <div class="info-nis">${student.nis}</div>
+                      <div class="info-nis">${safeNis}</div>
                     </div>
                     <div style="margin-top: 0.8mm;">
                       <div class="info-label">Kelas / Rombel</div>
-                      <div class="info-value">${student.class_name ? `Kelas ${student.class_name}` : "—"}</div>
+                      <div class="info-value">${safeClass}</div>
                     </div>
                   </div>
                   <div class="qr-box">
                     <img class="qr-img" src="${qrDataUrl}" alt="QR" />
-                    <div class="qr-code-txt">${token}</div>
+                    <div class="qr-code-txt">${safeToken}</div>
                   </div>
                 </div>
                 <div class="footer">

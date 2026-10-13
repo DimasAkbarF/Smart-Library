@@ -6,6 +6,8 @@ import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
 import { normalisasiKode } from "@/lib/format";
 import { sanitizeSearchTerm } from "@/lib/utils";
+import { generateStudentQrToken } from "@/lib/qr";
+import { generateTemporaryPassword } from "@/lib/password";
 import type { Student } from "@/lib/types";
 
 const StudentSchema = z.object({
@@ -26,10 +28,6 @@ export interface StudentFormState {
   };
 }
 
-function qrSiswa(nis: string) {
-  return `SIS-${normalisasiKode(nis)}`;
-}
-
 export async function createStudent(
   _prev: StudentFormState,
   formData: FormData,
@@ -42,7 +40,7 @@ export async function createStudent(
   });
   if (!parsed.success) return { message: parsed.error.issues[0]?.message };
   const nis = normalisasiKode(parsed.data.nis);
-  const token = qrSiswa(nis);
+  const token = generateStudentQrToken();
   const svc = serviceClient();
   const { data, error } = await svc
     .from("students")
@@ -95,7 +93,7 @@ export async function updateStudent(
       nis,
       name: parsed.data.name,
       class_id: parsed.data.class_id || null,
-      qr_token: qrSiswa(nis),
+      // Tidak menimpa qr_token lama saat update identitas biasa agar kartu fisik tidak mendadak hangus
     })
     .eq("id", id);
   if (error) {
@@ -107,6 +105,82 @@ export async function updateStudent(
   revalidatePath("/admin/students");
   revalidateTag("admin-dashboard", { expire: 0 });
   return { ok: true };
+}
+
+/**
+ * Cabut dan Terbitkan Ulang Token QR Siswa:
+ * Digunakan jika kartu fisik hilang, rusak, atau diduga disalahgunakan pihak lain.
+ */
+export async function revokeAndRegenerateStudentQr(id: string): Promise<{ ok: boolean; qr_token?: string }> {
+  const session = await assertRole("admin");
+  const newToken = generateStudentQrToken();
+  const svc = serviceClient();
+  const { error } = await svc
+    .from("students")
+    .update({ qr_token: newToken })
+    .eq("id", id);
+  if (error) throw new Error("Gagal menerbitkan ulang token QR.");
+  await tulisAudit(session.userId, "student.qr_revoked_and_reissued", "student", id, { new_token: newToken });
+  revalidatePath("/admin");
+  revalidatePath("/admin/students");
+  revalidatePath("/admin/qr");
+  return { ok: true, qr_token: newToken };
+}
+
+/**
+ * Reset kata sandi siswa oleh petugas perpustakaan:
+ * Menghasilkan kata sandi sementara acak dan mewajibkan ganti sandi pada login pertama.
+ */
+export async function resetStudentPassword(studentId: string): Promise<{ ok: boolean; tempPassword?: string }> {
+  const session = await assertRole("admin");
+  const svc = serviceClient();
+  const { data: student } = await svc
+    .from("students")
+    .select("id, nis, name, user_id")
+    .eq("id", studentId)
+    .single();
+
+  if (!student) throw new Error("Siswa tidak ditemukan.");
+
+  const tempPassword = generateTemporaryPassword();
+  let userId = student.user_id;
+
+  if (userId) {
+    // Akun auth sudah ada: update password dan set must_change_password
+    const { error: pErr } = await svc.auth.admin.updateUserById(userId, {
+      password: tempPassword,
+    });
+    if (pErr) throw new Error("Gagal mereset kata sandi siswa di auth server.");
+    await svc.from("profiles").update({ must_change_password: true }).eq("id", userId);
+  } else {
+    // Belum punya auth user: buat akun baru untuk siswa
+    const email = `siswa_${student.nis.toLowerCase()}@sekolah.local`;
+    const { data: created, error: cErr } = await svc.auth.admin.createUser({
+      email,
+      password: tempPassword,
+      email_confirm: true,
+    });
+    if (cErr || !created.user) throw new Error("Gagal membuat akun akses siswa.");
+    userId = created.user.id;
+
+    await svc.from("profiles").upsert({
+      id: userId,
+      username: student.nis.toLowerCase(),
+      email,
+      full_name: student.name,
+      role: "student",
+      status: "active",
+      must_change_password: true,
+    });
+
+    await svc.from("students").update({ user_id: userId }).eq("id", student.id);
+  }
+
+  await tulisAudit(session.userId, "student.password_reset_by_admin", "student", studentId, {
+    nis: student.nis,
+  });
+
+  return { ok: true, tempPassword };
 }
 
 export async function setStudentStatus(id: string, status: Student["status"]) {
@@ -218,7 +292,7 @@ export async function importStudents(rows: ImportStudentRow[]): Promise<ImportRe
     const classId = r.class?.trim()
       ? (classByName.get(r.class.trim().toLowerCase()) ?? null)
       : null;
-    toInsert.push({ nis, name, class_id: classId, qr_token: qrSiswa(nis) });
+    toInsert.push({ nis, name, class_id: classId, qr_token: generateStudentQrToken() });
   });
 
   // Batch 200 baris

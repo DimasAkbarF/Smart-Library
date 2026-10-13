@@ -4,15 +4,13 @@ import { LoginCard } from "@/components/login/login-card";
 import { SchoolFooter } from "@/components/login/school-footer";
 
 export const metadata: Metadata = {
-  title: "Masuk",
+  title: "Portal Masuk Siswa",
   description:
-    "Masuk ke Smart Library SMP Negeri 17 Tangerang Selatan untuk peminjaman, pengembalian, dan katalog koleksi perpustakaan.",
-  keywords: [
-    "masuk perpustakaan smpn 17",
-    "login smart library smpn 17 tangsel",
-    "perpustakaan smpn 17 tangsel",
-    "perpustakaan smp negeri 17 tangerang selatan",
-  ],
+    "Portal masuk resmi Smart Library SMP Negeri 17 Tangerang Selatan untuk peminjaman, pengembalian, dan katalog koleksi perpustakaan.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 /**
@@ -52,7 +50,7 @@ export default function LoginPage() {
     <main className="flex min-h-svh flex-col justify-center bg-paper px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <div className="mx-auto my-auto w-full max-w-[420px] lg:max-w-[960px] min-[1440px]:max-w-[1020px]">
         {/* Mobile / Tablet Header Branding (< 1024px) */}

@@ -149,8 +149,23 @@ export function ImportClient() {
   // Determine current workflow step: 1 (Upload), 2 (Periksa), 3 (Konfirmasi/Importing), 4 (Hasil Selesai)
   const currentStep = report ? 4 : busy ? 3 : data ? 2 : 1;
 
+  const [typeError, setTypeError] = useState<string | null>(null);
+
   async function handleFileSelect(selectedFile: File | undefined) {
     if (!selectedFile) return;
+    setTypeError(null);
+
+    const validExtensions = [".xlsx", ".csv"];
+    const ext = selectedFile.name.toLowerCase().slice(selectedFile.name.lastIndexOf("."));
+    if (!validExtensions.includes(ext)) {
+      setFile(selectedFile);
+      setBookData(null);
+      setStudentData(null);
+      setReport(null);
+      setTypeError(`Format file "${ext}" tidak diizinkan. Hanya file .xlsx dan .csv yang didukung.`);
+      return;
+    }
+
     if (selectedFile.size > MAX_BYTES) {
       setFile(selectedFile);
       setBookData(null);
@@ -170,6 +185,7 @@ export function ImportClient() {
       else setStudentData(parseStudents(matrix));
     } catch (err) {
       console.error("Gagal membaca file spreadsheet:", err);
+      setTypeError("File spreadsheet rusak atau tidak dapat dibaca.");
     }
   }
 
@@ -389,6 +405,16 @@ export function ImportClient() {
             <p className="mt-0.5 text-danger/90">
               File &ldquo;{file?.name}&rdquo; melebihi batas maksimal 5 MB. Silakan bagi file menjadi beberapa bagian yang lebih kecil.
             </p>
+          </div>
+        </div>
+      )}
+
+      {typeError && (
+        <div role="alert" className="flex items-start gap-3 rounded-btn border border-danger/30 bg-danger-bg p-4 text-meta font-semibold text-danger">
+          <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+          <div>
+            <p className="font-bold text-body">Format File Tidak Valid</p>
+            <p className="mt-0.5 text-danger/90">{typeError}</p>
           </div>
         </div>
       )}

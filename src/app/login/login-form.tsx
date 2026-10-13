@@ -1,29 +1,35 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { login } from "@/features/auth/actions";
+import { TurnstileWidget } from "@/components/auth/turnstile-widget";
 import { cn } from "@/lib/utils";
 
 /**
- * Form login dengan standar tata letak design.md §6 & PRD §8.1.
- * Menggunakan IBM Plex Sans, border rule-strong, fokus 2px solid primary,
- * tombol [Lihat] kata sandi, dan target sentuh minimal 44px di mobile (h-11 sm:h-10).
+ * Form login siswa dengan standar tata letak design.md §6 & PRD §8.1.
+ * Menggunakan Cloudflare Turnstile mode Managed, disabled button sampai widget selesai.
  */
 export function LoginForm() {
   const [state, action, pending] = useActionState(login, {});
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const invalid = Boolean(state.message);
+  const isSubmitDisabled = pending || !turnstileToken;
 
   return (
     <form action={action} className="grid gap-4.5">
-      {/* Field 1: NIS / NAMA PENGGUNA */}
+      {/* Hidden input untuk turnstile token */}
+      <input type="hidden" name="turnstile_token" value={turnstileToken ?? ""} />
+
+      {/* Field 1: NIS */}
       <div className="grid gap-1.5">
         <label
           htmlFor="identifier"
           className="font-plex-sans text-[12px] font-semibold uppercase tracking-[0.06em] text-[#4A5160]"
         >
-          NIS / NAMA PENGGUNA
+          NOMOR INDUK SISWA (NIS)
         </label>
         <input
           id="identifier"
@@ -33,7 +39,7 @@ export function LoginForm() {
           required
           disabled={pending}
           aria-invalid={invalid}
-          placeholder="cth. 2024001"
+          placeholder="cth. 20260001"
           className={cn(
             "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white px-3 font-plex-sans text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
             "focus:border-primary focus:ring-2 focus:ring-primary/20",
@@ -81,34 +87,46 @@ export function LoginForm() {
         </div>
       </div>
 
-      {/* Error Alert: design.md §6 & §10 */}
+      {/* Cloudflare Turnstile Managed Widget */}
+      <div className="pt-0.5">
+        <TurnstileWidget onTokenChange={setTurnstileToken} />
+      </div>
+
+      {/* Error Alert */}
       {state.message && (
         <p
           role="alert"
           className="flex items-start gap-2 rounded-[4px] border border-[#E8B9B9] bg-[#FBEAEA] px-3.5 py-2.5 font-plex-sans text-[13px] font-medium text-[#A12B2B] leading-relaxed"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
-          <span>
-            {state.message.includes("kredensial") || state.message.includes("Password") || state.message.includes("tidak cocok")
-              ? "NIS atau kata sandi tidak cocok. Periksa kembali, atau hubungi petugas perpustakaan."
-              : state.message}
-          </span>
+          <span>{state.message}</span>
         </p>
       )}
 
-      {/* Tombol Submit: design.md §5 (tinggi 44px mobile / 40px desktop, radius 4px, latar primary #1B2F5B) */}
+      {/* Tombol Submit (Disabled sampai verifikasi selesai) */}
       <button
         type="submit"
-        disabled={pending}
+        disabled={isSubmitDisabled}
+        title={!turnstileToken ? "Selesaikan verifikasi keamanan terlebih dahulu" : undefined}
         className={cn(
-          "mt-2 flex h-11 sm:h-10 w-full items-center justify-center rounded-[4px] bg-[#1B2F5B] px-4 font-plex-sans text-[14px] font-medium text-white transition-colors",
+          "mt-1 flex h-11 sm:h-10 w-full items-center justify-center rounded-[4px] bg-[#1B2F5B] px-4 font-plex-sans text-[14px] font-medium text-white transition-colors",
           "hover:bg-[#13234A] active:bg-[#13234A]",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1B2F5B]",
           "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
         )}
       >
-        {pending ? "Memproses..." : "Masuk"}
+        {pending ? "Memproses..." : !turnstileToken ? "Menunggu Verifikasi Keamanan..." : "Masuk"}
       </button>
+
+      {/* Portal Switcher Link */}
+      <div className="pt-1 text-center">
+        <Link
+          href="/admin/login"
+          className="font-plex-sans text-[12px] font-medium text-primary hover:underline hover:text-ink transition-colors"
+        >
+          Petugas perpustakaan atau Administrator? Masuk di sini →
+        </Link>
+      </div>
     </form>
   );
 }

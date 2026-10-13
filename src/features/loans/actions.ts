@@ -38,7 +38,7 @@ export async function resolveQr(rawToken: string): Promise<ResolveResult> {
   const { data: s } = await svc
     .from("students")
     .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)")
-    .or(`qr_token.eq.${token},nis.eq.${token}`)
+    .eq("qr_token", token)
     .single();
   if (s) {
     const student = mapStudent(s);

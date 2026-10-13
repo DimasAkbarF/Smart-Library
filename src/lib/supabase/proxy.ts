@@ -47,9 +47,16 @@ export async function updateSession(request: NextRequest) {
             headers: requestHeaders,
           },
         });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options),
-        );
+        cookiesToSet.forEach(({ name, value, options }) => {
+          // Hardening atribut cookie: HttpOnly, Secure, SameSite=Lax
+          const hardenedOptions = {
+            ...options,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax" as const,
+          };
+          supabaseResponse.cookies.set(name, value, hardenedOptions);
+        });
       },
     },
   });
@@ -69,9 +76,14 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Salin cookie yang diperbarui (refresh token) oleh Supabase SSR
+  // Salin cookie yang diperbarui (refresh token) oleh Supabase SSR dengan flags yang aman
   supabaseResponse.cookies.getAll().forEach((c) => {
-    finalResponse.cookies.set(c);
+    finalResponse.cookies.set(c.name, c.value, {
+      ...c,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
   });
 
   return finalResponse;

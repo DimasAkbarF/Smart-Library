@@ -1,6 +1,24 @@
 import type { NextConfig } from "next";
 
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: blob: https:;
+  font-src 'self' https://fonts.gstatic.com data:;
+  connect-src 'self' https://challenges.cloudflare.com https://*.supabase.co http://localhost:54321 http://127.0.0.1:54321;
+  frame-src 'self' https://challenges.cloudflare.com;
+  frame-ancestors 'none';
+  form-action 'self';
+  base-uri 'self';
+  object-src 'none';
+`.replace(/\s{2,}/g, " ").trim();
+
 const securityHeaders = [
+  {
+    key: "Content-Security-Policy",
+    value: cspHeader,
+  },
   {
     key: "X-DNS-Prefetch-Control",
     value: "on",
@@ -11,7 +29,7 @@ const securityHeaders = [
   },
   {
     key: "X-Frame-Options",
-    value: "SAMEORIGIN",
+    value: "DENY",
   },
   {
     key: "X-Content-Type-Options",
@@ -36,6 +54,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
   async headers() {
     return [
       {

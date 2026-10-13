@@ -3,102 +3,161 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { z } from "zod";
+import { pbkdf2Sync, timingSafeEqual } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { serviceClient } from "@/lib/supabase/service";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { ROLE_HOME } from "@/lib/types";
 import { checkRateLimit, recordFailedAttempt, resetRateLimit } from "@/lib/rate-limit";
-import { tulisAudit } from "@/lib/auth";
+import { getSession, tulisAudit } from "@/lib/auth";
+import { verifyTurnstile } from "@/lib/turnstile";
+import { isDefaultPassword, validatePassword } from "@/lib/password";
+import { verifyTotpToken } from "@/lib/totp";
+import { cookies } from "next/headers";
 
-const GAGAL = "NIS / username atau password belum sesuai. Periksa kembali lalu coba lagi.";
+const GENERIC_ERROR_STUDENT = "NIS atau kata sandi salah. Periksa kembali lalu coba lagi.";
+const GENERIC_ERROR_ADMIN = "Nama pengguna atau kata sandi salah. Periksa kembali lalu coba lagi.";
 
 const LoginSchema = z.object({
-  identifier: z.string().trim().min(1, "Isi NIS atau username."),
-  password: z.string().min(1, "Isi password."),
+  identifier: z.string().trim().min(1, "Isi NIS atau nama pengguna."),
+  password: z.string().min(1, "Isi kata sandi."),
+  turnstileToken: z.string().optional(),
+});
+
+const AdminLoginSchema = z.object({
+  identifier: z.string().trim().min(1, "Isi nama pengguna atau email."),
+  password: z.string().min(1, "Isi kata sandi."),
+  totpCode: z.string().trim().optional(),
+  turnstileToken: z.string().optional(),
 });
 
 export interface LoginState {
   message?: string;
+  requireTotp?: boolean;
 }
 
-/** Login dengan username ATAU email disertai proteksi brute-force server-side rate-limit dan pencatatan audit IP/lokasi. */
-export async function login(_prev: LoginState, formData: FormData): Promise<LoginState> {
-  const parsed = LoginSchema.safeParse({
-    identifier: formData.get("identifier"),
-    password: formData.get("password"),
-  });
-  if (!parsed.success) {
-    return { message: parsed.error.issues[0]?.message ?? "Data masuk belum lengkap." };
-  }
-  if (!supabaseConfigured) {
-    return { message: "Server belum terhubung ke database. Hubungi admin perpustakaan." };
-  }
+/**
+ * Simulasi komputasi kriptografis untuk menyeragamkan waktu respons (Constant Time),
+ * mencegah penyerang menebak keberadaan akun berdasarkan perbedaan milidetik (Timing Attack).
+ */
+function dummyCryptoDelay() {
+  const dummySalt = Buffer.from("smart_library_salt_smpn17_tangsel");
+  const hash1 = pbkdf2Sync("dummy_password_timing_defense", dummySalt, 10000, 32, "sha256");
+  const hash2 = pbkdf2Sync("dummy_password_timing_defense", dummySalt, 10000, 32, "sha256");
+  timingSafeEqual(hash1, hash2);
+}
 
-  // Identifikasi IP client & lokasi untuk rate limiting dan audit logging
+async function getClientInfo() {
   let clientIp = "127.0.0.1";
   let locationStr = "Jaringan Lokal / Sekolah";
   let userAgent = "";
+  let host = "";
+
   try {
     const h = await headers();
     userAgent = h.get("user-agent") || "";
-    const xff = h.get("x-forwarded-for");
-    const xReal = h.get("x-real-ip");
+    host = h.get("host") || "";
     const cfIp = h.get("cf-connecting-ip");
-    clientIp = (xff ? xff.split(",")[0]?.trim() : null) || xReal || cfIp || "127.0.0.1";
+    const xReal = h.get("x-real-ip");
+    const xff = h.get("x-forwarded-for");
+    clientIp = cfIp || xReal || (xff ? xff.split(",")[0]?.trim() : null) || "127.0.0.1";
 
-    // Deteksi lokasi dari header proxy/CDN
-    const city = h.get("x-vercel-ip-city") || h.get("cf-ipcity") || h.get("x-city");
-    const country = h.get("x-vercel-ip-country") || h.get("cf-ipcountry") || h.get("x-country");
+    const city = h.get("cf-ipcity") || h.get("x-vercel-ip-city");
+    const country = h.get("cf-ipcountry") || h.get("x-vercel-ip-country");
     const region = h.get("x-vercel-ip-country-region") || h.get("x-region");
 
     if (city || country) {
       locationStr = [city, region, country].filter(Boolean).join(", ");
-    } else if (
-      clientIp === "127.0.0.1" ||
-      clientIp === "::1" ||
-      clientIp.startsWith("192.168.") ||
-      clientIp.startsWith("10.") ||
-      clientIp.startsWith("172.16.") ||
-      clientIp === "localhost"
-    ) {
-      locationStr = "Jaringan Lokal / Sekolah";
     }
   } catch {
     // Abaikan jika headers() tidak tersedia
   }
 
-  const rateLimitKey = `login:${clientIp}:${parsed.data.identifier.toLowerCase()}`;
+  return { clientIp, locationStr, userAgent, host };
+}
+
+/**
+ * LOGIN SISWA: Khusus siswa (NIS).
+ * Wajib Cloudflare Turnstile, anti-brute force, generic error, timing defense, audit log.
+ */
+export async function login(_prev: LoginState, formData: FormData): Promise<LoginState> {
+  const parsed = LoginSchema.safeParse({
+    identifier: formData.get("identifier"),
+    password: formData.get("password"),
+    turnstileToken: formData.get("cf-turnstile-response") || formData.get("turnstile_token"),
+  });
+
+  if (!parsed.success) {
+    return { message: parsed.error.issues[0]?.message ?? "Data masuk belum lengkap." };
+  }
+
+  if (!supabaseConfigured) {
+    return { message: "Server belum terhubung ke database. Hubungi admin perpustakaan." };
+  }
+
+  const { clientIp, locationStr, userAgent, host } = await getClientInfo();
+  const rawId = parsed.data.identifier.toLowerCase();
+
+  // 1. VERIFIKASI CLOUDFLARE TURNSTILE TERLEBIH DAHULU SEBELUM CEK DB/PASSWORD
+  const turnstileResult = await verifyTurnstile(parsed.data.turnstileToken, clientIp, {
+    action: "login",
+    expectedHostname: host,
+  });
+  if (!turnstileResult.success) {
+    await tulisAudit(null, "auth.login_bot_blocked", "auth", rawId, {
+      ip: clientIp,
+      reason: turnstileResult.message,
+      user_agent: userAgent,
+    });
+    return { message: turnstileResult.message || "Tantangan keamanan gagal." };
+  }
+
+  // 2. RATE LIMITING (Terpisah per IP dan per Identitas)
+  const rateLimitKey = `login:id:${rawId}`;
   const ipRateLimitKey = `login:ip:${clientIp}`;
 
-  // Cek batas percobaan: maks 5x gagal per identitas dan maks 20x gagal per IP (15 menit)
   const idStatus = checkRateLimit(rateLimitKey, 5);
-  const ipStatus = checkRateLimit(ipRateLimitKey, 20);
+  const ipStatus = checkRateLimit(ipRateLimitKey, 15);
 
   if (!idStatus.allowed || !ipStatus.allowed) {
     const waitSec = Math.max(idStatus.retryAfterSeconds, ipStatus.retryAfterSeconds);
     const waitMin = Math.ceil(waitSec / 60);
+    await tulisAudit(null, "auth.login_rate_limited", "auth", rawId, {
+      ip: clientIp,
+      wait_minutes: waitMin,
+      user_agent: userAgent,
+    });
     return {
       message: `Terlalu banyak percobaan masuk yang gagal. Silakan tunggu ${waitMin} menit sebelum mencoba lagi.`,
     };
   }
 
-  let email = parsed.data.identifier;
-  if (!email.includes("@")) {
-    const svc = serviceClient();
-    const { data, error: lookupError } = await svc
-      .from("profiles")
-      .select("email")
-      .eq("username", email.toLowerCase())
-      .single();
-    if (lookupError || !data?.email) {
-      // Cegah user enumeration: jangan bedakan akun tidak ada dengan password salah
-      recordFailedAttempt(rateLimitKey);
-      recordFailedAttempt(ipRateLimitKey);
-      return { message: GAGAL };
-    }
-    email = data.email;
+  // 3. AMBIL EMAIL & VALIDASI ROLE SISWA
+  const svc = serviceClient();
+  let email = rawId;
+
+  const { data: profile } = await svc
+    .from("profiles")
+    .select("id, email, username, full_name, role, status, must_change_password")
+    .eq("username", rawId)
+    .single();
+
+  // Jika akun tidak ditemukan atau bukan role 'student' (petugas/admin harus ke /admin/login)
+  if (!profile || profile.role !== "student") {
+    dummyCryptoDelay();
+    recordFailedAttempt(rateLimitKey, 5);
+    recordFailedAttempt(ipRateLimitKey, 15);
+    await tulisAudit(null, "auth.login_failed", "auth", rawId, {
+      ip: clientIp,
+      reason: "invalid_credentials_or_wrong_portal",
+      user_agent: userAgent,
+    });
+    return { message: GENERIC_ERROR_STUDENT };
   }
 
+  email = profile.email || `${rawId}@sekolah.local`;
+
+  // 4. AUTENTIKASI DENGAN SUPABASE
   const supabase = await createClient();
   const { data: authData, error } = await supabase.auth
     .signInWithPassword({
@@ -108,47 +167,291 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     .catch((e: unknown) => ({ data: { user: null }, error: e as Error }));
 
   if (error || !authData?.user) {
-    recordFailedAttempt(rateLimitKey);
-    recordFailedAttempt(ipRateLimitKey);
-    return { message: GAGAL };
+    recordFailedAttempt(rateLimitKey, 5);
+    recordFailedAttempt(ipRateLimitKey, 15);
+    await tulisAudit(null, "auth.login_failed", "auth", rawId, {
+      ip: clientIp,
+      reason: "invalid_password",
+      user_agent: userAgent,
+    });
+    return { message: GENERIC_ERROR_STUDENT };
   }
 
-  // Bersihkan catatan rate-limit jika berhasil masuk
+  // 5. LOGIN BERHASIL: RESET RATE LIMIT
   resetRateLimit(rateLimitKey);
   resetRateLimit(ipRateLimitKey);
 
-  // Arahkan sesuai role
-  const user = authData.user;
-  const svc = serviceClient();
-  const { data: profile } = await svc
-    .from("profiles")
-    .select("role, status, full_name, username")
-    .eq("id", user.id)
-    .single();
-  if (!profile || profile.status !== "active") {
+  if (profile.status !== "active") {
     await supabase.auth.signOut();
     return {
       message: "Akun ini sedang tidak aktif. Silakan hubungi admin perpustakaan.",
     };
   }
 
-  // Catat audit log setiap kali ada yang login beserta IP & lokasi
-  await tulisAudit(user.id, "auth.login", "user", user.id, {
+  // 6. DETEKSI PASSWORD DEFAULT / FIRST LOGIN
+  const usedDefault = isDefaultPassword(parsed.data.password, profile.username);
+  if (usedDefault || profile.must_change_password) {
+    await svc.from("profiles").update({ must_change_password: true }).eq("id", profile.id);
+    await tulisAudit(profile.id, "auth.force_password_change_required", "user", profile.id, {
+      ip: clientIp,
+      reason: usedDefault ? "default_password_detected" : "flag_set",
+    });
+    redirect("/change-password");
+  }
+
+  // 7. CATAT AUDIT LOG
+  await tulisAudit(profile.id, "auth.login", "user", profile.id, {
     ip: clientIp,
     location: locationStr,
-    role: profile.role,
-    name: profile.full_name || profile.username || parsed.data.identifier,
-    identifier: parsed.data.identifier,
+    role: "student",
+    name: profile.full_name,
+    identifier: rawId,
     user_agent: userAgent,
-  }).catch((err) => {
-    console.warn("Gagal menulis audit log login:", err);
   });
 
-  redirect(ROLE_HOME[profile.role as keyof typeof ROLE_HOME]);
+  redirect(ROLE_HOME.student);
 }
 
-export async function logout() {
+/**
+ * LOGIN ADMIN / PETUGAS: Khusus admin dan petugas perpustakaan (/admin/login).
+ * Didukung 2FA TOTP opsional/terkonfigurasi, Turnstile, anti-brute force, generic error.
+ */
+export async function adminLogin(_prev: LoginState, formData: FormData): Promise<LoginState> {
+  const parsed = AdminLoginSchema.safeParse({
+    identifier: formData.get("identifier"),
+    password: formData.get("password"),
+    totpCode: formData.get("totp_code") || undefined,
+    turnstileToken: formData.get("cf-turnstile-response") || formData.get("turnstile_token"),
+  });
+
+  if (!parsed.success) {
+    return { message: parsed.error.issues[0]?.message ?? "Data masuk belum lengkap." };
+  }
+
+  if (!supabaseConfigured) {
+    return { message: "Server belum terhubung ke database. Hubungi admin perpustakaan." };
+  }
+
+  const { clientIp, locationStr, userAgent, host } = await getClientInfo();
+  const rawId = parsed.data.identifier.toLowerCase();
+
+  // 1. VERIFIKASI CLOUDFLARE TURNSTILE TERLEBIH DAHULU
+  const turnstileResult = await verifyTurnstile(parsed.data.turnstileToken, clientIp, {
+    action: "login",
+    expectedHostname: host,
+  });
+  if (!turnstileResult.success) {
+    await tulisAudit(null, "admin_auth.login_bot_blocked", "auth", rawId, {
+      ip: clientIp,
+      reason: turnstileResult.message,
+      user_agent: userAgent,
+    });
+    return { message: turnstileResult.message || "Tantangan keamanan gagal." };
+  }
+
+  // 2. RATE LIMITING ADMIN (Lebih ketat: maks 5x gagal, lockout 15-60 menit)
+  const rateLimitKey = `admin_login:id:${rawId}`;
+  const ipRateLimitKey = `admin_login:ip:${clientIp}`;
+
+  const idStatus = checkRateLimit(rateLimitKey, 5);
+  const ipStatus = checkRateLimit(ipRateLimitKey, 10);
+
+  if (!idStatus.allowed || !ipStatus.allowed) {
+    const waitSec = Math.max(idStatus.retryAfterSeconds, ipStatus.retryAfterSeconds);
+    const waitMin = Math.ceil(waitSec / 60);
+    await tulisAudit(null, "admin_auth.rate_limited", "auth", rawId, {
+      ip: clientIp,
+      wait_minutes: waitMin,
+      user_agent: userAgent,
+    });
+    return {
+      message: `Terlalu banyak percobaan masuk gagal. Akun/IP terkunci selama ${waitMin} menit.`,
+    };
+  }
+
+  // 3. AMBIL EMAIL & VALIDASI ROLE ADMIN
+  const svc = serviceClient();
+  let email = rawId;
+
+  let profileQuery = svc
+    .from("profiles")
+    .select("id, email, username, full_name, role, status, must_change_password, totp_enabled, totp_secret");
+
+  if (rawId.includes("@")) {
+    profileQuery = profileQuery.eq("email", rawId);
+  } else {
+    profileQuery = profileQuery.eq("username", rawId);
+  }
+
+  const { data: profile } = await profileQuery.single();
+
+  // Jika akun tidak ditemukan atau bukan role 'admin'
+  if (!profile || profile.role !== "admin") {
+    dummyCryptoDelay();
+    recordFailedAttempt(rateLimitKey, 5);
+    recordFailedAttempt(ipRateLimitKey, 10);
+    await tulisAudit(null, "admin_auth.failed", "auth", rawId, {
+      ip: clientIp,
+      reason: "invalid_credentials_or_unauthorized_role",
+      user_agent: userAgent,
+    });
+    return { message: GENERIC_ERROR_ADMIN };
+  }
+
+  // 4. VERIFIKASI 2FA TOTP JIKA DIAKTIFKAN
+  if (profile.totp_enabled && profile.totp_secret) {
+    if (!parsed.data.totpCode) {
+      return {
+        requireTotp: true,
+        message: "Akun ini dilindungi 2FA. Masukkan 6 digit kode dari aplikasi Authenticator Anda.",
+      };
+    }
+
+    const isTotpValid = verifyTotpToken(profile.totp_secret, parsed.data.totpCode);
+    if (!isTotpValid) {
+      dummyCryptoDelay();
+      recordFailedAttempt(rateLimitKey, 5);
+      recordFailedAttempt(ipRateLimitKey, 10);
+      await tulisAudit(profile.id, "admin_auth.totp_failed", "auth", rawId, {
+        ip: clientIp,
+        user_agent: userAgent,
+      });
+      return {
+        requireTotp: true,
+        message: "Kode autentikasi 2FA salah atau telah kedaluwarsa.",
+      };
+    }
+  }
+
+  email = profile.email || `${profile.username}@sekolah.local`;
+
+  // 5. AUTENTIKASI DENGAN SUPABASE
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  const { data: authData, error } = await supabase.auth
+    .signInWithPassword({
+      email,
+      password: parsed.data.password,
+    })
+    .catch((e: unknown) => ({ data: { user: null }, error: e as Error }));
+
+  if (error || !authData?.user) {
+    recordFailedAttempt(rateLimitKey, 5);
+    recordFailedAttempt(ipRateLimitKey, 10);
+    await tulisAudit(null, "admin_auth.failed", "auth", rawId, {
+      ip: clientIp,
+      reason: "invalid_password",
+      user_agent: userAgent,
+    });
+    return { message: GENERIC_ERROR_ADMIN };
+  }
+
+  // 6. LOGIN BERHASIL
+  resetRateLimit(rateLimitKey);
+  resetRateLimit(ipRateLimitKey);
+
+  if (profile.status !== "active") {
+    await supabase.auth.signOut();
+    return { message: "Akun admin ini sedang tidak aktif." };
+  }
+
+  // Deteksi password default
+  const usedDefault = isDefaultPassword(parsed.data.password, profile.username);
+  if (usedDefault || profile.must_change_password) {
+    await svc.from("profiles").update({ must_change_password: true }).eq("id", profile.id);
+    redirect("/change-password");
+  }
+
+  await tulisAudit(profile.id, "admin_auth.login_success", "user", profile.id, {
+    ip: clientIp,
+    location: locationStr,
+    role: "admin",
+    name: profile.full_name,
+    totp_used: Boolean(profile.totp_enabled),
+    user_agent: userAgent,
+  });
+
+  redirect(ROLE_HOME.admin);
+}
+
+/**
+ * GANTI KATA SANDI (Wajib login pertama & reset password)
+ */
+export async function changePassword(
+  _prev: { message?: string; ok?: boolean },
+  formData: FormData,
+): Promise<{ message?: string; ok?: boolean }> {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const newPassword = String(formData.get("new_password") ?? "");
+  const confirmPassword = String(formData.get("confirm_password") ?? "");
+
+  if (newPassword !== confirmPassword) {
+    return { message: "Konfirmasi kata sandi tidak cocok." };
+  }
+
+  const validation = validatePassword(newPassword, {
+    username: session.profile.username,
+    email: session.profile.email ?? undefined,
+    fullName: session.profile.full_name,
+  });
+
+  if (!validation.valid) {
+    return { message: validation.message };
+  }
+
+  const svc = serviceClient();
+  const { error: authErr } = await svc.auth.admin.updateUserById(session.userId, {
+    password: newPassword,
+  });
+
+  if (authErr) {
+    console.error("Gagal update kata sandi Supabase:", authErr);
+    return { message: "Gagal memperbarui kata sandi. Coba beberapa saat lagi." };
+  }
+
+  await svc
+    .from("profiles")
+    .update({ must_change_password: false })
+    .eq("id", session.userId);
+
+  await tulisAudit(session.userId, "auth.password_changed", "user", session.userId, {
+    username: session.profile.username,
+    role: session.profile.role,
+  });
+
+  redirect(ROLE_HOME[session.profile.role]);
+}
+
+/**
+ * LOGOUT: Invalidasi sesi Supabase secara tuntas dan hapus semua cookie auth.
+ */
+export async function logout() {
+  try {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+  } catch {
+    // Abaikan jika sudah tidak ada sesi
+  }
+
+  try {
+    const cookieStore = await cookies();
+    const all = cookieStore.getAll();
+    for (const c of all) {
+      if (c.name.startsWith("sb-")) {
+        cookieStore.set(c.name, "", {
+          path: "/",
+          maxAge: 0,
+          expires: new Date(0),
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+        });
+      }
+    }
+  } catch {
+    // Abaikan jika tidak di context writable cookie
+  }
+
   redirect("/login");
 }

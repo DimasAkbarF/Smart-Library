@@ -1,9 +1,9 @@
-import { assertRole } from "@/lib/auth";
+import { requireApiRole } from "@/lib/auth";
 import { serviceClient } from "@/lib/supabase/service";
 
 function csvCell(v: unknown): string {
   let s = String(v ?? "");
-  // Netralkan potensi formula injection untuk aplikasi spreadsheet (Excel / Calc)
+  // Netralkan potensi CSV Formula Injection (Excel / LibreOffice Calc)
   if (/^[=+\-@\t\r]/.test(s)) {
     s = `'${s}`;
   }
@@ -16,12 +16,24 @@ function toCsv(headers: string[], rows: (unknown[] | Record<string, unknown>)[])
     const vals = Array.isArray(r) ? r : headers.map((h) => (r as Record<string, unknown>)[h]);
     lines.push(vals.map(csvCell).join(","));
   }
-  return "﻿" + lines.join("\n"); // BOM agar Excel tampil benar
+  return "\ufeff" + lines.join("\n"); // UTF-8 BOM
 }
 
 export async function GET(req: Request) {
-  const session = await assertRole("admin").catch(() => null);
-  if (!session) return new Response("Unauthorized", { status: 401 });
+  // Verifikasi Otorisasi: Hanya role 'admin' yang diizinkan mengunduh data perpustakaan
+  const auth = await requireApiRole("admin");
+  if (!auth.ok) {
+    return new Response(
+      JSON.stringify({
+        error: auth.message,
+        statusCode: auth.status,
+      }),
+      {
+        status: auth.status,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
 
   const type = new URL(req.url).searchParams.get("type");
   const status = new URL(req.url).searchParams.get("status") ?? "";
@@ -76,7 +88,6 @@ export async function GET(req: Request) {
   }
 
   if (type === "students") {
-    if (session.profile.role !== "admin") return new Response("Forbidden", { status: 403 });
     const { data } = await svc
       .from("students")
       .select("nis, name, status, qr_token, classes(name)")
@@ -93,7 +104,10 @@ export async function GET(req: Request) {
     return csvResponse(toCsv(["nis", "nama", "kelas", "status", "qr"], rows), "siswa.csv");
   }
 
-  return new Response("Unknown type", { status: 400 });
+  return new Response(JSON.stringify({ error: "Tipe ekspor tidak dikenal." }), {
+    status: 400,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
 function csvResponse(csv: string, filename: string) {
@@ -101,6 +115,8 @@ function csvResponse(csv: string, filename: string) {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="${filename}"`,
+      "Cache-Control": "no-store, no-cache, must-revalidate, private",
+      "X-Content-Type-Options": "nosniff",
     },
   });
 }

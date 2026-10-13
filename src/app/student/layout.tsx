@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth";
 import { AppShell } from "@/components/layout/app-shell";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function StudentLayout({ children }: { children: React.ReactNode }) {
   const session = await requireRole("student");
