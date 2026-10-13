@@ -16,7 +16,7 @@ export async function proxy(request: NextRequest) {
   const method = request.method;
   if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
     const origin = request.headers.get("origin");
-    const host = request.headers.get("host");
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
 
     if (origin && host) {
       try {

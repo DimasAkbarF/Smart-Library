@@ -3,6 +3,8 @@ import { SchoolBrandLockup, SchoolBrandPanel } from "@/components/login/school-b
 import { LoginCard } from "@/components/login/login-card";
 import { SchoolFooter } from "@/components/login/school-footer";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Portal Masuk Siswa",
   description:

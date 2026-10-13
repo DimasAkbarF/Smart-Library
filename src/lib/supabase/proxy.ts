@@ -3,12 +3,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseConfigured } from "@/lib/supabase/env";
 
 export async function updateSession(request: NextRequest) {
-  if (!supabaseConfigured) return NextResponse.next({ request });
-
   // 1. Sanitasi header internal agar tidak bisa di-spoof dari client luar
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete("x-user-id");
   requestHeaders.delete("x-user-email");
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+
+  if (!supabaseConfigured) {
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
 
   // 2. Periksa apakah ada cookie auth Supabase sebelum memanggil network
   const cookies = request.cookies.getAll();

@@ -2,6 +2,10 @@
 
 import { Turnstile } from "@marsidev/react-turnstile";
 import { AlertTriangle } from "lucide-react";
+import { useState } from "react";
+
+// Kunci pengujian resmi Cloudflare yang selalu valid di localhost / 127.0.0.1
+const CLOUDFLARE_TEST_SITE_KEY = "1x00000000000000000000AA";
 
 export interface TurnstileWidgetProps {
   siteKey?: string;
@@ -10,8 +14,15 @@ export interface TurnstileWidgetProps {
 }
 
 export function TurnstileWidget({ siteKey: propSiteKey, onTokenChange, className }: TurnstileWidgetProps) {
-  // Hanya baca dari variabel lingkungan NEXT_PUBLIC_TURNSTILE_SITE_KEY tanpa fallback kunci tes
-  const siteKey = (propSiteKey || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)?.trim();
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const isDev = process.env.NODE_ENV !== "production";
+  // Gunakan prop/env, dan di mode development fallback otomatis ke dummy test key agar tidak memblokir pengujian lokal
+  const siteKey = (
+    propSiteKey ||
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+    (isDev ? CLOUDFLARE_TEST_SITE_KEY : "")
+  )?.trim();
 
   if (!siteKey) {
     return (
@@ -23,7 +34,7 @@ export function TurnstileWidget({ siteKey: propSiteKey, onTokenChange, className
         <div>
           <span className="font-semibold block">Verifikasi Bot Belum Dikonfigurasi</span>
           <span>
-            Variabel <code className="font-mono font-bold">NEXT_PUBLIC_TURNSTILE_SITE_KEY</code> belum diisi pada lingkungan aplikasi. Tombol masuk dinonaktifkan demi perlindungan sistem.
+            Variabel <code className="font-mono font-bold">NEXT_PUBLIC_TURNSTILE_SITE_KEY</code> belum diisi pada lingkungan aplikasi.
           </span>
         </div>
       </div>
@@ -31,7 +42,7 @@ export function TurnstileWidget({ siteKey: propSiteKey, onTokenChange, className
   }
 
   return (
-    <div className={className ?? "flex justify-center my-1"}>
+    <div className={className ?? "flex flex-col items-center my-1"}>
       <Turnstile
         siteKey={siteKey}
         options={{
@@ -40,16 +51,27 @@ export function TurnstileWidget({ siteKey: propSiteKey, onTokenChange, className
           action: "login",
         }}
         onSuccess={(token) => {
+          setLoadError(null);
           onTokenChange(token);
         }}
-        onError={() => {
+        onError={(errorCode) => {
           onTokenChange(null);
+          if (errorCode === "110200" || errorCode === "110100") {
+            setLoadError("Domain ini belum didaftarkan pada Cloudflare Turnstile dashboard.");
+          } else {
+            setLoadError("Gagal memverifikasi widget bot. Periksa koneksi internet.");
+          }
         }}
         onExpire={() => {
           onTokenChange(null);
         }}
       />
-      <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response" />
+
+      {loadError && (
+        <p className="mt-1 text-[11.5px] font-plex-sans text-[#A12B2B] text-center">
+          {loadError}
+        </p>
+      )}
     </div>
   );
 }
