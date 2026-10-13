@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { serviceClient } from "@/lib/supabase/service";
-import { ROLE_HOME, type Profile, type Role } from "@/lib/types";
+import type { Profile, Role } from "@/lib/types";
 
 import { headers } from "next/headers";
 import { unstable_cache } from "next/cache";
@@ -60,11 +60,11 @@ export const getSession = cache(async (): Promise<Session | null> => {
   return { userId, profile };
 });
 
-/** Halaman: wajib login; role di luar daftar dialihkan ke beranda role-nya. */
+/** Halaman: wajib login; role di luar daftar dialihkan ke /login. */
 export async function requireRole(...roles: Role[]): Promise<Session> {
   const session = await getSession();
   if (!session) redirect("/login");
-  if (!roles.includes(session.profile.role)) redirect(ROLE_HOME[session.profile.role]);
+  if (!roles.includes(session.profile.role)) redirect("/login");
   return session;
 }
 
@@ -72,7 +72,7 @@ export async function requireRole(...roles: Role[]): Promise<Session> {
 export async function assertRole(...roles: Role[]): Promise<Session> {
   const session = await getSession();
   if (!session) redirect("/login");
-  if (!roles.includes(session.profile.role)) redirect(ROLE_HOME[session.profile.role] || "/login");
+  if (!roles.includes(session.profile.role)) redirect("/login");
   if (session.profile.status !== "active") redirect("/login");
   return session;
 }

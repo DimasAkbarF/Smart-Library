@@ -2,7 +2,6 @@
 
 import { unstable_cache } from "next/cache";
 import { serviceClient } from "@/lib/supabase/service";
-import { assertRole } from "@/lib/auth";
 import type { Book, Category } from "@/lib/types";
 
 import { sanitizeSearchTerm } from "@/lib/utils";
@@ -16,14 +15,13 @@ export interface CatalogResult {
   pageCount: number;
 }
 
-/** Katalog: cari judul/penulis/ISBN + filter kategori + hanya tersedia. */
+/** Katalog: cari judul/penulis/ISBN + filter kategori + hanya tersedia (publik read-only). */
 export async function searchBooks(opts: {
   q?: string;
   categoryId?: string;
   availableOnly?: boolean;
   page?: number;
 }): Promise<CatalogResult> {
-  await assertRole("student", "admin");
   const svc = serviceClient();
   const page = Math.max(1, opts.page ?? 1);
 
@@ -79,7 +77,6 @@ export async function searchBooks(opts: {
 }
 
 export async function getBookDetail(id: string): Promise<Book | null> {
-  await assertRole("student", "admin");
   const svc = serviceClient();
   const { data: b } = await svc
     .from("books")
@@ -119,6 +116,5 @@ const getCachedCategories = unstable_cache(
 );
 
 export async function listCategories(): Promise<Category[]> {
-  await assertRole("student", "admin");
   return getCachedCategories();
 }

@@ -3,13 +3,18 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseConfigured } from "@/lib/supabase/env";
 
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
   // 1. Sanitasi header internal agar tidak bisa di-spoof dari client luar
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete("x-user-id");
   requestHeaders.delete("x-user-email");
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  requestHeaders.set("x-pathname", pathname);
 
   if (!supabaseConfigured) {
+    if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+      return NextResponse.redirect(new URL("/login", request.url), 302);
+    }
     return NextResponse.next({
       request: {
         headers: requestHeaders,
@@ -23,7 +28,12 @@ export async function updateSession(request: NextRequest) {
     (c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"),
   );
 
-  // Jika tidak ada cookie auth sama sekali, teruskan tanpa network roundtrip
+  // Jika mencoba mengakses rute admin tanpa cookie auth, langsung tolak ke /login
+  if (!hasAuthCookie && pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    return NextResponse.redirect(new URL("/login", request.url), 302);
+  }
+
+  // Jika tidak ada cookie auth sama sekali dan bukan rute terproteksi, teruskan
   if (!hasAuthCookie) {
     return NextResponse.next({
       request: {
@@ -33,7 +43,6 @@ export async function updateSession(request: NextRequest) {
   }
 
   // 3. Validasi sesi secara kriptografis menggunakan supabase.auth.getUser()
-  // JANGAN PERNAH percaya JSON mentah dari cookie tanpa verifikasi tanda tangan token!
   let supabaseResponse = NextResponse.next({
     request: {
       headers: requestHeaders,
@@ -59,7 +68,7 @@ export async function updateSession(request: NextRequest) {
           const hardenedOptions = {
             ...options,
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: process.env.NODE_ENV === "production" || request.headers.get("x-forwarded-proto") === "https",
             sameSite: "lax" as const,
           };
           supabaseResponse.cookies.set(name, value, hardenedOptions);
@@ -75,6 +84,9 @@ export async function updateSession(request: NextRequest) {
   if (user) {
     requestHeaders.set("x-user-id", user.id);
     if (user.email) requestHeaders.set("x-user-email", user.email);
+  } else if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    // Cookie ada tapi tidak valid / expired pada rute admin -> redirect ke /login
+    return NextResponse.redirect(new URL("/login", request.url), 302);
   }
 
   const finalResponse = NextResponse.next({
@@ -88,7 +100,7 @@ export async function updateSession(request: NextRequest) {
     finalResponse.cookies.set(c.name, c.value, {
       ...c,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" || request.headers.get("x-forwarded-proto") === "https",
       sameSite: "lax",
     });
   });

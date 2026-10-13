@@ -67,13 +67,6 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-export const STUDENT_NAV_ITEMS: NavItem[] = [
-  { href: "/student", label: "Beranda", icon: Home },
-  { href: "/student/books", label: "Katalog", icon: BookOpen },
-  { href: "/student/loans", label: "Pinjaman", icon: ArrowLeftRight },
-  { href: "/student/profile", label: "Kartu", icon: Users },
-];
-
 export const NAV_GROUPS: Record<Role, NavGroup[]> = {
   admin: [
     {
@@ -82,17 +75,12 @@ export const NAV_GROUPS: Record<Role, NavGroup[]> = {
     },
     ...ADMIN_NAV_GROUPS,
   ],
-  student: [
-    {
-      group: "NAVIGASI",
-      items: STUDENT_NAV_ITEMS,
-    },
-  ],
+  student: [],
 };
 
 export const NAV: Record<Role, NavItem[]> = {
   admin: NAV_GROUPS.admin.flatMap((g) => g.items),
-  student: STUDENT_NAV_ITEMS,
+  student: [],
 };
 
 export const ROLE_LABEL: Record<Role, string> = {

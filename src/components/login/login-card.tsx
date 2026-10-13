@@ -3,15 +3,15 @@ import { supabaseConfigured } from "@/lib/supabase/env";
 
 /**
  * Kartu form login (design.md §6 & PRD §8.1).
- * Konten form berdimensi maksimal 380px terpusat di dalam panel putih.
- * Judul "Masuk" memakai h1 Newsreader + garis ganda editorial.
+ * Mempertahankan tampilan identik dengan desain /admin/login:
+ * Font Newsreader + garis ganda editorial, form surface putih terpusat.
  */
 export function LoginCard() {
   return (
     <div className="w-full max-w-[380px]">
-      {/* Judul Masuk dengan font Newsreader & Garis Ganda Editorial (design.md §2, §3, & §6) */}
+      {/* Judul Masuk dengan font Newsreader & Garis Ganda Editorial */}
       <h1 className="font-serif text-[28px] font-semibold tracking-tight text-[#161B26] leading-none sm:text-[32px]">
-        Masuk
+        Masuk Petugas & Admin
       </h1>
 
       {/* Garis ganda header: 1px ink + 3px jarak + 1px rule-strong */}
@@ -21,7 +21,7 @@ export function LoginCard() {
       </div>
 
       <p className="mt-4 font-plex-sans text-[13.5px] leading-relaxed text-[#4A5160]">
-        Gunakan NIS atau nama pengguna yang terdaftar di perpustakaan.
+        Akses terproteksi untuk staf perpustakaan dan administrator sistem.
       </p>
 
       {!supabaseConfigured && (
@@ -41,10 +41,7 @@ export function LoginCard() {
       <div className="mt-6 border-t border-rule pt-4 text-center">
         <p className="font-plex-sans text-[12.5px] text-[#4A5160]">
           Lupa kata sandi?{" "}
-          <span className="font-medium text-[#1B2F5B]">Hubungi petugas perpustakaan.</span>
-        </p>
-        <p className="mt-1 font-plex-sans text-[11.5px] text-[#666C7A]">
-          Siswa masuk memakai NIS, petugas dan admin memakai nama pengguna.
+          <span className="font-medium text-[#1B2F5B]">Hubungi administrator sistem.</span>
         </p>
       </div>
     </div>

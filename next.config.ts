@@ -66,6 +66,11 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: "/admin/login", destination: "/login", permanent: true },
+      { source: "/student/books", destination: "/books", permanent: true },
+      { source: "/student/books/:id", destination: "/books/:id", permanent: true },
+      { source: "/student", destination: "/login", permanent: true },
+      { source: "/student/:path*", destination: "/login", permanent: true },
       { source: "/librarian", destination: "/admin", permanent: false },
       { source: "/librarian/borrow", destination: "/admin/borrow", permanent: false },
       { source: "/librarian/return", destination: "/admin/return", permanent: false },

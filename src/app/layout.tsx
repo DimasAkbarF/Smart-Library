@@ -52,19 +52,32 @@ export const metadata: Metadata = {
     template: "%s — Smart Library",
   },
   description:
-    "Sistem perpustakaan sekolah berbasis QR: katalog, peminjaman, pengembalian, dan pelaporan.",
-  applicationName: "Smart Library",
+    "Smart Library SMPN 17 Tangerang Selatan (Perpus SMP 17 Tangsel) — Sistem perpustakaan digital sekolah berbasis QR: katalog koleksi buku, peminjaman, pengembalian, dan informasi literasi siswa.",
+  applicationName: "Smart Library SMPN 17 Tangsel",
   keywords: [
+    "perpussmp17tangsel",
+    "perpus smp 17 tangsel",
+    "perpus smpn 17 tangsel",
+    "perpustakaan smp 17 tangsel",
     "perpustakaan smpn 17 tangsel",
     "perpustakaan smp negeri 17 tangerang selatan",
     "smart library smpn 17",
+    "smart library smpn 17 tangsel",
     "smart library smp negeri 17 tangerang selatan",
     "perpustakaan smpn 17 kota tangerang selatan",
+    "perpussmp17",
+    "perpussmpn17",
     "smp negeri 17 tangerang selatan",
     "smpn 17 tangsel",
     "katalog buku smpn 17 tangsel",
+    "katalog perpustakaan smp 17 tangsel",
     "perpustakaan digital smpn 17",
+    "perpustakaan digital smp 17 tangsel",
     "perpustakaan sekolah tangerang selatan",
+    "perpustakaan sekolah smpn 17 tangerang selatan",
+    "e-perpus smpn 17 tangsel",
+    "perpustakaan online smpn 17 tangsel",
+    "peminjaman buku smp 17 tangsel",
     "kartu perpustakaan digital siswa",
     "sirkulasi buku qr code",
   ],
@@ -119,7 +132,7 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="id"

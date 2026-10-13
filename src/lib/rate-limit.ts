@@ -1,3 +1,6 @@
+import { serviceClient } from "@/lib/supabase/service";
+import { supabaseConfigured } from "@/lib/supabase/env";
+
 interface RateLimitEntry {
   count: number;
   firstFailedAt: number;
@@ -5,7 +8,7 @@ interface RateLimitEntry {
   backoffLevel: number;
 }
 
-const store = new Map<string, RateLimitEntry>();
+const memoryStore = new Map<string, RateLimitEntry>();
 
 // Pembersihan berkala memori setiap 5 menit
 const CLEANUP_INTERVAL = 5 * 60 * 1000;
@@ -15,18 +18,18 @@ function purgeExpired() {
   const now = Date.now();
   if (now - lastCleanup < CLEANUP_INTERVAL) return;
   lastCleanup = now;
-  for (const [key, entry] of store.entries()) {
+  for (const [key, entry] of memoryStore.entries()) {
     if (now > entry.lockedUntil && now > entry.firstFailedAt + 2 * 60 * 60 * 1000) {
-      store.delete(key);
+      memoryStore.delete(key);
     }
   }
 }
 
 /**
  * Menghitung durasi lockout dengan backoff progresif:
- * - Percobaan ke-5: 15 menit (15 * 60 detik)
- * - Percobaan ke-6: 30 menit (30 * 60 detik)
- * - Percobaan ke-7+: 60 menit (60 * 60 detik)
+ * - Percobaan ke-5: 15 menit
+ * - Percobaan ke-6: 30 menit
+ * - Percobaan ke-7+: 60 menit
  */
 function calculateLockoutMs(level: number): number {
   if (level <= 1) return 15 * 60 * 1000; // 15 menit
@@ -42,14 +45,40 @@ export interface RateLimitCheckResult {
 
 /**
  * Memeriksa apakah kunci tertentu (IP atau identifier) sedang dalam status terkunci.
+ * Mendukung persistensi Supabase database dengan fallback otomatis ke memory store.
  */
-export function checkRateLimit(
+export async function checkRateLimit(
   key: string,
   maxAttempts: number = 5,
-): RateLimitCheckResult {
+): Promise<RateLimitCheckResult> {
   purgeExpired();
   const now = Date.now();
-  const entry = store.get(key);
+
+  let entry = memoryStore.get(key);
+
+  // Jika terhubung ke database Supabase, periksa data persisten di tabel auth_rate_limits
+  if (supabaseConfigured) {
+    try {
+      const svc = serviceClient();
+      const { data } = await svc
+        .from("auth_rate_limits")
+        .select("count, first_failed_at, locked_until, backoff_level")
+        .eq("key", key)
+        .single();
+
+      if (data) {
+        entry = {
+          count: Number(data.count),
+          firstFailedAt: Number(data.first_failed_at),
+          lockedUntil: Number(data.locked_until),
+          backoffLevel: Number(data.backoff_level),
+        };
+        memoryStore.set(key, entry);
+      }
+    } catch {
+      // Graceful fallback ke memoryStore jika tabel belum dimigrasi atau koneksi terputus
+    }
+  }
 
   if (!entry) {
     return {
@@ -71,7 +100,15 @@ export function checkRateLimit(
 
   // Jika lockout sudah lewat lebih dari 1 jam sejak kegagalan pertama tanpa gagal baru, reset
   if (now > entry.firstFailedAt + 60 * 60 * 1000 && now >= entry.lockedUntil) {
-    store.delete(key);
+    memoryStore.delete(key);
+    if (supabaseConfigured) {
+      try {
+        const svc = serviceClient();
+        await svc.from("auth_rate_limits").delete().eq("key", key);
+      } catch {
+        /* abaikan */
+      }
+    }
     return {
       allowed: true,
       remaining: maxAttempts,
@@ -89,14 +126,15 @@ export function checkRateLimit(
 
 /**
  * Mencatat percobaan gagal dan mengaktifkan backoff progresif saat menyentuh batas maksimum.
+ * Disimpan secara persisten ke database Supabase.
  */
-export function recordFailedAttempt(
+export async function recordFailedAttempt(
   key: string,
   maxAttempts: number = 5,
-): { count: number; lockedUntil: number; retryAfterSeconds: number } {
+): Promise<{ count: number; lockedUntil: number; retryAfterSeconds: number }> {
   purgeExpired();
   const now = Date.now();
-  let entry = store.get(key);
+  let entry = memoryStore.get(key);
 
   if (!entry) {
     entry = {
@@ -105,33 +143,71 @@ export function recordFailedAttempt(
       lockedUntil: 0,
       backoffLevel: 0,
     };
-    store.set(key, entry);
-    return { count: 1, lockedUntil: 0, retryAfterSeconds: 0 };
+  } else {
+    entry.count += 1;
+    if (entry.count >= maxAttempts) {
+      entry.backoffLevel += 1;
+      const lockoutMs = calculateLockoutMs(entry.backoffLevel);
+      entry.lockedUntil = now + lockoutMs;
+    }
   }
 
-  entry.count += 1;
+  memoryStore.set(key, entry);
 
-  if (entry.count >= maxAttempts) {
-    entry.backoffLevel += 1;
-    const lockoutMs = calculateLockoutMs(entry.backoffLevel);
-    entry.lockedUntil = now + lockoutMs;
-    const retryAfter = Math.ceil(lockoutMs / 1000);
-    return { count: entry.count, lockedUntil: entry.lockedUntil, retryAfterSeconds: retryAfter };
+  // Simpan secara persisten ke database
+  if (supabaseConfigured) {
+    try {
+      const svc = serviceClient();
+      await svc.from("auth_rate_limits").upsert(
+        {
+          key,
+          count: entry.count,
+          first_failed_at: entry.firstFailedAt,
+          locked_until: entry.lockedUntil,
+          backoff_level: entry.backoffLevel,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "key" },
+      );
+    } catch (err) {
+      console.warn("[RATE LIMIT DB WARNING] Gagal menyimpan rate limit ke database:", err);
+    }
   }
 
-  return { count: entry.count, lockedUntil: entry.lockedUntil, retryAfterSeconds: 0 };
+  const retryAfter = entry.lockedUntil > now ? Math.ceil((entry.lockedUntil - now) / 1000) : 0;
+  return {
+    count: entry.count,
+    lockedUntil: entry.lockedUntil,
+    retryAfterSeconds: retryAfter,
+  };
 }
 
 /**
  * Menghapus catatan percobaan saat login berhasil.
  */
-export function resetRateLimit(key: string): void {
-  store.delete(key);
+export async function resetRateLimit(key: string): Promise<void> {
+  memoryStore.delete(key);
+  if (supabaseConfigured) {
+    try {
+      const svc = serviceClient();
+      await svc.from("auth_rate_limits").delete().eq("key", key);
+    } catch {
+      /* abaikan */
+    }
+  }
 }
 
 /**
  * Menghapus seluruh status lockout (reset darurat).
  */
-export function clearAllRateLimits(): void {
-  store.clear();
+export async function clearAllRateLimits(): Promise<void> {
+  memoryStore.clear();
+  if (supabaseConfigured) {
+    try {
+      const svc = serviceClient();
+      await svc.from("auth_rate_limits").delete().neq("key", "__never_match__");
+    } catch {
+      /* abaikan */
+    }
+  }
 }

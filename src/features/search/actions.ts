@@ -33,7 +33,7 @@ export interface GlobalSearchResult {
 }
 
 export async function searchGlobal(q: string): Promise<GlobalSearchResult> {
-  const session = await assertRole("student", "admin");
+  await assertRole("admin");
   const query = sanitizeSearchTerm(q);
   if (!query || query.length < 2) {
     return { books: [], students: [], transactions: [] };
@@ -41,7 +41,6 @@ export async function searchGlobal(q: string): Promise<GlobalSearchResult> {
 
   const svc = serviceClient();
   const pattern = `%${query}%`;
-  const isAdmin = session.profile.role === "admin";
 
   // Hanya admin yang berhak mencari data siswa dan transaksi peminjaman
   const [booksRes, studentsRes, loansRes] = await Promise.all([
@@ -50,21 +49,17 @@ export async function searchGlobal(q: string): Promise<GlobalSearchResult> {
       .select("id, title, author, isbn, categories(name)")
       .or(`title.ilike.${pattern},author.ilike.${pattern},isbn.ilike.${pattern}`)
       .limit(6),
-    isAdmin
-      ? svc
-          .from("students")
-          .select("id, nis, name, status, classes(name)")
-          .or(`name.ilike.${pattern},nis.ilike.${pattern}`)
-          .limit(6)
-      : Promise.resolve({ data: [] }),
-    isAdmin
-      ? svc
-          .from("loans")
-          .select("id, status, due_at, students!inner(name, nis), book_copies!inner(inventory_code, books!inner(title))")
-          .or(`students.name.ilike.${pattern},students.nis.ilike.${pattern},book_copies.inventory_code.ilike.${pattern},book_copies.books.title.ilike.${pattern}`)
-          .order("borrowed_at", { ascending: false })
-          .limit(6)
-      : Promise.resolve({ data: [] }),
+    svc
+      .from("students")
+      .select("id, nis, name, status, classes(name)")
+      .or(`name.ilike.${pattern},nis.ilike.${pattern}`)
+      .limit(6),
+    svc
+      .from("loans")
+      .select("id, status, due_at, students!inner(name, nis), book_copies!inner(inventory_code, books!inner(title))")
+      .or(`students.name.ilike.${pattern},students.nis.ilike.${pattern},book_copies.inventory_code.ilike.${pattern},book_copies.books.title.ilike.${pattern}`)
+      .order("borrowed_at", { ascending: false })
+      .limit(6),
   ]);
 
   // Count copies for matching books

@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import {
   NAV_GROUPS,
-  STUDENT_NAV_ITEMS,
   ROLE_LABEL,
   type NavItem,
 } from "@/lib/nav";
@@ -101,47 +100,6 @@ function AdminNavItemLink({
   );
 }
 
-/** Bottom navigation bar untuk siswa di layar HP (< 768px) per design.md §5 */
-function StudentBottomNav() {
-  const pathname = usePathname();
-
-  return (
-    <nav
-      aria-label="Navigasi siswa"
-      className="fixed inset-x-0 bottom-0 z-30 grid h-16 grid-cols-4 border-t border-rule bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
-    >
-      {STUDENT_NAV_ITEMS.map((item) => {
-        const active =
-          item.href === "/student"
-            ? pathname === "/student"
-            : pathname === item.href || pathname.startsWith(item.href + "/");
-        const Icon = item.icon;
-
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 transition-colors",
-              active ? "text-primary" : "text-ink-muted hover:text-ink",
-            )}
-          >
-            <Icon className="size-6 shrink-0" aria-hidden />
-            <span
-              className={cn(
-                "text-[12px] leading-tight font-plex-sans",
-                active ? "font-semibold" : "font-normal",
-              )}
-            >
-              {item.label}
-            </span>
-          </Link>
-        );
-      })}
-    </nav>
-  );
-}
 
 function Breadcrumb() {
   const pathname = usePathname();
@@ -238,10 +196,8 @@ export function AppShell({
   userName: string;
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const isStudent = role === "student";
   const navGroups = NAV_GROUPS[role] || [];
 
   const isCollapsed = useSyncExternalStore(
@@ -249,7 +205,7 @@ export function AppShell({
     sidebarStore.getSnapshot,
     sidebarStore.getServerSnapshot
   );
-  const collapsed = !isStudent && isCollapsed;
+  const collapsed = isCollapsed;
   const toggleCollapsed = () => sidebarStore.toggle();
 
   // Dengarkan pintasan keyboard global Ctrl+K / Cmd+K
@@ -288,8 +244,7 @@ export function AppShell({
         {/* ============================================================
             TATA LETAK ADMIN: SIDEBAR 248px + TOPBAR 56px (PRD §7.2)
             ============================================================ */}
-        {!isStudent && (
-          <>
+        <>
             {/* DESKTOP SIDEBAR ADMIN (248px, Collapsible 64px) */}
             <aside
               className={cn(
@@ -486,87 +441,6 @@ export function AppShell({
               </div>
             )}
           </>
-        )}
-
-        {/* ============================================================
-            TATA LETAK SISWA (PRD §7.2):
-            - Tablet/Desktop: Topbar horizontal, konten tengah maks 1040px
-            - HP (< 768px): Topbar 56px + Bottom bar 4 item (64px)
-            ============================================================ */}
-        {isStudent && (
-          <div className="flex min-h-dvh flex-col">
-            {/* TOPBAR SISWA */}
-            <header className="sticky top-0 z-20 border-b border-rule bg-white">
-              <div className="mx-auto flex h-14 max-w-[1040px] items-center justify-between px-4 sm:px-6">
-                <Brand />
-
-                {/* Tautan Navigasi Horizontal di Tablet/Desktop */}
-                <nav
-                  aria-label="Navigasi siswa desktop"
-                  className="hidden items-center gap-1 md:flex"
-                >
-                  {STUDENT_NAV_ITEMS.map((item) => {
-                    const active =
-                      item.href === "/student"
-                        ? pathname === "/student"
-                        : pathname === item.href || pathname.startsWith(item.href + "/");
-                    const Icon = item.icon;
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "flex items-center gap-2 rounded-btn px-3 py-1.5 text-xs transition-colors",
-                          active
-                            ? "bg-primary-soft font-medium text-primary"
-                            : "text-ink-muted hover:bg-surface-sunken-ed hover:text-ink",
-                        )}
-                      >
-                        <Icon className="size-4" aria-hidden />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
-
-                {/* Aksi Kanan Siswa */}
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSearchOpen(true)}
-                    aria-label="Cari katalog (Ctrl+K)"
-                    className="flex size-9 cursor-pointer items-center justify-center rounded-btn border border-rule text-ink-muted hover:bg-surface-sunken-ed hover:text-ink focus-visible:outline-2 focus-visible:outline-primary"
-                  >
-                    <Search className="size-4" />
-                  </button>
-
-                  <NotificationsPanel />
-
-                  <form action={logout} className="hidden md:block">
-                    <button
-                      type="submit"
-                      aria-label="Keluar"
-                      title="Keluar"
-                      className="flex size-9 items-center justify-center rounded-btn border border-rule text-ink-muted hover:bg-danger-bg hover:text-danger focus-visible:outline-2 focus-visible:outline-primary"
-                    >
-                      <LogOut className="size-4" />
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </header>
-
-            {/* KONTEN SISWA */}
-            <main className="flex-1 px-4 pb-24 pt-5 sm:px-6 md:pb-12 md:pt-8">
-              <div className="mx-auto w-full max-w-[1040px]">{children}</div>
-            </main>
-
-            {/* BOTTOM BAR SISWA DI HP (< 768px) */}
-            <StudentBottomNav />
-          </div>
-        )}
 
         {/* Global Search Command Palette */}
         <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />

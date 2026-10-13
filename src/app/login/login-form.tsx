@@ -1,15 +1,15 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { login } from "@/features/auth/actions";
 import { TurnstileWidget } from "@/components/auth/turnstile-widget";
 import { cn } from "@/lib/utils";
 
 /**
- * Form login siswa dengan standar tata letak design.md §6 & PRD §8.1.
- * Menggunakan Cloudflare Turnstile mode Managed, disabled button sampai widget selesai.
+ * Formulir login tunggal resmi Smart Library SMPN 17 Tangerang Selatan.
+ * Khusus untuk petugas perpustakaan dan staf administrator.
+ * Dilengkapi Cloudflare Turnstile, persistent rate limiting, dan 2FA TOTP opsional.
  */
 export interface LoginFormProps {
   siteKey?: string;
@@ -24,16 +24,16 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
 
   return (
     <form action={action} className="grid gap-4.5">
-      {/* Hidden input untuk turnstile token */}
+      {/* Hidden input token turnstile */}
       <input type="hidden" name="turnstile_token" value={turnstileToken ?? ""} />
 
-      {/* Field 1: NIS */}
+      {/* Field 1: Nama Pengguna / Email */}
       <div className="grid gap-1.5">
         <label
           htmlFor="identifier"
           className="font-plex-sans text-[12px] font-semibold uppercase tracking-[0.06em] text-[#4A5160]"
         >
-          NOMOR INDUK SISWA (NIS)
+          NAMA PENGGUNA ATAU EMAIL
         </label>
         <input
           id="identifier"
@@ -43,7 +43,7 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
           required
           disabled={pending}
           aria-invalid={invalid}
-          placeholder="cth. 20260001"
+          placeholder="nama pengguna atau email"
           className={cn(
             "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white px-3 font-plex-sans text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
             "focus:border-primary focus:ring-2 focus:ring-primary/20",
@@ -53,7 +53,7 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
         />
       </div>
 
-      {/* Field 2: KATA SANDI */}
+      {/* Field 2: Kata Sandi */}
       <div className="grid gap-1.5">
         <label
           htmlFor="password"
@@ -96,7 +96,7 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
         <TurnstileWidget siteKey={siteKey} onTokenChange={setTurnstileToken} />
       </div>
 
-      {/* Error Alert */}
+      {/* Error Alert Generik */}
       {state.message && (
         <p
           role="alert"
@@ -107,11 +107,10 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
         </p>
       )}
 
-      {/* Tombol Submit (Disabled sampai verifikasi selesai) */}
+      {/* Tombol Submit */}
       <button
         type="submit"
         disabled={isSubmitDisabled}
-        title={!turnstileToken ? "Selesaikan verifikasi keamanan terlebih dahulu" : undefined}
         className={cn(
           "mt-1 flex h-11 sm:h-10 w-full items-center justify-center rounded-[4px] bg-[#1B2F5B] px-4 font-plex-sans text-[14px] font-medium text-white transition-colors",
           "hover:bg-[#13234A] active:bg-[#13234A]",
@@ -121,16 +120,6 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
       >
         {pending ? "Memproses..." : !turnstileToken ? "Menunggu Verifikasi Keamanan..." : "Masuk"}
       </button>
-
-      {/* Portal Switcher Link */}
-      <div className="pt-1 text-center">
-        <Link
-          href="/admin/login"
-          className="font-plex-sans text-[12px] font-medium text-primary hover:underline hover:text-ink transition-colors"
-        >
-          Petugas perpustakaan atau Administrator? Masuk di sini →
-        </Link>
-      </div>
     </form>
   );
 }

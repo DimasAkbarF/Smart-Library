@@ -2,10 +2,6 @@ import "server-only";
 
 const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
-// Kunci pengujian resmi Cloudflare yang selalu berhasil di localhost / test suites
-export const CLOUDFLARE_TEST_SITE_KEY = "1x00000000000000000000AA";
-export const CLOUDFLARE_TEST_SECRET_KEY = "1x0000000000000000000000000000000AA";
-
 // Cache token yang sudah pernah diverifikasi untuk mencegah Replay Attacks
 // Cloudflare token berlaku selama maksimal 300 detik (5 menit).
 const consumedTokens = new Map<string, number>();
@@ -33,36 +29,48 @@ export interface TurnstileVerifyOptions {
  * Memvalidasi token Cloudflare Turnstile secara server-side ke API Cloudflare.
  * Wajib dijalankan SEBELUM cek identitas / kata sandi database.
  *
- * Mendukung:
- * - Lingkungan produksi dengan domain resmi (perpustakaansmp17tangsel.web.id)
- * - Lingkungan lokal (localhost / 127.0.0.1) menggunakan kunci pengujian resmi Cloudflare
+ * Standar Keamanan:
+ * - Fail-closed: Jika secret key tidak ada di server, login otomatis ditolak.
+ * - Key hanya dari TURNSTILE_SECRET_KEY (tanpa kunci tes dummy / tanpa hardcode).
+ * - Logging error-codes dari Cloudflare siteverify tanpa mengekspos secret.
+ * - Pengecualian localhost hanya diizinkan saat NODE_ENV=development.
+ * - Flag TURNSTILE_ENABLED=false hanya berlaku di development jika dibutuhkan.
  */
 export async function verifyTurnstile(
   token: string | null | undefined,
   _remoteIp?: string,
   options: TurnstileVerifyOptions = { action: "login" },
 ): Promise<TurnstileVerificationResult> {
+  const isDev = process.env.NODE_ENV === "development";
+
+  // Flag darurat untuk penonaktifan sementara HANYA di lingkungan development
+  if (isDev && process.env.TURNSTILE_ENABLED === "false") {
+    console.warn(
+      "[TURNSTILE DEV BYPASS] Verifikasi Turnstile dinonaktifkan sementara via TURNSTILE_ENABLED=false (Hanya berlaku di development).",
+    );
+    return { success: true };
+  }
+
   cleanupConsumedTokens();
 
   // 1. Validasi keberadaan token dari client
   if (!token || typeof token !== "string" || token.trim().length === 0) {
     return {
       success: false,
-      message: "Verifikasi keamanan (Turnstile) diperlukan. Silakan centang widget verifikasi.",
+      message: "Verifikasi keamanan (Turnstile) diperlukan. Silakan selesaikan verifikasi.",
     };
   }
 
   const cleanToken = token.trim();
 
-  // 2. Baca Secret Key dari variabel lingkungan (fallback ke dummy key jika mode development)
-  const isDev = process.env.NODE_ENV !== "production";
-  const secretKey = (process.env.TURNSTILE_SECRET_KEY || (isDev ? CLOUDFLARE_TEST_SECRET_KEY : ""))?.trim();
+  // 2. Baca Secret Key HANYA dari variabel lingkungan (tanpa hardcode / tanpa test key bawaan)
+  const secretKey = process.env.TURNSTILE_SECRET_KEY?.trim();
 
-  // Jika env var kosong di produksi: GAGAL TERTUTUP (Fail-closed)
+  // Gagal tertutup (Fail-closed) jika secret key belum dikonfigurasi
   if (!secretKey) {
     console.error(
-      "[SECURITY CRITICAL - FAIL CLOSED] Variabel lingkungan TURNSTILE_SECRET_KEY belum diisi pada lingkungan produksi server. " +
-      "Seluruh permintaan login otomatis ditolak demi keamanan data sekolah.",
+      "[SECURITY CRITICAL - FAIL CLOSED] Variabel lingkungan TURNSTILE_SECRET_KEY belum diisi pada server. " +
+      "Permintaan login ditolak demi keamanan data sekolah.",
     );
     return {
       success: false,
@@ -70,15 +78,12 @@ export async function verifyTurnstile(
     };
   }
 
-  const isTestKey = secretKey === CLOUDFLARE_TEST_SECRET_KEY;
-
   // 3. Proteksi Anti-Replay: Token hanya boleh dipakai tepat satu kali
-  // Token uji coba dummy dikecualikan agar tidak mengunci pengetesan berulang di lingkungan dev
-  if (!isTestKey && consumedTokens.has(cleanToken)) {
+  if (consumedTokens.has(cleanToken)) {
     console.warn("[TURNSTILE REPLAY BLOCKED] Percobaan penggunaan ulang token Turnstile terdeteksi.");
     return {
       success: false,
-      message: "Token verifikasi keamanan sudah pernah digunakan. Silakan muat ulang verifikasi.",
+      message: "Token verifikasi keamanan sudah pernah digunakan. Silakan muat ulang halaman.",
     };
   }
 
@@ -87,7 +92,6 @@ export async function verifyTurnstile(
     const formData = new URLSearchParams();
     formData.append("secret", secretKey);
     formData.append("response", cleanToken);
-    // Catatan: remoteip sengaja diabaikan untuk mencegah penolakan palsu (invalid-remoteip) di balik NAT / proxy / jaringan sekolah
 
     const res = await fetch(SITEVERIFY_URL, {
       method: "POST",
@@ -102,7 +106,7 @@ export async function verifyTurnstile(
       console.error(`[TURNSTILE HTTP ERROR] Cloudflare siteverify merespons status HTTP ${res.status}. Login ditolak.`);
       return {
         success: false,
-        message: "Layanan verifikasi keamanan Cloudflare mengalami gangguan (HTTP Error). Permintaan masuk ditolak.",
+        message: "Layanan verifikasi keamanan mengalami gangguan. Permintaan masuk ditolak.",
       };
     }
 
@@ -115,12 +119,14 @@ export async function verifyTurnstile(
     };
 
     if (!data.success) {
+      // Catat error-codes tanpa membocorkan secret key
+      const errorCodes = data["error-codes"] || [];
       console.warn(
-        `[TURNSTILE REJECTED] Respons Cloudflare siteverify menolak token. Error-codes: ${JSON.stringify(data["error-codes"] || [])}`,
+        `[TURNSTILE REJECTED] Respons Cloudflare siteverify menolak token. Error-codes: ${JSON.stringify(errorCodes)}`,
       );
       return {
         success: false,
-        message: "Verifikasi keamanan Turnstile gagal atau kedaluwarsa. Silakan muat ulang tantangan.",
+        message: "Verifikasi keamanan Turnstile gagal atau kedaluwarsa. Silakan coba kembali.",
       };
     }
 
@@ -138,21 +144,23 @@ export async function verifyTurnstile(
 
     // 6. Validasi Atribut Hostname
     // Domain produksi WAJIB cocok dengan domain situs perpustakaan (perpustakaansmp17tangsel.web.id).
-    // Hostname localhost / 127.0.0.1 / example.com HANYA diizinkan jika NODE_ENV === "development" atau menggunakan dummy test key resmi.
+    // Hostname localhost / 127.0.0.1 HANYA diizinkan jika NODE_ENV === "development".
     if (data.hostname) {
       const cleanReceived = data.hostname.toLowerCase().split(":")[0];
       const cleanExpected = (options.expectedHostname || "perpustakaansmp17tangsel.web.id").toLowerCase().split(":")[0];
-      const isDevOrTest = isDev || isTestKey;
+
+      const isLocalhost = cleanReceived === "localhost" || cleanReceived === "127.0.0.1";
+      const isAllowedLocal = isDev && isLocalhost;
 
       const isMatch =
-        (isDevOrTest && (cleanReceived === "example.com" || cleanReceived === "localhost" || cleanReceived === "127.0.0.1")) ||
+        isAllowedLocal ||
         cleanReceived === cleanExpected ||
         cleanExpected.endsWith(`.${cleanReceived}`) ||
         cleanReceived === "perpustakaansmp17tangsel.web.id";
 
       if (!isMatch) {
         console.warn(
-          `[TURNSTILE HOSTNAME MISMATCH] Token berasal dari hostname "${cleanReceived}", sedangkan host server adalah "${cleanExpected}". Login ditolak.`,
+          `[TURNSTILE HOSTNAME MISMATCH] Token berasal dari hostname "${cleanReceived}", diharapkan "${cleanExpected}". Login ditolak.`,
         );
         return {
           success: false,
@@ -161,21 +169,19 @@ export async function verifyTurnstile(
       }
     }
 
-    // 7. Catat token ke cache terpakai selama 10 menit (anti-replay) jika bukan kunci tes
-    if (!isTestKey) {
-      consumedTokens.set(cleanToken, Date.now() + 10 * 60 * 1000);
-    }
+    // 7. Catat token ke cache terpakai selama 10 menit (anti-replay)
+    consumedTokens.set(cleanToken, Date.now() + 10 * 60 * 1000);
 
     return { success: true };
   } catch (err) {
     // Timeout atau galat jaringan: WAJIB tolak (Fail-closed)
     console.error(
-      "[TURNSTILE NETWORK/TIMEOUT ERROR] Gagal menghubungi endpoint Cloudflare siteverify dalam batas waktu 5 detik:",
+      "[TURNSTILE NETWORK/TIMEOUT ERROR] Gagal menghubungi endpoint Cloudflare siteverify dalam 5 detik:",
       err,
     );
     return {
       success: false,
-      message: "Verifikasi bot mengalami batas waktu (timeout) atau gangguan koneksi. Permintaan masuk ditolak demi keamanan.",
+      message: "Verifikasi keamanan mengalami batas waktu (timeout). Permintaan masuk ditolak demi keamanan.",
     };
   }
 }

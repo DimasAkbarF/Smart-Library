@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { searchBooks, listCategories } from "@/features/catalog/queries";
@@ -6,6 +7,20 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SearchInput } from "@/components/ui/search-input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Katalog Koleksi Buku Perpustakaan",
+  description:
+    "Jelajahi koleksi buku resmi Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel). Temukan ketersediaan buku dan referensi belajar.",
+  keywords: [
+    "perpussmp17tangsel",
+    "katalog buku smpn 17 tangsel",
+    "katalog perpustakaan smp 17 tangsel",
+    "perpus smp 17 tangsel",
+    "perpustakaan smpn 17 tangsel",
+    "buku perpustakaan smpn 17 tangerang selatan",
+  ],
+};
 
 type SP = { q?: string; cat?: string; avail?: string; page?: string };
 
@@ -17,10 +32,10 @@ function href(sp: SP, patch: Partial<SP>): string {
   if (merged.avail) next.set("avail", merged.avail);
   if (merged.page) next.set("page", merged.page);
   const s = next.toString();
-  return s ? `/student/books?${s}` : "/student/books";
+  return s ? `/books?${s}` : "/books";
 }
 
-export default async function StudentBooks({
+export default async function PublicBooksPage({
   searchParams,
 }: {
   searchParams: Promise<SP>;
@@ -38,13 +53,15 @@ export default async function StudentBooks({
   ]);
 
   return (
-    <div className="grid gap-5">
-      <header>
-        <h1 className="font-display text-display-sm font-bold">Katalog Buku</h1>
-        <p className="text-ink-muted">
+    <div className="grid gap-6">
+      <header className="border-b border-rule pb-5">
+        <h1 className="font-serif text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+          Katalog Koleksi Buku
+        </h1>
+        <p className="mt-2 text-sm text-ink-muted">
           {result.total > 0
-            ? `${result.total} buku ditemukan.`
-            : "Cari buku favoritmu di sini."}
+            ? `${result.total} judul buku terdata di perpustakaan.`
+            : "Jelajahi dan temukan buku referensi pembelajaran di SMP Negeri 17 Tangerang Selatan."}
         </p>
       </header>
 
@@ -56,11 +73,13 @@ export default async function StudentBooks({
         <Link
           href={href(sp, { cat: undefined, page: undefined })}
           className={cn(
-            "rounded-chip px-3 py-1 text-xs font-medium transition-colors",
-            !sp.cat ? "bg-primary-soft text-primary font-semibold border border-primary/20" : "bg-white text-ink-muted hover:text-ink border border-rule",
+            "rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
+            !sp.cat
+              ? "bg-primary-soft text-primary font-semibold border border-primary/20"
+              : "bg-white text-ink-muted hover:text-ink border border-rule",
           )}
         >
-          Semua
+          Semua Kategori
         </Link>
         {categories.map((c) => (
           <Link
@@ -68,8 +87,10 @@ export default async function StudentBooks({
             href={href(sp, { cat: sp.cat === c.id ? undefined : c.id, page: undefined })}
             aria-pressed={sp.cat === c.id}
             className={cn(
-              "rounded-chip px-3 py-1 text-xs font-medium transition-colors",
-              sp.cat === c.id ? "bg-primary-soft text-primary font-semibold border border-primary/20" : "bg-white text-ink-muted hover:text-ink border border-rule",
+              "rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
+              sp.cat === c.id
+                ? "bg-primary-soft text-primary font-semibold border border-primary/20"
+                : "bg-white text-ink-muted hover:text-ink border border-rule",
             )}
           >
             {c.name}
@@ -79,13 +100,13 @@ export default async function StudentBooks({
           href={href(sp, { avail: sp.avail === "1" ? undefined : "1", page: undefined })}
           aria-pressed={sp.avail === "1"}
           className={cn(
-            "rounded-chip border px-3 py-1 text-xs font-medium transition-colors",
+            "rounded-chip border px-3 py-1.5 text-xs font-medium transition-colors",
             sp.avail === "1"
               ? "border-success/30 bg-success-bg text-success font-semibold"
               : "border-rule bg-white text-ink-muted hover:text-ink",
           )}
         >
-          Hanya tersedia
+          Hanya yang Tersedia
         </Link>
       </div>
 
@@ -94,23 +115,23 @@ export default async function StudentBooks({
           title="Tidak ada buku yang cocok"
           body="Coba kata kunci atau filter lain untuk menemukan buku yang kamu cari."
           action={
-            <Link href="/student/books">
-              <Button variant="secondary">Atur ulang filter</Button>
+            <Link href="/books">
+              <Button variant="secondary">Atur ulang pencarian</Button>
             </Link>
           }
         />
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {result.books.map((b) => (
             <li key={b.id}>
-              <BookCard book={b} href={`/student/books/${b.id}`} />
+              <BookCard book={b} href={`/books/${b.id}`} />
             </li>
           ))}
         </ul>
       )}
 
       {result.pageCount > 1 && (
-        <nav className="flex items-center justify-center gap-2" aria-label="Paginasi">
+        <nav className="flex items-center justify-center gap-2 pt-4" aria-label="Paginasi">
           {page > 1 && (
             <Link href={href(sp, { page: String(page - 1) })}>
               <Button variant="secondary" size="sm">Sebelumnya</Button>

@@ -6,9 +6,9 @@ import { SchoolFooter } from "@/components/login/school-footer";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Portal Masuk Siswa",
+  title: "Portal Petugas & Administrator",
   description:
-    "Portal masuk resmi Smart Library SMP Negeri 17 Tangerang Selatan untuk peminjaman, pengembalian, dan katalog koleksi perpustakaan.",
+    "Portal masuk resmi Smart Library SMP Negeri 17 Tangerang Selatan untuk petugas perpustakaan dan staf administrasi.",
   robots: {
     index: false,
     follow: false,

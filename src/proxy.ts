@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
 export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
   // 1. HTTP to HTTPS redirect di environment produksi
   // Periksa cf-visitor dan x-forwarded-proto untuk mencegah redirect loop di balik Cloudflare proxy
   const proto = request.headers.get("x-forwarded-proto");
@@ -19,7 +21,25 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(httpsUrl, 301);
   }
 
-  // 2. Proteksi CSRF: Validasi Header Origin vs Host untuk metode mutasi
+  // 2. Redirect Rute Lama & Rute Siswa (301 Permanent)
+  if (pathname === "/admin/login") {
+    return NextResponse.redirect(new URL("/login", request.url), 301);
+  }
+
+  if (pathname === "/student/books") {
+    return NextResponse.redirect(new URL("/books", request.url), 301);
+  }
+
+  if (pathname.startsWith("/student/books/")) {
+    const bookId = pathname.replace("/student/books/", "");
+    return NextResponse.redirect(new URL(`/books/${bookId}`, request.url), 301);
+  }
+
+  if (pathname === "/student" || pathname.startsWith("/student/")) {
+    return NextResponse.redirect(new URL("/login", request.url), 301);
+  }
+
+  // 3. Proteksi CSRF: Validasi Header Origin vs Host untuk metode mutasi
   const method = request.method;
   if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
     const origin = request.headers.get("origin");
@@ -66,7 +86,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 3. Update dan validasi sesi Supabase
+  // 4. Update dan validasi sesi Supabase serta proteksi rute admin
   return updateSession(request);
 }
 

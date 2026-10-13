@@ -96,6 +96,6 @@ export interface AuditLog {
 }
 
 export const ROLE_HOME: Record<Role, string> = {
-  student: "/student",
+  student: "/login",
   admin: "/admin",
 };

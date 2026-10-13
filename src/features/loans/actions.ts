@@ -2,7 +2,7 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { serviceClient } from "@/lib/supabase/service";
-import { assertRole, getSession } from "@/lib/auth";
+import { assertRole } from "@/lib/auth";
 import { normalisasiKode } from "@/lib/format";
 import { kodeDariError } from "@/lib/errors";
 import type { BookCopy, Loan, Policy, Student } from "@/lib/types";
@@ -184,32 +184,6 @@ export async function listLoans(f: LoanFilters, pageSize = 15) {
   return { rows, total: count ?? rows.length, page, pageCount: Math.max(1, Math.ceil((count ?? rows.length) / pageSize)) };
 }
 
-/** Pinjaman milik siswa yang sedang login. */
-export async function myLoans(): Promise<{ active: Loan[]; history: Loan[] }> {
-  const session = await getSession();
-  if (!session || session.profile.role !== "student") throw new Error("FORBIDDEN");
-  const svc = serviceClient();
-  const { data: student } = await svc
-    .from("students")
-    .select("id")
-    .eq("user_id", session.userId)
-    .single();
-  if (!student) return { active: [], history: [] };
-  const { data } = await svc
-    .from("loans")
-    .select(
-      "id, borrowed_at, due_at, returned_at, status, fine_amount, students!inner(id, name, nis, classes(name)), book_copies!inner(id, inventory_code, books!inner(title))",
-    )
-    .eq("student_id", student.id)
-    .order("borrowed_at", { ascending: false })
-    .limit(50);
-  const all = (data ?? []).map(mapLoan);
-  return {
-    active: all.filter((l) => l.status === "ACTIVE" || l.status === "OVERDUE"),
-    history: all.filter((l) => l.status === "RETURNED" || l.status === "CANCELLED"),
-  };
-}
-
 export async function getPolicy(): Promise<Policy> {
   const svc = serviceClient();
   const { data } = await svc.from("library_policies").select("*").eq("id", 1).single();
@@ -224,23 +198,24 @@ export async function getPolicy(): Promise<Policy> {
   );
 }
 
-/** Profil siswa yang sedang login + jumlah pinjaman aktif. */
-export async function myProfile() {
-  const session = await getSession();
-  if (!session || session.profile.role !== "student") throw new Error("FORBIDDEN");
+/**
+ * Mengambil data kartu anggota digital HANYA berdasarkan token acak panjang berentropi tinggi (STU-xxxxxxxxxxxxxxxx).
+ * Mencegah enumerasi IDOR: Menolak NIS, menolak ID berurutan, dan menolak token pendek.
+ */
+export async function getStudentCardByToken(token: string): Promise<Student | null> {
+  const clean = normalisasiKode(token);
+  if (!clean || !/^STU-[A-Z0-9]{16,64}$/.test(clean)) {
+    return null;
+  }
   const svc = serviceClient();
-  const { data: s } = await svc
+  const { data } = await svc
     .from("students")
     .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)")
-    .eq("user_id", session.userId)
+    .eq("qr_token", clean)
     .single();
-  if (!s) return null;
-  const { count } = await svc
-    .from("loans")
-    .select("id", { count: "exact", head: true })
-    .eq("student_id", s.id)
-    .in("status", ["ACTIVE", "OVERDUE"]);
-  return { student: mapStudent(s), activeCount: count ?? 0 };
+
+  if (!data || data.status !== "active") return null;
+  return mapStudent(data);
 }
 
 let lastOverdueCheck = 0;

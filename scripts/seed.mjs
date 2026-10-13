@@ -1,18 +1,20 @@
 /**
- * Seed akun demo + data contoh.
+ * Seed akun admin/petugas + data contoh perpustakaan.
  * Jalankan: npm run seed   (butuh .env.local terisi)
  *
  * Akun yang dibuat:
- *   admin / admin123   → Admin Data
- *   penjaga / jaga123  → Penjaga Perpustakaan
- *   20260001 / siswa123 → Siswa (Dimas Pratama, VII-A)
+ *   admin (Perpustakaan) -> Role: admin
+ *   (Login siswa DIHAPUS, data siswa hanya sebagai data anggota sirkulasi)
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
-for (const line of readFileSync(".env.local", "utf8").split("\n")) {
-  const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.+?)\s*$/);
-  if (m) process.env[m[1]] = m[2];
+if (existsSync(".env.local")) {
+  for (const line of readFileSync(".env.local", "utf8").split("\n")) {
+    const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.+?)\s*$/);
+    if (m) process.env[m[1]] = m[2];
+  }
 }
 
 const supabase = createClient(
@@ -32,48 +34,79 @@ try {
   );
 }
 
-const users = [
-  { username: "admin", email: "admin@sekolah.local", password: "admin123", full_name: "Admin Perpustakaan", role: "admin" },
-  { username: "20260001", email: "siswa@sekolah.local", password: "siswa123", full_name: "Dimas Pratama", role: "student" },
-];
-
 function fail(step, res) {
   const detail = res?.error ? JSON.stringify(res.error) : "respon kosong tanpa user";
   throw new Error(`${step} gagal: ${detail}`);
 }
 
-const userIds = {};
+// 1. Akun Admin/Petugas (Password acak kuat jika tidak disetel di env)
+const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || ("Pustaka17#" + randomBytes(5).toString("hex"));
+const adminUser = {
+  username: "admin",
+  email: process.env.ADMIN_EMAIL || "admin@sekolah.sch.id",
+  password: adminPassword,
+  full_name: "Administrator Perpustakaan",
+  role: "admin",
+};
 
-for (const u of users) {
-  const created = await supabase.auth.admin.createUser({ email: u.email, password: u.password, email_confirm: true });
-  let userId = created.data?.user?.id;
-  if (!userId) {
-    // Sudah ada dari seed sebelumnya: cari lewat daftar user
-    const list = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    if (list.error) fail("listUsers", list);
-    userId = list.data?.users?.find((x) => x.email === u.email)?.id;
+const created = await supabase.auth.admin.createUser({
+  email: adminUser.email,
+  password: adminUser.password,
+  email_confirm: true,
+});
+
+let adminId = created.data?.user?.id;
+if (!adminId) {
+  // Jika sudah ada: perbarui kata sandi dan cari id
+  const list = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (list.error) fail("listUsers", list);
+  adminId = list.data?.users?.find((x) => x.email === adminUser.email)?.id;
+  if (adminId) {
+    await supabase.auth.admin.updateUserById(adminId, { password: adminUser.password });
   }
-  if (!userId) fail("createUser " + u.email, created);
-  userIds[u.username] = userId;
-  const prof = await supabase.from("profiles").upsert(
-    { id: userId, username: u.username, email: u.email, full_name: u.full_name, role: u.role, status: "active" },
-    { onConflict: "id" },
-  );
-  if (prof.error) fail("profiles.upsert " + u.username, prof);
-  console.log("OK akun:", u.username);
 }
+if (!adminId) fail("createUser " + adminUser.email, created);
 
-// Siswa contoh tertaut ke akun siswa
+const prof = await supabase.from("profiles").upsert(
+  {
+    id: adminId,
+    username: adminUser.username,
+    email: adminUser.email,
+    full_name: adminUser.full_name,
+    role: "admin",
+    status: "active",
+    must_change_password: true, // Wajib ganti sandi pada login pertama
+  },
+  { onConflict: "id" },
+);
+if (prof.error) fail("profiles.upsert " + adminUser.username, prof);
+
+console.log("\n=======================================================");
+console.log("AKUN ADMIN BERHASIL DIBUAT/DIPERBARUI:");
+console.log(`Username     : ${adminUser.username}`);
+console.log(`Email        : ${adminUser.email}`);
+console.log(`Password Baru: ${adminUser.password}`);
+console.log("Catatan      : Harap simpan kata sandi ini dan ganti saat login!");
+console.log("=======================================================\n");
+
+// 2. Data Anggota Siswa (Hanya data anggota, TANPA akun login / kredensial auth)
 const { data: kelas } = await supabase.from("classes").select("id").eq("name", "VII-A").single();
+const studentQrToken = "STU-" + randomBytes(10).toString("hex").toUpperCase();
 const siswa = await supabase.from("students").upsert(
-  { nis: "20260001", name: "Dimas Pratama", class_id: kelas?.id ?? null, qr_token: "SIS-20260001", status: "active",
-    user_id: userIds["20260001"] },
+  {
+    nis: "20260001",
+    name: "Dimas Pratama",
+    class_id: kelas?.id ?? null,
+    qr_token: studentQrToken,
+    status: "active",
+    user_id: null, // Tanpa login siswa
+  },
   { onConflict: "nis" },
 );
 if (siswa.error) fail("students.upsert", siswa);
-console.log("OK siswa: 20260001");
+console.log(`OK Siswa Anggota: 20260001 (Token: ${studentQrToken})`);
 
-// Buku contoh + eksemplar
+// 3. Buku contoh + eksemplar
 const { data: kat } = await supabase.from("categories").select("id, name");
 const fiksi = kat?.find((c) => c.name === "Fiksi")?.id ?? null;
 const pelajaran = kat?.find((c) => c.name === "Pelajaran")?.id ?? null;
@@ -98,4 +131,4 @@ for (const b of contoh) {
   }
   console.log("OK buku:", b.title);
 }
-console.log("\nSelesai. Masuk dengan username di atas.");
+console.log("\nSelesai seeding database. Portal login siap di /login.");
