@@ -12,11 +12,10 @@ Production URL: [https://perpustakaansmp17tangsel.web.id](https://perpustakaansm
 Operasi peminjaman (`borrow_book`) dan pengembalian (`return_book`) diisolasi melalui PostgreSQL Stored Procedures (RPC). Pendekatan ini memastikan konsistensi status eksemplar, batas kuota peminjaman siswa, dan perhitungan denda terlambat dieksekusi dalam satu transaksi atomik guna mencegah *concurrency issues* dan peminjaman ganda (*double-borrowing*).
 
 ### 2. Autentikasi & Kontrol Akses (RBAC)
-Sistem memisahkan alur otorisasi ke dalam dua peran utama:
-- **Admin**: Akses meja sirkulasi, manajemen katalog buku, data inventaris eksemplar, master data siswa, laporan sirkulasi, dan log audit.
-- **Siswa**: Portal mandiri untuk memantau status pinjaman aktif, riwayat sirkulasi, tagihan denda, dan kartu perpustakaan digital.
+Sistem memisahkan alur otorisasi dan identifikasi:
+- **Staf Perpustakaan (Admin & Pustakawan)**: Akses terpusat melalui portal tunggal di `/login` untuk meja sirkulasi, inventaris katalog, eksemplar, data siswa, laporan, dan log audit. Dilindungi *dual-key rate limiting* (per-IP dan per-akun), *anti-timing delays*, dan *audit trail* aktivitas.
+- **Siswa & Publik**: Akses katalog publik di `/books` dan kartu anggota digital berbasis token kriptografis acak di `/card/[token]` tanpa memerlukan akun/kata sandi, mencegah kendala lupa password dan meminimalisir risiko kebocoran data siswa.
 
-Proteksi login mencakup mitigasi brute-force melalui *rate limiting* serta pencatatan audit otomatis (IP address dan geolokasi) pada setiap sesi masuk.
 
 ### 3. Performa & Antarmuka Responsif
 - **React Server Components (RSC)**: Meminimalkan *client-side bundle size* dengan merender katalog dan laporan secara langsung di server.
@@ -42,14 +41,18 @@ Proteksi login mencakup mitigasi brute-force melalui *rate limiting* serta penca
 
 ```
 Smart-Library/
+├── docs/
+│   └── decisions/          # Architecture Decision Records (ADRs)
 ├── public/                 # Aset statis publik (logo institusi, manifest)
 ├── scripts/
-│   └── seed.mjs            # Script seeder data awal untuk demonstrasi
+│   ├── seed.mjs            # Seeder data awal untuk demonstrasi
+│   └── test-all-features.mjs # Suite pengujian end-to-end 26 fitur otomatis
 ├── src/
 │   ├── app/                # Next.js App Router
 │   │   ├── admin/          # Panel kontrol admin (sirkulasi, katalog, siswa, audit)
-│   │   ├── student/        # Portal siswa (katalog, pinjaman aktif, kartu anggota)
-│   │   ├── login/          # Autentikasi dan identifikasi pengguna
+│   │   ├── books/          # Katalog buku publik dan detail buku
+│   │   ├── card/           # Kartu anggota digital siswa via token (/card/[token])
+│   │   ├── login/          # Portal masuk staf terpusat
 │   │   ├── api/            # Endpoint internal (ekspor laporan, sitemap)
 │   │   ├── globals.css     # Definisi tema, token tipografi, dan variabel CSS
 │   │   └── layout.tsx      # Root layout, metadata global, dan font loader
@@ -115,29 +118,44 @@ Aplikasi dapat diakses melalui `http://localhost:3000`.
 
 ---
 
-## Kredensial Pengujian (Demo)
+## Kredensial Pengujian (Demo) & Akses
 
-| Peran | Pengenal (NIS / Username) | Kata Sandi | Rute Awal |
+| Peran | Pengenal (Email / Username / Token) | Kata Sandi | Rute Masuk / Akses |
 |---|---|---|---|
-| Admin Perpustakaan | `admin` | `admin123` | `/admin` |
-| Siswa | `20260001` | `siswa123` | `/student` |
+| Admin Perpustakaan | `admin` (atau `admin@sekolah.local`) | `admin123` | `/login` → `/admin` |
+| Siswa (Kartu Digital) | Token acak contoh: `STU-7F9C2BF4FC1E38E6796D` | *(Tanpa kata sandi)* | `/card/STU-7F9C2BF4FC1E38E6796D` |
+| Publik | Bebas akses | *(Tanpa kata sandi)* | `/books` (Katalog Buku) |
 
 ---
 
 ## Validasi & Quality Assurance
 
-Jalankan perintah berikut sebelum membuka merge request atau rilis produksi:
+Jalankan perintah berikut sebelum membuka pull request atau rilis produksi:
 
 ```bash
-# Validasi tipe statis
+# Validasi tipe statis TypeScript
 npx tsc --noEmit
 
-# Analisis kualitas kode
+# Analisis linting kode (ESLint)
 npm run lint
 
 # Kompilasi build produksi Next.js
 npm run build
+
+# Pengujian End-to-End Otomatis (26 Fitur Lengkap)
+node scripts/test-all-features.mjs
 ```
+
+---
+
+## Catatan Keputusan Arsitektur (ADRs)
+
+Seluruh keputusan teknis dan arsitektural didokumentasikan secara rinci di direktori [`docs/decisions/`](docs/decisions/README.md):
+- [ADR-001: Sentralisasi Autentikasi Staf & Penghapusan Cloudflare Turnstile](docs/decisions/ADR-001-centralized-staff-auth-and-removal-of-turnstile.md)
+- [ADR-002: Kontinuitas Sesi & Manajemen Cookie dengan Supabase SSR](docs/decisions/ADR-002-session-continuity-and-cookie-transport.md)
+- [ADR-003: Kartu Perpustakaan Digital Siswa Berbasis Token Acak](docs/decisions/ADR-003-tokenized-digital-student-cards.md)
+- [ADR-004: Transaksi Sirkulasi Atomik via PostgreSQL Stored Procedures (RPC)](docs/decisions/ADR-004-atomic-circulation-via-postgresql-rpc.md)
+
 
 ---
 
