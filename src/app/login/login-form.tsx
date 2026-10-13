@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 /**
  * Formulir login tunggal resmi Smart Library SMPN 17 Tangerang Selatan.
  * Khusus untuk petugas perpustakaan dan staf administrator.
- * Dilengkapi Cloudflare Turnstile, persistent rate limiting, dan 2FA TOTP opsional.
+ * Dilengkapi Cloudflare Turnstile, persistent rate limiting, dan auto-reset token.
  */
 export interface LoginFormProps {
   siteKey?: string;
@@ -19,11 +19,22 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
   const [state, action, pending] = useActionState(login, {});
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   const invalid = Boolean(state.message);
   const isSubmitDisabled = pending || !turnstileToken;
 
+  const handleAction = (formData: FormData) => {
+    if (!turnstileToken || pending) return;
+    const token = turnstileToken;
+    // Bersihkan token saat submit agar token yang sama tidak terkirim dua kali
+    setTurnstileToken(null);
+    formData.set("turnstile_token", token);
+    formData.set("cf-turnstile-response", token);
+    action(formData);
+  };
+
   return (
-    <form action={action} className="grid gap-4.5">
+    <form action={handleAction} className="grid gap-4.5">
       {/* Hidden input token turnstile */}
       <input type="hidden" name="turnstile_token" value={turnstileToken ?? ""} />
 
@@ -93,7 +104,11 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
 
       {/* Cloudflare Turnstile Managed Widget */}
       <div className="pt-0.5">
-        <TurnstileWidget siteKey={siteKey} onTokenChange={setTurnstileToken} />
+        <TurnstileWidget
+          key={state.message || "initial"}
+          siteKey={siteKey}
+          onTokenChange={setTurnstileToken}
+        />
       </div>
 
       {/* Error Alert Generik */}

@@ -11,7 +11,7 @@ import { ROLE_HOME } from "@/lib/types";
 import { checkRateLimit, recordFailedAttempt, resetRateLimit } from "@/lib/rate-limit";
 import { getSession, tulisAudit } from "@/lib/auth";
 import { verifyTurnstile } from "@/lib/turnstile";
-import { isDefaultPassword, validatePassword } from "@/lib/password";
+import { validatePassword } from "@/lib/password";
 import { verifyTotpToken } from "@/lib/totp";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -136,21 +136,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     };
   }
 
-  // 3. TOLAK KATA SANDI DEFAULT BAWAAN (Hapus Pemakaian Password Default)
-  if (isDefaultPassword(parsed.data.password, rawId)) {
-    dummyCryptoDelay();
-    await recordFailedAttempt(rateLimitKey, 5);
-    await recordFailedAttempt(ipRateLimitKey, 10);
-    await tulisAudit(null, "auth.default_password_rejected", "auth", rawId, {
-      ip: clientIp,
-      user_agent: userAgent,
-    });
-    return {
-      message: "Kata sandi default tidak diizinkan. Silakan hubungi administrator untuk mengatur ulang kata sandi yang aman.",
-    };
-  }
-
-  // 4. AMBIL PROFIL & VALIDASI HANYA ROLE ADMIN / PETUGAS
+  // 3. AMBIL PROFIL & VALIDASI HANYA ROLE ADMIN / PETUGAS
   const svc = serviceClient();
   let email = rawId;
 

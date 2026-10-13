@@ -83,7 +83,7 @@ export async function verifyTurnstile(
     console.warn("[TURNSTILE REPLAY BLOCKED] Percobaan penggunaan ulang token Turnstile terdeteksi.");
     return {
       success: false,
-      message: "Token verifikasi keamanan sudah pernah digunakan. Silakan muat ulang halaman.",
+      message: "Verifikasi keamanan telah kedaluwarsa. Mohon tunggu verifikasi otomatis lalu klik Masuk kembali.",
     };
   }
 
@@ -124,6 +124,12 @@ export async function verifyTurnstile(
       console.warn(
         `[TURNSTILE REJECTED] Respons Cloudflare siteverify menolak token. Error-codes: ${JSON.stringify(errorCodes)}`,
       );
+      if (errorCodes.includes("timeout-or-duplicate")) {
+        return {
+          success: false,
+          message: "Verifikasi keamanan telah kedaluwarsa. Mohon tunggu verifikasi otomatis lalu klik Masuk kembali.",
+        };
+      }
       return {
         success: false,
         message: "Verifikasi keamanan Turnstile gagal atau kedaluwarsa. Silakan coba kembali.",
