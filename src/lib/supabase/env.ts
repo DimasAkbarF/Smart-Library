@@ -17,10 +17,6 @@ export function validateProductionEnv(): { valid: boolean; missing: string[] } {
   if (!SUPABASE_ANON_KEY) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
   if (!SUPABASE_SERVICE_ROLE_KEY) missing.push("SUPABASE_SERVICE_ROLE_KEY");
 
-  if (process.env.NODE_ENV === "production") {
-    if (!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) missing.push("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
-    if (!process.env.TURNSTILE_SECRET_KEY) missing.push("TURNSTILE_SECRET_KEY");
-  }
 
   if (missing.length > 0 && process.env.NODE_ENV === "production") {
     console.error(

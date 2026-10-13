@@ -10,7 +10,6 @@ import { supabaseConfigured } from "@/lib/supabase/env";
 import { ROLE_HOME } from "@/lib/types";
 import { checkRateLimit, recordFailedAttempt, resetRateLimit } from "@/lib/rate-limit";
 import { getSession, tulisAudit } from "@/lib/auth";
-import { verifyTurnstile } from "@/lib/turnstile";
 import { validatePassword } from "@/lib/password";
 import { verifyTotpToken } from "@/lib/totp";
 import { cookies } from "next/headers";
@@ -23,7 +22,6 @@ const LoginSchema = z.object({
   identifier: z.string().trim().min(1, "Isi nama pengguna atau email."),
   password: z.string().min(1, "Isi kata sandi."),
   totpCode: z.string().trim().optional(),
-  turnstileToken: z.string().optional(),
 });
 
 export interface LoginState {
@@ -52,14 +50,13 @@ async function getClientInfo() {
     const h = await headers();
     userAgent = h.get("user-agent") || "";
     host = h.get("x-forwarded-host") || h.get("host") || "";
-    // Prioritaskan CF-Connecting-IP dari reverse proxy Cloudflare
-    const cfIp = h.get("cf-connecting-ip");
+    // Ambil IP klien dari header reverse proxy standar (x-real-ip atau x-forwarded-for)
     const xReal = h.get("x-real-ip");
     const xff = h.get("x-forwarded-for");
-    clientIp = cfIp || xReal || (xff ? xff.split(",")[0]?.trim() : null) || "127.0.0.1";
+    clientIp = xReal || (xff ? xff.split(",")[0]?.trim() : null) || "127.0.0.1";
 
-    const city = h.get("cf-ipcity") || h.get("x-vercel-ip-city");
-    const country = h.get("cf-ipcountry") || h.get("x-vercel-ip-country");
+    const city = h.get("x-vercel-ip-city");
+    const country = h.get("x-vercel-ip-country");
     const region = h.get("x-vercel-ip-country-region") || h.get("x-region");
 
     if (city || country) {
@@ -74,15 +71,13 @@ async function getClientInfo() {
 
 /**
  * SATU-SATUNYA LOGIN SISTEM: Khusus Admin & Petugas Perpustakaan.
- * Dilindungi Cloudflare Turnstile, persistent rate limiting, anti-timing attack,
- * 2FA TOTP (opsional jika aktif), penolakan default password, dan audit logging.
+ * Dilindungi persistent rate limiting, anti-timing attack, dan audit logging.
  */
 export async function login(_prev: LoginState, formData: FormData): Promise<LoginState> {
   const parsed = LoginSchema.safeParse({
     identifier: formData.get("identifier"),
     password: formData.get("password"),
     totpCode: formData.get("totp_code") || undefined,
-    turnstileToken: formData.get("cf-turnstile-response") || formData.get("turnstile_token"),
   });
 
   if (!parsed.success) {
@@ -98,25 +93,10 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     return { message: "Konfigurasi server perpustakaan belum lengkap. Hubungi administrator." };
   }
 
-  const { clientIp, locationStr, userAgent, host } = await getClientInfo();
+  const { clientIp, locationStr, userAgent } = await getClientInfo();
   const rawId = parsed.data.identifier.toLowerCase();
 
-  // 1. VERIFIKASI CLOUDFLARE TURNSTILE TERLEBIH DAHULU (Fail-closed)
-  // Kegagalan Turnstile sengaja TIDAK menambah counter gagal akun agar bot tidak bisa mengunci akun sah
-  const turnstileResult = await verifyTurnstile(parsed.data.turnstileToken, clientIp, {
-    action: "login",
-    expectedHostname: host,
-  });
-  if (!turnstileResult.success) {
-    await tulisAudit(null, "auth.login_bot_blocked", "auth", rawId, {
-      ip: clientIp,
-      reason: turnstileResult.message,
-      user_agent: userAgent,
-    });
-    return { message: turnstileResult.message || "Tantangan keamanan gagal." };
-  }
-
-  // 2. RATE LIMITING & LOCKOUT (Persisten per IP dan per Username)
+  // 1. RATE LIMITING & LOCKOUT (Persisten per IP dan per Username)
   const rateLimitKey = `admin_login:id:${rawId}`;
   const ipRateLimitKey = `admin_login:ip:${clientIp}`;
 
@@ -152,8 +132,8 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
 
   const { data: profile } = await profileQuery.single();
 
-  // Jika akun tidak ditemukan atau BUKAN role 'admin' (siswa tidak boleh login ke portal admin/petugas)
-  if (!profile || profile.role !== "admin") {
+  // Jika akun tidak ditemukan atau BUKAN role admin/petugas (siswa tidak boleh login ke portal admin/petugas)
+  if (!profile || (profile.role !== "admin" && profile.role !== "librarian")) {
     dummyCryptoDelay();
     await recordFailedAttempt(rateLimitKey, 5);
     await recordFailedAttempt(ipRateLimitKey, 10);

@@ -5,11 +5,7 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // 1. HTTP to HTTPS redirect di environment produksi
-  // Periksa cf-visitor dan x-forwarded-proto untuk mencegah redirect loop di balik Cloudflare proxy
   const proto = request.headers.get("x-forwarded-proto");
-  const cfVisitor = request.headers.get("cf-visitor");
-  const isCloudflareHttps = cfVisitor?.includes('"scheme":"https"');
-
   const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
   const isLocalhost = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
 
@@ -17,7 +13,6 @@ export async function proxy(request: NextRequest) {
     process.env.NODE_ENV === "production" &&
     !isLocalhost &&
     proto === "http" &&
-    !isCloudflareHttps &&
     request.nextUrl.protocol !== "https:"
   ) {
     const httpsUrl = request.nextUrl.clone();

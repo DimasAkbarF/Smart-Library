@@ -3,41 +3,22 @@
 import { useActionState, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { login } from "@/features/auth/actions";
-import { TurnstileWidget } from "@/components/auth/turnstile-widget";
 import { cn } from "@/lib/utils";
 
 /**
  * Formulir login tunggal resmi Smart Library SMPN 17 Tangerang Selatan.
  * Khusus untuk petugas perpustakaan dan staf administrator.
- * Dilengkapi Cloudflare Turnstile, persistent rate limiting, dan auto-reset token.
  */
-export interface LoginFormProps {
-  siteKey?: string;
-}
+export type LoginFormProps = Record<string, never>;
 
-export function LoginForm({ siteKey }: LoginFormProps = {}) {
+export function LoginForm(_props: LoginFormProps = {}) {
   const [state, action, pending] = useActionState(login, {});
   const [showPassword, setShowPassword] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const invalid = Boolean(state.message);
-  const isSubmitDisabled = pending || !turnstileToken;
-
-  const handleAction = (formData: FormData) => {
-    if (!turnstileToken || pending) return;
-    const token = turnstileToken;
-    // Bersihkan token saat submit agar token yang sama tidak terkirim dua kali
-    setTurnstileToken(null);
-    formData.set("turnstile_token", token);
-    formData.set("cf-turnstile-response", token);
-    action(formData);
-  };
 
   return (
-    <form action={handleAction} className="grid gap-4.5">
-      {/* Hidden input token turnstile */}
-      <input type="hidden" name="turnstile_token" value={turnstileToken ?? ""} />
-
+    <form action={action} className="grid gap-4.5">
       {/* Field 1: Nama Pengguna / Email */}
       <div className="grid gap-1.5">
         <label
@@ -102,15 +83,6 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
         </div>
       </div>
 
-      {/* Cloudflare Turnstile Managed Widget */}
-      <div className="pt-0.5">
-        <TurnstileWidget
-          key={state.message || "initial"}
-          siteKey={siteKey}
-          onTokenChange={setTurnstileToken}
-        />
-      </div>
-
       {/* Error Alert Generik */}
       {state.message && (
         <p
@@ -125,7 +97,7 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
       {/* Tombol Submit */}
       <button
         type="submit"
-        disabled={isSubmitDisabled}
+        disabled={pending}
         className={cn(
           "mt-1 flex h-11 sm:h-10 w-full items-center justify-center rounded-[4px] bg-[#1B2F5B] px-4 font-plex-sans text-[14px] font-medium text-white transition-colors",
           "hover:bg-[#13234A] active:bg-[#13234A]",
@@ -133,7 +105,7 @@ export function LoginForm({ siteKey }: LoginFormProps = {}) {
           "disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
         )}
       >
-        {pending ? "Memproses..." : !turnstileToken ? "Menunggu Verifikasi Keamanan..." : "Masuk"}
+        {pending ? "Memproses..." : "Masuk"}
       </button>
     </form>
   );

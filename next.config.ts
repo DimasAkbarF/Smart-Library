@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval';
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' data: blob: https:;
   font-src 'self' https://fonts.gstatic.com data:;
-  connect-src 'self' https://challenges.cloudflare.com https://*.supabase.co http://localhost:54321 http://127.0.0.1:54321;
-  frame-src 'self' https://challenges.cloudflare.com;
+  connect-src 'self' https://*.supabase.co http://localhost:54321 http://127.0.0.1:54321;
+  frame-src 'self';
   frame-ancestors 'none';
   form-action 'self';
   base-uri 'self';

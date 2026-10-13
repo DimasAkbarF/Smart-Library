@@ -35,7 +35,7 @@ export function LoginCard() {
       )}
 
       <div className={supabaseConfigured ? "mt-6" : "mt-5 opacity-60"}>
-        <LoginForm siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
+        <LoginForm />
       </div>
 
       <div className="mt-6 border-t border-rule pt-4 text-center">
