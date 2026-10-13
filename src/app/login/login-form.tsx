@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  */
 export type LoginFormProps = Record<string, never>;
 
-export function LoginForm(_props: LoginFormProps = {}) {
+export function LoginForm() {
   const [state, action, pending] = useActionState(login, {});
   const [showPassword, setShowPassword] = useState(false);
 

@@ -201,15 +201,6 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     return { message: "Akun ini sedang tidak aktif. Hubungi administrator." };
   }
 
-  // Otomatis re-hash password melalui Supabase Auth Admin API saat login sukses
-  // untuk memastikan format password selalu tersimpan dengan hash bcrypt modern terstandar
-  try {
-    await svc.auth.admin.updateUserById(authData.user.id, {
-      password: parsed.data.password,
-    });
-  } catch (err) {
-    console.warn("[AUTH REHASH WARNING] Gagal re-hash otomatis kata sandi:", err);
-  }
 
   await tulisAudit(profile.id, "auth.login_success", "user", profile.id, {
     ip: clientIp,

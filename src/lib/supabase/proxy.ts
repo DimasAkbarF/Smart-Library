@@ -49,6 +49,10 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
+  const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const isLocal = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
+  const isSecure = !isLocal && (process.env.NODE_ENV === "production" || request.headers.get("x-forwarded-proto") === "https");
+
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {
@@ -68,7 +72,7 @@ export async function updateSession(request: NextRequest) {
           const hardenedOptions = {
             ...options,
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production" || request.headers.get("x-forwarded-proto") === "https",
+            secure: isSecure,
             sameSite: "lax" as const,
           };
           supabaseResponse.cookies.set(name, value, hardenedOptions);
@@ -100,7 +104,7 @@ export async function updateSession(request: NextRequest) {
     finalResponse.cookies.set(c.name, c.value, {
       ...c,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production" || request.headers.get("x-forwarded-proto") === "https",
+      secure: isSecure,
       sameSite: "lax",
     });
   });
