@@ -11,7 +11,7 @@ import { ROLE_HOME } from "@/lib/types";
 import { checkRateLimit, recordFailedAttempt, resetRateLimit } from "@/lib/rate-limit";
 import { getSession, tulisAudit } from "@/lib/auth";
 import { verifyTurnstile } from "@/lib/turnstile";
-import { isDefaultPassword, validatePassword } from "@/lib/password";
+import { validatePassword } from "@/lib/password";
 import { verifyTotpToken } from "@/lib/totp";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -149,20 +149,20 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     .eq("username", rawId)
     .single();
 
-  // Jika akun tidak ditemukan atau bukan role 'student' (petugas/admin harus ke /admin/login)
-  if (!profile || profile.role !== "student") {
+  // Jika akun tidak ditemukan
+  if (!profile) {
     dummyCryptoDelay();
     recordFailedAttempt(rateLimitKey, 5);
     recordFailedAttempt(ipRateLimitKey, 15);
     await tulisAudit(null, "auth.login_failed", "auth", rawId, {
       ip: clientIp,
-      reason: "invalid_credentials_or_wrong_portal",
+      reason: "invalid_credentials_or_user_not_found",
       user_agent: userAgent,
     });
     return { message: GENERIC_ERROR_STUDENT };
   }
 
-  email = profile.email || `${rawId}@sekolah.local`;
+  email = profile.email || `${profile.username}@sekolah.local`;
 
   // 4. AUTENTIKASI DENGAN SUPABASE
   const supabase = await createClient();
@@ -195,31 +195,19 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     };
   }
 
-  // 6. DETEKSI PASSWORD DEFAULT / FIRST LOGIN
-  const usedDefault = isDefaultPassword(parsed.data.password, profile.username);
-  if (usedDefault || profile.must_change_password) {
-    await svc.from("profiles").update({ must_change_password: true }).eq("id", profile.id);
-    revalidatePath("/change-password");
-    revalidatePath("/", "layout");
-    console.info(`[AUTH DIAGNOSTIC] Siswa '${rawId}' dialihkan ke /change-password. usedDefault: ${usedDefault}, must_change_password: ${profile.must_change_password}`);
-    await tulisAudit(profile.id, "auth.force_password_change_required", "user", profile.id, {
-      ip: clientIp,
-      reason: usedDefault ? "default_password_detected" : "flag_set",
-    });
-    redirect("/change-password");
-  }
-
-  // 7. CATAT AUDIT LOG
+  // 6. CATAT AUDIT LOG
   await tulisAudit(profile.id, "auth.login", "user", profile.id, {
     ip: clientIp,
     location: locationStr,
-    role: "student",
+    role: profile.role,
     name: profile.full_name,
     identifier: rawId,
     user_agent: userAgent,
   });
 
-  redirect(ROLE_HOME.student);
+  const destination = ROLE_HOME[profile.role as keyof typeof ROLE_HOME] || "/login";
+  console.info(`[AUTH DIAGNOSTIC] Login berhasil untuk '${rawId}' (role: ${profile.role}), redirecting ke ${destination}`);
+  redirect(destination);
 }
 
 /**
@@ -369,16 +357,6 @@ export async function adminLogin(_prev: LoginState, formData: FormData): Promise
     return { message: "Akun admin ini sedang tidak aktif." };
   }
 
-  // Deteksi password default
-  const usedDefault = isDefaultPassword(parsed.data.password, profile.username);
-  if (usedDefault || profile.must_change_password) {
-    await svc.from("profiles").update({ must_change_password: true }).eq("id", profile.id);
-    revalidatePath("/change-password");
-    revalidatePath("/admin", "layout");
-    revalidatePath("/", "layout");
-    console.info(`[AUTH DIAGNOSTIC] Admin '${rawId}' dialihkan ke /change-password. usedDefault: ${usedDefault}, must_change_password: ${profile.must_change_password}`);
-    redirect("/change-password");
-  }
 
   await tulisAudit(profile.id, "admin_auth.login_success", "user", profile.id, {
     ip: clientIp,

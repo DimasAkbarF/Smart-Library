@@ -65,30 +65,6 @@ export async function requireRole(...roles: Role[]): Promise<Session> {
   const session = await getSession();
   if (!session) redirect("/login");
   if (!roles.includes(session.profile.role)) redirect(ROLE_HOME[session.profile.role]);
-
-  if (session.profile.must_change_password) {
-    // Verifikasi langsung ke database untuk mencegah redirect loop akibat cache stale
-    try {
-      const svc = serviceClient();
-      const { data: fresh } = await svc
-        .from("profiles")
-        .select("must_change_password")
-        .eq("id", session.userId)
-        .single();
-      if (fresh?.must_change_password) {
-        redirect("/change-password");
-      } else {
-        session.profile.must_change_password = false;
-      }
-    } catch (e: unknown) {
-      // Jika merupakan redirect Next.js, teruskan lemparannya
-      if (e && typeof e === "object" && "digest" in e && String((e as { digest: unknown }).digest).startsWith("NEXT_REDIRECT")) {
-        throw e;
-      }
-      // Jika terjadi error database sementara, jangan langsung redirect loop
-    }
-  }
-
   return session;
 }
 
