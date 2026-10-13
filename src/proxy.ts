@@ -10,8 +10,12 @@ export async function proxy(request: NextRequest) {
   const cfVisitor = request.headers.get("cf-visitor");
   const isCloudflareHttps = cfVisitor?.includes('"scheme":"https"');
 
+  const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const isLocalhost = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
+
   if (
     process.env.NODE_ENV === "production" &&
+    !isLocalhost &&
     proto === "http" &&
     !isCloudflareHttps &&
     request.nextUrl.protocol !== "https:"

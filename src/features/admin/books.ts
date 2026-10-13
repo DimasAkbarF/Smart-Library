@@ -103,7 +103,9 @@ export async function createBookWithCopies(
   revalidatePath("/admin");
   revalidatePath("/admin/books");
   revalidatePath("/admin/copies");
+  revalidatePath("/books");
   revalidateTag("admin-dashboard", { expire: 0 });
+  revalidateTag("catalog", { expire: 0 });
   return {
     ok: true,
     book: {
@@ -147,6 +149,10 @@ export async function updateBook(
   if (error) return { message: "Gagal menyimpan perubahan." };
   await tulisAudit(session.userId, "book.update", "book", id, { title: parsed.data.title });
   revalidatePath("/admin");
+  revalidatePath("/admin/books");
+  revalidatePath("/books");
+  revalidateTag("admin-dashboard", { expire: 0 });
+  revalidateTag("catalog", { expire: 0 });
   return { ok: true };
 }
 
@@ -168,7 +174,9 @@ export async function deleteBook(id: string): Promise<{ ok: boolean; message?: s
   await tulisAudit(session.userId, "book.delete", "book", id, {});
   revalidatePath("/admin");
   revalidatePath("/admin/books");
+  revalidatePath("/books");
   revalidateTag("admin-dashboard", { expire: 0 });
+  revalidateTag("catalog", { expire: 0 });
   return { ok: true };
 }
 
@@ -192,7 +200,9 @@ export async function addCopies(bookId: string, count: number, location?: string
   revalidatePath("/admin");
   revalidatePath("/admin/books");
   revalidatePath("/admin/copies");
+  revalidatePath("/books");
   revalidateTag("admin-dashboard", { expire: 0 });
+  revalidateTag("catalog", { expire: 0 });
   return (data ?? []).map((c, idx) => ({
     id: c.id,
     inventory_code: c.inventory_code || `BOOK-${String(idx + 1).padStart(6, "0")}`,
@@ -219,7 +229,9 @@ export async function setCopyStatus(copyId: string, status: BookCopy["status"]) 
   await tulisAudit(session.userId, "copy.status", "book_copy", copyId, { status });
   revalidatePath("/admin");
   revalidatePath("/admin/copies");
+  revalidatePath("/books");
   revalidateTag("admin-dashboard", { expire: 0 });
+  revalidateTag("catalog", { expire: 0 });
 }
 
 export async function listCopies(opts: {

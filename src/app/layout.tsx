@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import {
-  Plus_Jakarta_Sans,
-  JetBrains_Mono,
   Newsreader,
   IBM_Plex_Sans,
   IBM_Plex_Mono,
@@ -11,7 +9,7 @@ import "./globals.css";
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600", "700"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -21,6 +19,7 @@ const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
+  preload: true,
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -28,21 +27,6 @@ const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
-});
-
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-  preload: true,
-});
-
-const mono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -136,7 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="id"
-      className={`${plusJakarta.variable} ${mono.variable} ${newsreader.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full antialiased font-sans`}
+      className={`${newsreader.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full antialiased font-sans`}
     >
       <body className="min-h-full bg-background text-ink font-sans">{children}</body>
     </html>

@@ -125,7 +125,9 @@ export async function borrowAction(
   revalidatePath("/admin");
   revalidatePath("/admin/transactions");
   revalidatePath("/admin/borrow");
+  revalidatePath("/books");
   revalidateTag("admin-dashboard", { expire: 0 });
+  revalidateTag("catalog", { expire: 0 });
   return { ok: true, receipt };
 }
 
@@ -145,7 +147,9 @@ export async function returnAction(
     revalidatePath("/admin");
     revalidatePath("/admin/transactions");
     revalidatePath("/admin/return");
+    revalidatePath("/books");
     revalidateTag("admin-dashboard", { expire: 0 });
+    revalidateTag("catalog", { expire: 0 });
     return { ok: true, receipt };
   } catch (e) {
     return { ok: false, code: kodeDariError(e) || "UNKNOWN" };
