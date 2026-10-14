@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { QrScanner } from "@/components/library/qr-scanner";
-import { TransactionReceipt } from "@/components/library/receipt";
 import { Button } from "@/components/ui/button";
 import { CopyStatusChip } from "@/components/ui/status-chip";
 import {
   borrowAction,
   getStudentContext,
   resolveQr,
-  type Receipt,
   type StudentContext,
 } from "@/features/loans/actions";
 import { formatTanggal } from "@/lib/format";
@@ -25,7 +23,6 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
   const [busy1, setBusy1] = useState(false);
   const [busy2, setBusy2] = useState(false);
   const [busy3, setBusy3] = useState(false);
-  const [receipt, setReceipt] = useState<Receipt | null>(null);
 
   const resetAll = () => {
     setCtx(null);
@@ -33,7 +30,6 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
     setStep1Msg("");
     setStep2Msg("");
     setErr("");
-    setReceipt(null);
   };
 
   const onStudent = async (token: string) => {
@@ -94,22 +90,13 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
     setErr("");
     const res = await borrowAction(ctx.student.id, copy.id);
     setBusy3(false);
-    if (res.ok) setReceipt(res.receipt);
-    else setErr(pesanRamah(res.code));
+    if (res.ok) {
+      alert("Peminjaman buku berhasil!");
+      resetAll();
+    } else {
+      setErr(pesanRamah(res.code));
+    }
   };
-
-  if (receipt) {
-    return (
-      <div className="grid gap-3">
-        <TransactionReceipt kind="borrow" receipt={receipt} nextHref="/admin/borrow" nextLabel="Transaksi berikutnya" />
-        <div>
-          <Button variant="secondary" onClick={resetAll}>
-            Scan lagi tanpa pindah halaman
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px] items-start">
