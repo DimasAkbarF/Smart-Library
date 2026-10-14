@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { safeGetUser } from "@/lib/supabase/safe-auth";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { serviceClient } from "@/lib/supabase/service";
 import type { Profile, Role } from "@/lib/types";
@@ -39,18 +40,26 @@ export const getSession = cache(async (): Promise<Session | null> => {
   if (!supabaseConfigured) return null;
 
   let userId: string | null = null;
+  let authCheckedByProxy = false;
   try {
     const headerList = await headers();
     userId = headerList.get("x-user-id");
+    authCheckedByProxy = headerList.get("x-auth-checked") === "1";
   } catch {
     // Server action atau context tanpa headers
   }
 
   if (!userId) {
+    // Jika middleware proxy sudah memeriksa sesi dan memastikan tidak ada user aktif,
+    // langsung return null tanpa memanggil Supabase getUser() ulang (menghindari duplikasi log & latency).
+    if (authCheckedByProxy) {
+      return null;
+    }
+
     const supabase = await createClient();
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await safeGetUser(supabase);
     if (!user) return null;
     userId = user.id;
   }
