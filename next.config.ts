@@ -14,6 +14,8 @@ const cspHeader = `
   object-src 'none';
 `.replace(/\s{2,}/g, " ").trim();
 
+const isProd = process.env.NODE_ENV === "production";
+
 const securityHeaders = [
   {
     key: "Content-Security-Policy",
@@ -23,10 +25,17 @@ const securityHeaders = [
     key: "X-DNS-Prefetch-Control",
     value: "on",
   },
-  {
-    key: "Strict-Transport-Security",
-    value: "max-age=63072000; includeSubDomains; preload",
-  },
+  // HSTS (Strict-Transport-Security) HANYA untuk production HTTPS asli.
+  // JANGAN PERNAH dikirim pada development/localhost karena browser (Chrome/Edge)
+  // akan mencatat dan memaksa HTTPS ke port lokal yang mengakibatkan ERR_SSL_PROTOCOL_ERROR.
+  ...(isProd
+    ? [
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
+      ]
+    : []),
   {
     key: "X-Frame-Options",
     value: "DENY",

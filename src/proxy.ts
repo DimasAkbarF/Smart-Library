@@ -7,7 +7,11 @@ export async function proxy(request: NextRequest) {
   // 1. HTTP to HTTPS redirect di environment produksi
   const proto = request.headers.get("x-forwarded-proto");
   const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
-  const isLocalhost = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
+  const isLocalhost =
+    hostHeader.includes("localhost") ||
+    hostHeader.includes("127.0.0.1") ||
+    hostHeader.includes("[::1]") ||
+    hostHeader.includes("0.0.0.0");
 
   if (
     process.env.NODE_ENV === "production" &&
