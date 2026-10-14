@@ -29,13 +29,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const svc = serviceClient();
     const { data: books } = await svc
       .from("books")
-      .select("id, updated_at")
+      .select("id, created_at")
       .order("title")
       .limit(500);
 
     const bookRoutes: MetadataRoute.Sitemap = (books ?? []).map((b) => ({
       url: `${baseUrl}/books/${b.id}`,
-      lastModified: b.updated_at ? new Date(b.updated_at) : new Date(),
+      lastModified: b.created_at ? new Date(b.created_at) : new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     }));
