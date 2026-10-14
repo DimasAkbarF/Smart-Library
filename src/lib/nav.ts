@@ -6,6 +6,7 @@ import {
   BookOpen,
   FileText,
   Home,
+  IdCard,
   Layers,
   QrCode,
   ScrollText,
@@ -49,6 +50,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
     group: "ANGGOTA",
     items: [
       { href: "/admin/students", label: "Data Siswa", icon: Users },
+      { href: "/admin/students/cards", label: "Cetak Kartu Siswa", icon: IdCard },
     ],
   },
   {

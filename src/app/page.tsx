@@ -3,10 +3,10 @@ import { getSession } from "@/lib/auth";
 
 export default async function Home() {
   const session = await getSession();
-  if (!session || session.profile.role !== "admin") {
-    redirect("/login");
+  if (session?.profile.role === "admin") {
+    redirect("/admin");
   }
-  redirect("/admin");
+  redirect("/books");
 }
 
 export const dynamic = "force-dynamic";

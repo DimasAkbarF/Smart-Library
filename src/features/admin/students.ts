@@ -58,6 +58,7 @@ export async function createStudent(
   await tulisAudit(session.userId, "student.create", "student", data.id, { nis });
   revalidatePath("/admin");
   revalidatePath("/admin/students");
+  revalidateTag("students", { expire: 0 });
   revalidateTag("admin-dashboard", { expire: 0 });
   return {
     ok: true,
@@ -102,6 +103,7 @@ export async function updateStudent(
   await tulisAudit(session.userId, "student.update", "student", id, { nis });
   revalidatePath("/admin");
   revalidatePath("/admin/students");
+  revalidateTag("students", { expire: 0 });
   revalidateTag("admin-dashboard", { expire: 0 });
   return { ok: true };
 }
@@ -123,6 +125,7 @@ export async function revokeAndRegenerateStudentQr(id: string): Promise<{ ok: bo
   revalidatePath("/admin");
   revalidatePath("/admin/students");
   revalidatePath("/admin/qr");
+  revalidateTag("students", { expire: 0 });
   return { ok: true, qr_token: newToken };
 }
 
@@ -134,39 +137,53 @@ export async function setStudentStatus(id: string, status: Student["status"]) {
   await tulisAudit(session.userId, "student.status", "student", id, { status });
   revalidatePath("/admin");
   revalidatePath("/admin/students");
+  revalidateTag("students", { expire: 0 });
   revalidateTag("admin-dashboard", { expire: 0 });
 }
 
 export async function listStudents(opts: { q?: string; classId?: string; page?: number; pageSize?: number }) {
   await assertRole("admin");
-  const svc = serviceClient();
   const page = Math.max(1, opts.page ?? 1);
   const pageSize = opts.pageSize ?? 25;
-  let query = svc
-    .from("students")
-    .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)", { count: "exact" });
-  if (opts.classId) query = query.eq("class_id", opts.classId);
   const q = opts.q ? sanitizeSearchTerm(opts.q) : "";
-  if (q) {
-    const like = `%${q}%`;
-    query = query.or(`nis.ilike.${like},name.ilike.${like}`);
-  }
-  const { data, count } = await query
-    .order("name")
-    .range((page - 1) * pageSize, page * pageSize - 1);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rows: Student[] = (data ?? []).map((s: any) => ({
-    id: s.id,
-    nis: s.nis,
-    name: s.name,
-    class_id: s.class_id,
-    class_name: s.classes?.name ?? null,
-    qr_token: s.qr_token,
-    status: s.status,
-    user_id: s.user_id,
-  }));
-  const total = count ?? 0;
-  return { rows, total, page, pageCount: Math.max(1, Math.ceil(total / pageSize)) };
+  const classId = opts.classId ?? "";
+
+  const fetcher = unstable_cache(
+    async (qStr: string, cId: string, p: number, ps: number) => {
+      const svc = serviceClient();
+      let query = svc
+        .from("students")
+        .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)", { count: "exact" });
+      if (cId) query = query.eq("class_id", cId);
+      if (qStr) {
+        const like = `%${qStr}%`;
+        query = query.or(`nis.ilike.${like},name.ilike.${like}`);
+      }
+      const { data, count } = await query
+        .order("name")
+        .range((p - 1) * ps, p * ps - 1);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rows: Student[] = (data ?? []).map((s: any) => ({
+        id: s.id,
+        nis: s.nis,
+        name: s.name,
+        class_id: s.class_id,
+        class_name: s.classes?.name ?? null,
+        qr_token: s.qr_token,
+        status: s.status,
+        user_id: s.user_id,
+      }));
+      const total = count ?? 0;
+      return { rows, total, page: p, pageCount: Math.max(1, Math.ceil(total / ps)) };
+    },
+    ["students-list", q, classId, String(page), String(pageSize)],
+    {
+      revalidate: 300,
+      tags: ["students"],
+    },
+  );
+
+  return fetcher(q, classId, page, pageSize);
 }
 
 export const getCachedClasses = unstable_cache(
@@ -257,6 +274,7 @@ export async function importStudents(rows: ImportStudentRow[]): Promise<ImportRe
   });
   revalidatePath("/admin");
   revalidatePath("/admin/students");
+  revalidateTag("students", { expire: 0 });
   revalidateTag("admin-dashboard", { expire: 0 });
   revalidateTag("classes", { expire: 0 });
   return report;

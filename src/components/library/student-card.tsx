@@ -41,6 +41,7 @@ export function StudentCard({ student, className }: StudentCardProps) {
           alt=""
           width={256}
           height={256}
+          unoptimized
           className="size-64 object-contain grayscale"
         />
       </div>
@@ -55,6 +56,7 @@ export function StudentCard({ student, className }: StudentCardProps) {
               alt="Logo SMPN 17 Tangerang Selatan"
               width={56}
               height={56}
+              unoptimized
               className="size-full object-contain"
             />
           </div>

@@ -11,8 +11,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/"],
-        disallow: ["/login", "/admin", "/admin/login", "/student", "/change-password", "/api", "/card"],
+        allow: ["/", "/books", "/books/*", "/login"],
+        disallow: ["/admin/", "/api/", "/change-password", "/card/"],
       },
       {
         userAgent: ["GPTBot", "ClaudeBot", "PerplexityBot", "Applebot-Extended", "CCBot", "Bytespider"],

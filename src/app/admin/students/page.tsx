@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { Printer } from "lucide-react";
 import { listStudents, listClasses } from "@/features/admin/students";
 import { StudentsSection } from "./student-client";
 import { cn } from "@/lib/utils";
@@ -45,7 +46,14 @@ export default async function StudentsPage({
             Kelola basis data {data.total.toLocaleString("id-ID")} siswa terdaftar, penetapan rombel kelas, dan kode identitas perpustakaan.
           </p>
         </div>
-        <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
+          <Link
+            href={`/admin/students/cards${classId ? `?classId=${classId}` : ""}`}
+            className="inline-flex min-h-tap-min items-center justify-center rounded-btn bg-primary text-white px-4 text-label font-semibold hover:bg-primary-hover shadow-xs transition-colors w-full sm:w-auto gap-2"
+          >
+            <Printer className="size-4" />
+            <span>Cetak Semua Kartu</span>
+          </Link>
           <Link
             href="/admin/import"
             className="inline-flex min-h-tap-min items-center justify-center rounded-btn border border-rule-strong bg-card px-4 text-label font-semibold text-ink hover:bg-surface-sunken-ed transition-colors w-full sm:w-auto"

@@ -55,13 +55,15 @@ export default async function PublicBooksPage({
   return (
     <div className="grid gap-6">
       <header className="border-b border-rule pb-5">
+        <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase mb-1">
+          <span className="size-2 rounded-chip bg-primary shrink-0" />
+          <span>Perpustakaan Digital Resmi · SMP Negeri 17 Tangerang Selatan (NPSN 20603332)</span>
+        </div>
         <h1 className="font-serif text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-          Katalog Koleksi Buku
+          Katalog Koleksi Buku SMPN 17 Tangerang Selatan
         </h1>
-        <p className="mt-2 text-sm text-ink-muted">
-          {result.total > 0
-            ? `${result.total} judul buku terdata di perpustakaan.`
-            : "Jelajahi dan temukan buku referensi pembelajaran di SMP Negeri 17 Tangerang Selatan."}
+        <p className="mt-2 text-sm text-ink-muted leading-relaxed">
+          Smart Library SMP Negeri 17 Tangsel — Temukan dan telusuri {result.total.toLocaleString("id-ID")} koleksi buku pelajaran Kurikulum Merdeka, karya sastra, referensi belajar, dan ensiklopedia literasi sekolah resmi.
         </p>
       </header>
 

@@ -219,8 +219,21 @@ h1, h2, h3 {
     break-inside: avoid;
     box-shadow: none !important;
   }
+  /* Kartu Siswa Siap Cetak (A4: 2 kolom kartu) */
+  .print-student-cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  .print-student-card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
+  }
   body {
     background: #fff;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 

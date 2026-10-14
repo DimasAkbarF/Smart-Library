@@ -18,8 +18,17 @@ export async function generateMetadata({
     return { title: "Buku Tidak Ditemukan" };
   }
   return {
-    title: `${book.title} — Katalog Perpustakaan`,
-    description: `Detail buku ${book.title} karya ${book.author}. Ketersediaan: ${book.available_copies} dari ${book.total_copies} eksemplar.`,
+    title: `${book.title} karya ${book.author} — Smart Library SMPN 17 Tangsel`,
+    description: `Buku ${book.title} karya ${book.author}. Ketersediaan di Perpustakaan SMP Negeri 17 Tangerang Selatan (NPSN 20603332): ${book.available_copies} dari ${book.total_copies} eksemplar tersedia untuk dipinjam.`,
+    keywords: [
+      book.title,
+      book.author,
+      "smp negeri 17 tangerang selatan",
+      "smpn 17 tangsel",
+      "smp 17 tangsel",
+      "katalog buku smpn 17",
+      "perpustakaan smpn 17 tangerang selatan",
+    ],
   };
 }
 
@@ -31,6 +40,25 @@ export default async function PublicBookDetail({
   const { id } = await params;
   const [book, policy] = await Promise.all([getBookDetail(id), getPolicy()]);
   if (!book) notFound();
+
+  const bookJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "name": book.title,
+    "author": {
+      "@type": "Person",
+      "name": book.author,
+    },
+    ...(book.isbn ? { "isbn": book.isbn } : {}),
+    ...(book.publisher ? { "publisher": { "@type": "Organization", "name": book.publisher } } : {}),
+    ...(book.publication_year ? { "datePublished": String(book.publication_year) } : {}),
+    ...(book.cover_url ? { "image": book.cover_url } : {}),
+    "provider": {
+      "@type": "Library",
+      "name": "Smart Library SMP Negeri 17 Tangerang Selatan",
+      "url": "https://perpustakaansmp17tangsel.web.id",
+    },
+  };
 
   const initials = book.title
     .split(" ")
@@ -44,6 +72,10 @@ export default async function PublicBookDetail({
 
   return (
     <div className="space-y-6 animate-rise max-w-4xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd).replace(/</g, "\\u003c") }}
+      />
       {/* Top Nav */}
       <div>
         <Link href="/books" className="inline-flex w-fit mb-3">
