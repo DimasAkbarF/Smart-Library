@@ -38,8 +38,8 @@ export async function resolveQr(rawToken: string): Promise<ResolveResult> {
   const { data: s } = await svc
     .from("students")
     .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)")
-    .eq("qr_token", token)
-    .single();
+    .or(`qr_token.eq.${token},nis.eq.${token}`)
+    .maybeSingle();
   if (s) {
     const student = mapStudent(s);
     const { count } = await svc
@@ -54,7 +54,7 @@ export async function resolveQr(rawToken: string): Promise<ResolveResult> {
     .from("book_copies")
     .select("id, book_id, inventory_code, qr_token, condition, location, status, books(title)")
     .or(`qr_token.eq.${token},inventory_code.eq.${token}`)
-    .single();
+    .maybeSingle();
   if (c) {
     const copy = mapCopy(c);
     const loan = await activeLoanForCopy(copy.id);
@@ -68,11 +68,13 @@ export async function getStudentContext(idOrNis: string): Promise<StudentContext
   const svc = serviceClient();
   const key = idOrNis.trim();
   if (!key || !/^[A-Za-z0-9-]{1,64}$/.test(key)) throw new Error("STUDENT_NOT_FOUND");
-  const { data: s } = await svc
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key);
+  const query = svc
     .from("students")
-    .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)")
-    .or(`id.eq.${key},nis.eq.${key.toUpperCase()}`)
-    .single();
+    .select("id, nis, name, class_id, qr_token, status, user_id, classes(name)");
+  const { data: s } = isUuid
+    ? await query.eq("id", key).maybeSingle()
+    : await query.or(`nis.eq.${key.toUpperCase()},qr_token.eq.${key.toUpperCase()}`).maybeSingle();
   if (!s) throw new Error("STUDENT_NOT_FOUND");
   const { data: policy } = await svc.from("library_policies").select("*").eq("id", 1).single();
   const { data: loans, count } = await svc
