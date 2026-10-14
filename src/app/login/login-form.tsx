@@ -37,7 +37,7 @@ export function LoginForm() {
           aria-invalid={invalid}
           placeholder="nama pengguna atau email"
           className={cn(
-            "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white px-3 font-plex-sans text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
+            "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white px-3 font-plex-sans text-[16px] sm:text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
             "focus:border-primary focus:ring-2 focus:ring-primary/20",
             "disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:cursor-not-allowed",
             invalid && "border-danger bg-danger-bg text-danger focus:border-danger focus:ring-danger/20"
@@ -64,7 +64,7 @@ export function LoginForm() {
             aria-invalid={invalid}
             placeholder="Masukkan kata sandi"
             className={cn(
-              "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white pl-3 pr-16 font-plex-sans text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
+              "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white pl-3 pr-16 font-plex-sans text-[16px] sm:text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
               "focus:border-primary focus:ring-2 focus:ring-primary/20",
               "disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:cursor-not-allowed",
               invalid && "border-danger bg-danger-bg text-danger focus:border-danger focus:ring-danger/20"
@@ -76,7 +76,7 @@ export function LoginForm() {
             disabled={pending}
             aria-pressed={showPassword}
             aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
-            className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-[2px] px-2.5 py-1.5 font-plex-sans text-[12px] font-medium text-[#4A5160] hover:text-[#161B26] focus-visible:outline-2 focus-visible:outline-[#1B2F5B] disabled:cursor-not-allowed disabled:opacity-50"
+            className="absolute top-1/2 right-1.5 -translate-y-1/2 flex min-h-[36px] items-center rounded-[2px] px-2.5 py-1.5 font-plex-sans text-[12px] font-semibold text-[#4A5160] hover:text-[#161B26] focus-visible:outline-2 focus-visible:outline-[#1B2F5B] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {showPassword ? "Tutup" : "Lihat"}
           </button>

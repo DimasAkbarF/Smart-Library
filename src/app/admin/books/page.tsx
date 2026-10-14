@@ -35,14 +35,14 @@ export default async function BooksPage({
             Kelola data bibliografi, nomor ISBN, penerbit, dan ketersediaan stok fisik perpustakaan.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Link href="/admin/copies">
-            <Button variant="secondary" size="md">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2.5 w-full sm:w-auto">
+          <Link href="/admin/copies" className="w-full sm:w-auto">
+            <Button variant="secondary" size="md" className="w-full sm:w-auto min-h-tap-min font-semibold justify-center">
               Daftar Eksemplar
             </Button>
           </Link>
-          <Link href="/admin/books/new">
-            <Button size="md" className="gap-2">
+          <Link href="/admin/books/new" className="w-full sm:w-auto">
+            <Button size="md" className="gap-2 w-full sm:w-auto min-h-tap-min font-semibold justify-center">
               <Plus className="size-4" />
               <span>Tambah Buku</span>
             </Button>
@@ -160,7 +160,7 @@ export default async function BooksPage({
               cell: (b) => (
                 <Link
                   href={`/admin/books/${b.id}`}
-                  className="inline-flex items-center rounded-md border border-outline px-3 py-1 text-label font-semibold text-ink hover:border-sky hover:bg-sky-soft hover:text-sky-deep transition-colors"
+                  className="inline-flex min-h-[36px] items-center justify-center rounded-md border border-outline px-3 py-1.5 text-label font-semibold text-ink hover:border-sky hover:bg-sky-soft hover:text-sky-deep transition-colors"
                 >
                   Kelola Detail
                 </Link>

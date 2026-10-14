@@ -69,13 +69,17 @@ export default async function PublicBooksPage({
         <SearchInput placeholder="Cari judul, penulis, atau ISBN…" />
       </Suspense>
 
-      <div className="flex flex-wrap items-center gap-2" aria-label="Filter kategori">
+      <div
+        className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
+        role="group"
+        aria-label="Filter kategori"
+      >
         <Link
           href={href(sp, { cat: undefined, page: undefined })}
           className={cn(
-            "rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
+            "shrink-0 inline-flex min-h-[36px] items-center rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
             !sp.cat
-              ? "bg-primary-soft text-primary font-semibold border border-primary/20"
+              ? "bg-primary-soft text-primary font-semibold border border-primary/20 shadow-xs"
               : "bg-white text-ink-muted hover:text-ink border border-rule",
           )}
         >
@@ -87,9 +91,9 @@ export default async function PublicBooksPage({
             href={href(sp, { cat: sp.cat === c.id ? undefined : c.id, page: undefined })}
             aria-pressed={sp.cat === c.id}
             className={cn(
-              "rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
+              "shrink-0 inline-flex min-h-[36px] items-center rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
               sp.cat === c.id
-                ? "bg-primary-soft text-primary font-semibold border border-primary/20"
+                ? "bg-primary-soft text-primary font-semibold border border-primary/20 shadow-xs"
                 : "bg-white text-ink-muted hover:text-ink border border-rule",
             )}
           >
@@ -100,9 +104,9 @@ export default async function PublicBooksPage({
           href={href(sp, { avail: sp.avail === "1" ? undefined : "1", page: undefined })}
           aria-pressed={sp.avail === "1"}
           className={cn(
-            "rounded-chip border px-3 py-1.5 text-xs font-medium transition-colors",
+            "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-xs font-medium transition-colors",
             sp.avail === "1"
-              ? "border-success/30 bg-success-bg text-success font-semibold"
+              ? "border-success/30 bg-success-bg text-success font-semibold shadow-xs"
               : "border-rule bg-white text-ink-muted hover:text-ink",
           )}
         >

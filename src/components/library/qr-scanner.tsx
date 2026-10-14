@@ -169,10 +169,10 @@ export function QrScanner({
             onChange={(e) => setManual(e.target.value)}
             placeholder="Atau ketik kode manual (cth. BOOK-000001 / SIS-1001)"
             aria-label="Kode manual"
-            className="pl-10 font-mono text-label sm:text-body"
+            className="pl-10 font-mono text-base sm:text-sm"
           />
         </div>
-        <Button type="submit" variant="secondary" size="md" className="shrink-0">
+        <Button type="submit" variant="secondary" size="md" className="shrink-0 min-h-tap-min font-semibold">
           Cari
         </Button>
       </form>

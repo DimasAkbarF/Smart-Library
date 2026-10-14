@@ -392,17 +392,17 @@ export function AppShell({
                   className="fixed inset-0 bg-[#161B26]/45 transition-opacity"
                   onClick={() => setMobileMenuOpen(false)}
                 />
-                <div className="fixed inset-y-0 left-0 flex w-[260px] max-w-full flex-col justify-between border-r border-rule bg-white p-4 shadow-dropdown">
-                  <div className="min-h-0 overflow-y-auto">
+                <div className="fixed inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col justify-between border-r border-rule bg-white p-4 shadow-dropdown">
+                  <div className="min-h-0 overflow-y-auto pb-4 no-scrollbar">
                     <div className="flex items-center justify-between border-b border-rule pb-3">
                       <Brand />
                       <button
                         type="button"
                         onClick={() => setMobileMenuOpen(false)}
                         aria-label="Tutup menu"
-                        className="rounded-btn p-1 text-ink-muted hover:bg-surface-sunken-ed hover:text-ink"
+                        className="flex size-9 items-center justify-center rounded-btn text-ink-muted hover:bg-surface-sunken-ed hover:text-ink"
                       >
-                        <X className="size-4.5" />
+                        <X className="size-5" />
                       </button>
                     </div>
                     <div className="mt-3 space-y-3">
@@ -430,10 +430,10 @@ export function AppShell({
                     <form action={logout}>
                       <button
                         type="submit"
-                        className="flex w-full items-center gap-2 rounded-btn px-3 py-2 text-xs font-medium text-ink-muted hover:bg-danger-bg hover:text-danger"
+                        className="flex min-h-[40px] w-full items-center gap-2 rounded-btn px-3 py-2 text-xs font-semibold text-ink-muted hover:bg-danger-bg hover:text-danger active:bg-danger-bg transition-colors"
                       >
-                        <LogOut className="size-4" />
-                        <span>Keluar ({userName})</span>
+                        <LogOut className="size-4 shrink-0" />
+                        <span className="truncate">Keluar ({userName})</span>
                       </button>
                     </form>
                   </div>

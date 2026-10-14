@@ -58,23 +58,27 @@ export default async function CopiesPage({
             Pantau status fisik, penempatan rak, dan status operasional ({total.toLocaleString("id-ID")} unit tercatat).
           </p>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2.5 w-full sm:w-auto">
           <Link
             href="/admin/qr"
-            className="inline-flex h-9 items-center justify-center rounded-btn border border-rule bg-white px-3 text-xs font-medium text-ink hover:bg-surface-sunken-ed hover:border-rule-strong transition-colors"
+            className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule bg-white px-3 text-xs font-semibold text-ink hover:bg-surface-sunken-ed hover:border-rule-strong transition-colors"
           >
             Cetak Label QR
           </Link>
           <Link
             href="/admin/books"
-            className="inline-flex h-9 items-center justify-center rounded-btn bg-primary px-3 text-xs font-medium text-white hover:bg-primary-hover transition-colors"
+            className="inline-flex min-h-[36px] items-center justify-center rounded-btn bg-primary px-3 text-xs font-semibold text-white hover:bg-primary-hover transition-colors"
           >
             Katalog Buku
           </Link>
         </div>
       </header>
 
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter status">
+      <div
+        className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
+        role="group"
+        aria-label="Filter status"
+      >
         {FILTERS.map((f) => {
           const isActive = (status || "") === f.value;
           return (
@@ -83,9 +87,9 @@ export default async function CopiesPage({
               href={chipHref(f.value)}
               aria-current={isActive ? "true" : undefined}
               className={cn(
-                "rounded-chip border px-3 py-1 text-xs font-medium transition-colors",
+                "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
                 isActive
-                  ? "border-primary bg-primary-soft text-primary font-semibold"
+                  ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
                   : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:bg-surface-sunken-ed",
               )}
             >

@@ -93,9 +93,9 @@ export default async function AdminPage() {
           ============================================================ */}
       <header className="flex flex-col gap-4 border-b border-rule pb-5 md:flex-row md:items-start md:justify-between md:gap-6 sm:pb-6">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono">
+          <div className="flex items-center gap-2 text-xs font-medium text-primary font-plex-mono flex-wrap">
             <span className="size-1.5 shrink-0 rounded-chip bg-success" aria-hidden />
-            <span className="truncate">SMP Negeri 17 Tangerang Selatan · {todayFormatted}</span>
+            <span className="break-words">SMP Negeri 17 Tangerang Selatan · {todayFormatted}</span>
           </div>
           <h1 className="mt-2 font-serif text-2xl font-bold tracking-tight text-ink sm:text-3xl">
             Dashboard Perpustakaan
@@ -106,24 +106,24 @@ export default async function AdminPage() {
         </div>
 
         {/* Aksi utama */}
-        <div className="flex w-full flex-col gap-2 min-[360px]:flex-row min-[360px]:items-center sm:gap-2.5 md:w-auto md:flex-wrap">
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-2.5 md:w-auto md:flex-wrap">
           <Link href="/admin/borrow" className="min-w-0 flex-1 md:flex-initial">
             <Button
               size="sm"
-              className="h-11 min-h-11 w-full min-w-0 gap-2 whitespace-nowrap px-3.5 text-[13.5px] font-semibold md:h-12 md:min-h-12 md:px-5 md:text-body"
+              className="h-11 min-h-11 w-full min-w-0 gap-2 whitespace-nowrap px-3.5 text-[13.5px] font-semibold md:h-12 md:min-h-12 md:px-5 md:text-body justify-center"
             >
               <Plus className="size-4 shrink-0 md:size-5" />
-              <span className="truncate">Pinjamkan Buku</span>
+              <span>Pinjamkan Buku</span>
             </Button>
           </Link>
           <Link href="/admin/return" className="min-w-0 flex-1 md:flex-initial">
             <Button
               variant="secondary"
               size="sm"
-              className="h-11 min-h-11 w-full min-w-0 gap-2 whitespace-nowrap px-3.5 text-[13.5px] font-semibold md:h-12 md:min-h-12 md:px-5 md:text-body"
+              className="h-11 min-h-11 w-full min-w-0 gap-2 whitespace-nowrap px-3.5 text-[13.5px] font-semibold md:h-12 md:min-h-12 md:px-5 md:text-body justify-center"
             >
               <Upload className="size-4 shrink-0 md:size-5" />
-              <span className="truncate">Terima Pengembalian</span>
+              <span>Terima Pengembalian</span>
             </Button>
           </Link>
         </div>

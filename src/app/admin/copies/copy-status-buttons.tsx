@@ -53,7 +53,7 @@ export function CopyStatusButtons({ id, status }: { id: string; status: string }
             }
           }
         }}
-        className="h-8 rounded-btn border border-rule bg-white px-2 text-xs font-medium text-ink hover:border-rule-strong focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50"
+        className="h-9 sm:h-8 min-h-[36px] sm:min-h-0 rounded-btn border border-rule bg-white px-2 text-sm sm:text-xs font-medium text-ink hover:border-rule-strong focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50"
       >
         <option value="" disabled>
           Ubah status…

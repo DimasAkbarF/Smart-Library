@@ -53,23 +53,27 @@ export default async function TransactionsPage({
         </div>
         <Link
           href={exportHref}
-          className="inline-flex items-center justify-center rounded-md border border-outline bg-background px-4 py-2 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-all shadow-xs"
+          className="inline-flex min-h-tap-min items-center justify-center rounded-md border border-outline bg-background px-4 py-2 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-all shadow-xs w-full sm:w-auto"
         >
           Ekspor Seluruh CSV
         </Link>
       </div>
 
       <div className="space-y-3">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter status">
+        <div
+          className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
+          role="group"
+          aria-label="Filter status"
+        >
           {FILTERS.map((f) => (
             <Link
               key={f.label}
               href={chipHref(f.value)}
               aria-current={(status || "") === f.value ? "true" : undefined}
               className={cn(
-                "rounded-chip border px-3 py-1 text-xs font-medium transition-colors",
+                "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
                 (status || "") === f.value
-                  ? "border-primary bg-primary-soft text-primary font-semibold"
+                  ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
                   : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:bg-surface-sunken-ed",
               )}
             >

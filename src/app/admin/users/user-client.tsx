@@ -30,7 +30,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
 
   return (
     <div className="grid gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {msg ? (
           <p role="alert" className="text-body font-semibold text-danger">
             {msg}
@@ -38,7 +38,11 @@ export function UsersSection({ users }: { users: Profile[] }) {
         ) : (
           <span />
         )}
-        <Button type="button" onClick={() => setOpen(true)}>
+        <Button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="w-full sm:w-auto min-h-tap-min justify-center font-semibold"
+        >
           Tambah Pengguna
         </Button>
       </div>
@@ -109,7 +113,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
               <button
                 type="button"
                 onClick={() => toggle(u)}
-                className="rounded-btn border border-rule px-2.5 py-1 text-label font-semibold text-ink hover:bg-card hover:text-primary transition-colors"
+                className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1.5 text-label font-semibold text-ink hover:bg-card hover:text-primary transition-colors active:bg-surface-sunken-ed"
               >
                 {u.status === "active" ? "Nonaktifkan" : "Aktifkan"}
               </button>

@@ -42,7 +42,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
           <Input name="name" required placeholder="cth. Fiksi" />
         </Field>
         <div className="flex items-end">
-          <Button type="submit" variant="secondary" disabled={busy}>
+          <Button type="submit" variant="secondary" disabled={busy} className="h-11 sm:h-10 min-h-10">
             {busy ? "…" : "Tambah"}
           </Button>
         </div>
@@ -63,7 +63,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
               onClick={() => {
                 if (window.confirm(`Hapus kategori "${c.name}"?`)) run(() => deleteCategory(c.id));
               }}
-              className="rounded-btn border border-rule px-2.5 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50"
+              className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50 active:bg-danger/10"
             >
               Hapus
             </button>
@@ -88,7 +88,7 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
           <Input name="name" required placeholder="cth. 8A" />
         </Field>
         <div className="flex items-end">
-          <Button type="submit" variant="secondary" disabled={busy}>
+          <Button type="submit" variant="secondary" disabled={busy} className="h-11 sm:h-10 min-h-10">
             {busy ? "…" : "Tambah"}
           </Button>
         </div>
@@ -109,7 +109,7 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
               onClick={() => {
                 if (window.confirm(`Hapus kelas "${c.name}"?`)) run(() => deleteClass(c.id));
               }}
-              className="rounded-btn border border-rule px-2.5 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50"
+              className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50 active:bg-danger/10"
             >
               Hapus
             </button>

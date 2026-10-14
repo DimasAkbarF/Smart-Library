@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const inputCls =
-  "w-full rounded-btn border border-rule-strong bg-white px-3.5 text-sm text-ink font-plex-sans placeholder:text-ink-subtle transition-colors duration-150 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:border-rule";
+  "w-full rounded-btn border border-rule-strong bg-white px-3.5 text-base sm:text-sm text-ink font-plex-sans placeholder:text-ink-subtle transition-colors duration-150 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:border-rule";
 
 export function Field({
   label,
@@ -52,7 +52,7 @@ export function Field({
 }
 
 export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(inputCls, "h-10 min-h-10", className)} {...props} />;
+  return <input className={cn(inputCls, "h-11 sm:h-10 min-h-10", className)} {...props} />;
 }
 
 export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
@@ -61,7 +61,7 @@ export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<H
 
 export function Select({ className, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select className={cn(inputCls, "h-10 min-h-10", className)} {...props}>
+    <select className={cn(inputCls, "h-11 sm:h-10 min-h-10", className)} {...props}>
       {children}
     </select>
   );

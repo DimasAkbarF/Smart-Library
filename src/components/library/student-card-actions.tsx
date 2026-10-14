@@ -285,14 +285,14 @@ export function StudentCardActions({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2.5">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
       <Button
         type="button"
         variant="secondary"
         size="sm"
         onClick={handleDownloadQr}
         disabled={downloading}
-        className="gap-2"
+        className="gap-2 min-h-[40px] sm:min-h-0 justify-center w-full sm:w-auto font-semibold"
       >
         {downloaded ? <Check className="size-4 text-leaf-deep" /> : <Download className="size-4" />}
         <span>{downloaded ? "QR Tersimpan!" : "Unduh QR Pelajar (PNG)"}</span>
@@ -303,7 +303,7 @@ export function StudentCardActions({
         variant="secondary"
         size="sm"
         onClick={handlePrintCard}
-        className="gap-2"
+        className="gap-2 min-h-[40px] sm:min-h-0 justify-center w-full sm:w-auto font-semibold"
       >
         <Printer className="size-4" />
         <span>Cetak Kartu Fisik</span>

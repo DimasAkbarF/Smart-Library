@@ -63,19 +63,23 @@ export default async function QrPage({
             {total.toLocaleString("id-ID")} label eksemplar terdaftar · Halaman {page} dari {pageCount}
           </p>
         </div>
-        <PrintButton />
+        <PrintButton className="w-full sm:w-auto min-h-tap-min font-semibold justify-center" />
       </div>
 
       {/* Filter and Search Bar */}
       <div className="no-print space-y-3">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter status">
+        <div
+          className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
+          role="group"
+          aria-label="Filter status"
+        >
           {FILTERS.map((f) => (
             <Link
               key={f.value}
               href={chipHref(f.value)}
               aria-current={(status || "") === f.value ? "true" : undefined}
               className={cn(
-                "rounded-chip border px-3 py-1.5 text-label font-semibold transition-all",
+                "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-all",
                 (status || "") === f.value
                   ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
                   : "border-rule text-ink-muted hover:bg-card hover:text-ink"

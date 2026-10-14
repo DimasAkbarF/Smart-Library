@@ -76,19 +76,19 @@ export function InteractiveChart({
         </div>
 
         {/* Filter Tabs & Legend */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
           <div className="flex items-center gap-3 text-xs">
             <span className="flex items-center gap-1.5 font-medium text-ink-muted">
-              <span className="size-2 rounded-chip bg-primary" />
-              Pinjam ({nf.format(totalPinjam)})
+              <span className="size-2 rounded-chip bg-primary shrink-0" />
+              <span>Pinjam ({nf.format(totalPinjam)})</span>
             </span>
             <span className="flex items-center gap-1.5 font-medium text-ink-muted">
-              <span className="size-2 rounded-chip bg-success" />
-              Kembali ({nf.format(totalKembali)})
+              <span className="size-2 rounded-chip bg-success shrink-0" />
+              <span>Kembali ({nf.format(totalKembali)})</span>
             </span>
           </div>
 
-          <div className="flex rounded-btn border border-rule bg-surface-sunken-ed p-0.5" role="group" aria-label="Periode grafik">
+          <div className="flex rounded-btn border border-rule bg-surface-sunken-ed p-0.5 shrink-0" role="group" aria-label="Periode grafik">
             {(
               [
                 { id: "14d", label: "14 Hari" },
@@ -103,7 +103,7 @@ export function InteractiveChart({
                   setHoveredIdx(null);
                 }}
                 className={cn(
-                  "rounded-xs px-2.5 py-1 text-label font-semibold transition-colors cursor-pointer",
+                  "inline-flex items-center justify-center min-h-[32px] rounded-xs px-3 py-1 text-label font-semibold transition-colors cursor-pointer",
                   period === tab.id
                     ? "bg-white text-primary shadow-xs font-bold border border-rule/50"
                     : "text-ink-muted hover:text-ink"

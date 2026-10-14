@@ -78,9 +78,11 @@ export default async function PublicStudentCardPage({
             {/* Action Buttons: Unduh & Cetak Kartu */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
               <StudentCardActions student={student} />
-              <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-                <ShieldCheck className="size-4 text-success" />
-                <span>QR Token Terverifikasi: <strong className="font-mono text-ink">{student.qr_token}</strong></span>
+              <div className="flex items-center gap-1.5 text-xs text-ink-muted min-w-0">
+                <ShieldCheck className="size-4 text-success shrink-0" />
+                <span className="min-w-0 break-all sm:break-normal">
+                  QR Token Terverifikasi: <strong className="font-mono text-ink">{student.qr_token}</strong>
+                </span>
               </div>
             </div>
           </section>
