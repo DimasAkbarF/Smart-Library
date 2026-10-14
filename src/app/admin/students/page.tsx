@@ -32,23 +32,23 @@ export default async function StudentsPage({
 
   return (
     <div className="space-y-6 animate-rise">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-rule pb-5">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-5">
         <div>
-          <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase">
-            <span className="size-2 rounded-chip bg-primary" />
-            <span>Direktori Anggota · SMP Negeri 17 Tangerang Selatan</span>
+          <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase flex-wrap">
+            <span className="size-2 rounded-chip bg-primary shrink-0" />
+            <span className="break-words">Direktori Anggota · SMP Negeri 17 Tangerang Selatan</span>
           </div>
           <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
             Data Siswa
           </h1>
-          <p className="mt-1 text-body text-ink-muted">
+          <p className="mt-1 text-body text-ink-muted text-sm sm:text-base">
             Kelola basis data {data.total.toLocaleString("id-ID")} siswa terdaftar, penetapan rombel kelas, dan kode identitas perpustakaan.
           </p>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
           <Link
             href="/admin/import"
-            className="inline-flex min-h-tap-min items-center justify-center rounded-btn border border-rule-strong bg-card px-4 text-label font-semibold text-ink hover:bg-surface-sunken-ed transition-colors"
+            className="inline-flex min-h-tap-min items-center justify-center rounded-btn border border-rule-strong bg-card px-4 text-label font-semibold text-ink hover:bg-surface-sunken-ed transition-colors w-full sm:w-auto"
           >
             Impor CSV / Excel
           </Link>
@@ -56,12 +56,16 @@ export default async function StudentsPage({
       </header>
 
       {classes.length > 0 && (
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter kelas">
+        <div
+          className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
+          role="group"
+          aria-label="Filter kelas"
+        >
           <Link
             href={classHref("")}
             aria-current={!classId ? "true" : undefined}
             className={cn(
-              "rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
+              "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
               !classId
                 ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
                 : "border-rule text-ink-muted hover:border-rule-strong hover:bg-card",
@@ -77,7 +81,7 @@ export default async function StudentsPage({
                 href={classHref(c.id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
+                  "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
                   isActive
                     ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
                     : "border-rule text-ink-muted hover:border-rule-strong hover:bg-card",

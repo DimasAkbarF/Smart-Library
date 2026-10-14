@@ -15,6 +15,7 @@ import { QrQuickViewButton, QrModal } from "@/components/library/qr-modal";
 import { SearchInput } from "@/components/ui/search-input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { pesanRamah, kodeDariError } from "@/lib/errors";
+import { cn } from "@/lib/utils";
 import type { ClassRow, Student } from "@/lib/types";
 
 export function StudentsSection({
@@ -66,7 +67,7 @@ export function StudentsSection({
         <Button
           type="button"
           onClick={() => setAddOpen(true)}
-          className="gap-2 shrink-0 shadow-xs"
+          className="gap-2 shrink-0 shadow-xs min-h-[44px] sm:min-h-0 justify-center font-semibold"
         >
           <Plus className="size-4" />
           <span>Tambah Siswa</span>
@@ -194,6 +195,77 @@ export function StudentsSection({
         pageCount={pageCount}
         baseUrl={baseUrl}
         totalLabel={`${total.toLocaleString("id-ID")} siswa · halaman ${page} dari ${pageCount}`}
+        renderMobileCard={(s) => (
+          <div className="rounded-card border border-rule bg-card p-4 shadow-xs flex flex-col gap-3 min-w-0">
+            {/* Header: Nama, NIS, Kelas, Status */}
+            <div className="flex items-start justify-between gap-3 min-w-0">
+              <div className="flex items-start gap-3 min-w-0">
+                <div
+                  className="size-9 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center shrink-0 text-sm font-plex-sans"
+                  aria-hidden="true"
+                >
+                  {s.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-ink text-sm sm:text-base truncate">{s.name}</p>
+                  <p className="text-xs font-plex-sans text-ink-subtle">
+                    NIS: <span className="font-mono text-ink">{s.nis}</span> ·{" "}
+                    <span>{s.class_name ? `Kelas ${s.class_name}` : "Tanpa kelas"}</span>
+                  </p>
+                </div>
+              </div>
+              <StatusChip
+                tone={s.status === "active" ? "success" : "muted"}
+                label={s.status === "active" ? "Aktif" : "Nonaktif"}
+              />
+            </div>
+
+            {/* Token & QR Quick View */}
+            <div className="flex items-center justify-between gap-2 rounded-btn bg-surface-sunken-ed/60 px-3 py-2 border border-rule/50 min-w-0">
+              <div className="min-w-0 flex-1">
+                <span className="block text-[11px] font-medium uppercase tracking-[0.04em] text-ink-subtle">
+                  Token Kartu
+                </span>
+                <code className="block text-xs font-mono text-ink truncate">
+                  {s.qr_token}
+                </code>
+              </div>
+              <QrQuickViewButton
+                title={s.name}
+                subtitle={`NIS: ${s.nis}`}
+                code={s.nis}
+                token={s.qr_token}
+                meta={s.class_name ? `Kelas ${s.class_name}` : undefined}
+                type="student"
+              />
+            </div>
+
+            {/* Aksi Buttons */}
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-rule/40">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setEdit(s)}
+                className="w-full min-h-[38px] text-xs font-semibold justify-center"
+              >
+                Ubah Data
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => toggle(s)}
+                className={cn(
+                  "w-full min-h-[38px] text-xs font-semibold justify-center",
+                  s.status === "active" ? "text-danger hover:bg-danger/10" : "text-primary hover:bg-primary/10"
+                )}
+              >
+                {s.status === "active" ? "Nonaktifkan" : "Aktifkan"}
+              </Button>
+            </div>
+          </div>
+        )}
       />
       )}
 
@@ -278,16 +350,32 @@ function StudentForm({
   return (
     <form action={formAction} className="grid gap-4">
       <Field label="NIS (Nomor Induk Siswa)">
-        <Input name="nis" required defaultValue={student?.nis ?? ""} placeholder="Contoh: 20260012" />
+        <Input
+          name="nis"
+          required
+          defaultValue={student?.nis ?? ""}
+          placeholder="Contoh: 20260012"
+          className="h-11 sm:h-10 text-base sm:text-sm"
+        />
         <span className="text-meta text-ink-subtle">
           Kode QR kartu sirkulasi akan otomatis dibuat berbasis NIS ({student?.nis ? `SIS-${student.nis}` : "SIS-[NIS]"}).
         </span>
       </Field>
       <Field label="Nama Lengkap">
-        <Input name="name" required defaultValue={student?.name ?? ""} placeholder="Nama lengkap siswa" />
+        <Input
+          name="name"
+          required
+          defaultValue={student?.name ?? ""}
+          placeholder="Nama lengkap siswa"
+          className="h-11 sm:h-10 text-base sm:text-sm"
+        />
       </Field>
       <Field label="Rombel Kelas">
-        <Select name="class_id" defaultValue={student?.class_id ?? ""}>
+        <Select
+          name="class_id"
+          defaultValue={student?.class_id ?? ""}
+          className="h-11 sm:h-10 text-base sm:text-sm"
+        >
           <option value="">Tanpa kelas / Belum ditentukan</option>
           {classes.map((c) => (
             <option key={c.id} value={c.id}>
@@ -301,7 +389,9 @@ function StudentForm({
           {state.message}
         </p>
       )}
-      <SubmitButton>{student ? "Simpan perubahan" : "Daftarkan Siswa & Buat QR"}</SubmitButton>
+      <SubmitButton className="min-h-tap-min h-11 sm:h-10 text-body font-semibold justify-center w-full">
+        {student ? "Simpan perubahan" : "Daftarkan Siswa & Buat QR"}
+      </SubmitButton>
     </form>
   );
 }

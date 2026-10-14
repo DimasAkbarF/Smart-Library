@@ -32,7 +32,7 @@ export function SearchInput({ placeholder, param = "q" }: { placeholder: string;
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="pl-11"
+        className="pl-11 h-11 sm:h-10 text-base sm:text-sm"
       />
     </div>
   );
