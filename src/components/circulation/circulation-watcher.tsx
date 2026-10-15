@@ -2,29 +2,37 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 const CHANNEL_NAME = "circulation-sync";
 const BC_NAME = "smart-library-circulation";
 const STORAGE_KEY = "sl_circulation_sync";
 const LOCAL_EVENT = "sl_circulation_local_sync";
 
-let sharedSupabaseChannel: ReturnType<ReturnType<typeof createClient>["channel"]> | null = null;
+let sharedSupabaseChannel: RealtimeChannel | null = null;
+let channelPromise: Promise<RealtimeChannel | null> | null = null;
 
-function getSharedChannel() {
+async function getSharedChannel(): Promise<RealtimeChannel | null> {
   if (typeof window === "undefined") return null;
-  if (!sharedSupabaseChannel) {
-    try {
-      const supabase = createClient();
-      sharedSupabaseChannel = supabase.channel(CHANNEL_NAME, {
-        config: { broadcast: { self: false } },
-      });
-      sharedSupabaseChannel.subscribe();
-    } catch {
-      /* ignore */
-    }
+  if (sharedSupabaseChannel) return sharedSupabaseChannel;
+  if (!channelPromise) {
+    channelPromise = import("@/lib/supabase/client")
+      .then(({ createClient }) => {
+        try {
+          const supabase = createClient();
+          const ch = supabase.channel(CHANNEL_NAME, {
+            config: { broadcast: { self: false } },
+          });
+          ch.subscribe();
+          sharedSupabaseChannel = ch;
+          return ch;
+        } catch {
+          return null;
+        }
+      })
+      .catch(() => null);
   }
-  return sharedSupabaseChannel;
+  return channelPromise;
 }
 
 export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
@@ -60,17 +68,24 @@ export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
   }
 
   // 3. Supabase Realtime broadcast (antar perangkat & sesi eksternal)
-  try {
-    const ch = getSharedChannel();
-    if (ch) {
-      ch.send({
+  if (sharedSupabaseChannel) {
+    try {
+      sharedSupabaseChannel.send({
         type: "broadcast",
         event: "change",
         payload: data,
       });
+    } catch {
+      /* ignore */
     }
-  } catch {
-    /* ignore */
+  } else {
+    void getSharedChannel().then((ch) => {
+      ch?.send({
+        type: "broadcast",
+        event: "change",
+        payload: data,
+      });
+    });
   }
 }
 
@@ -148,13 +163,14 @@ export function CirculationWatcher() {
     window.addEventListener("focus", onVisibilityOrFocus);
 
     // 5. Supabase Realtime WebSocket listener (Broadcast instan)
-    const sharedCh = getSharedChannel();
-    if (sharedCh) {
-      sharedCh.on("broadcast", { event: "change" }, () => {
-        void checkServerVersion();
-        triggerRefresh();
-      });
-    }
+    void getSharedChannel().then((ch) => {
+      if (ch) {
+        ch.on("broadcast", { event: "change" }, () => {
+          void checkServerVersion();
+          triggerRefresh();
+        });
+      }
+    });
 
     // 6. Background Heartbeat Fallback (setiap 3.5 detik saat tab aktif & terlihat)
     const interval = setInterval(checkServerVersion, 3500);

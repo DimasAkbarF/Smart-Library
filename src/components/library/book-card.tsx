@@ -10,7 +10,7 @@ export function BookCard({ book, href }: { book: Book; href: string }) {
     <Link
       href={href}
       className={cn(
-        "group flex gap-4 rounded-panel border border-rule bg-white p-4 font-plex-sans transition-colors duration-150 hover:border-rule-strong hover:bg-primary-soft/10",
+        "group flex min-h-[144px] gap-4 rounded-panel border border-rule bg-white p-4 font-plex-sans transition-colors duration-150 hover:border-rule-strong hover:bg-primary-soft/10",
       )}
     >
       {book.cover_url ? (
@@ -18,8 +18,11 @@ export function BookCard({ book, href }: { book: Book; href: string }) {
         <img
           src={book.cover_url}
           alt={`Sampul ${book.title}`}
+          width={80}
+          height={112}
           className="h-28 w-20 shrink-0 rounded-btn border border-rule object-cover shadow-xs"
           loading="lazy"
+          decoding="async"
         />
       ) : (
         <span
@@ -29,8 +32,8 @@ export function BookCard({ book, href }: { book: Book; href: string }) {
           {initials}
         </span>
       )}
-      <span className="grid min-w-0 content-start gap-1.5">
-        <span className="font-serif text-base font-medium leading-snug text-ink transition-colors group-hover:text-primary">
+      <span className="grid min-w-0 content-start gap-1.5 flex-1">
+        <span className="font-serif text-base font-medium leading-snug text-ink transition-colors group-hover:text-primary line-clamp-2">
           {book.title}
         </span>
         <span className="truncate text-xs text-ink-muted">{book.author}</span>
