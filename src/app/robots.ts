@@ -19,6 +19,8 @@ export default function robots(): MetadataRoute.Robots {
           "/",
           "/books",
           "/books/*",
+          "/informasi",
+          "/faq",
           "/login",
           "/favicon.ico",
           "/favicon-*.png",
