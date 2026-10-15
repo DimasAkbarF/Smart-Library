@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
@@ -227,11 +227,23 @@ export async function setCopyStatus(copyId: string, status: BookCopy["status"]) 
   const { error } = await svc.from("book_copies").update({ status }).eq("id", copyId);
   if (error) throw new Error("Gagal mengubah status.");
   await tulisAudit(session.userId, "copy.status", "book_copy", copyId, { status });
+  revalidatePath("/", "layout");
   revalidatePath("/admin");
   revalidatePath("/admin/copies");
+  revalidatePath("/admin/books");
   revalidatePath("/books");
-  revalidateTag("admin-dashboard", { expire: 0 });
-  revalidateTag("catalog", { expire: 0 });
+  try {
+    updateTag("catalog");
+    updateTag("admin-dashboard");
+  } catch {
+    /* ignore if outside action context */
+  }
+  try {
+    revalidateTag("admin-dashboard", { expire: 0 });
+    revalidateTag("catalog", { expire: 0 });
+  } catch {
+    /* ignore */
+  }
 }
 
 export async function listCopies(opts: {

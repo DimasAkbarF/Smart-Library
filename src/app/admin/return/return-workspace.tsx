@@ -12,6 +12,7 @@ import {
 } from "@/features/loans/actions";
 import { formatRupiah, formatTanggal, hariTelat } from "@/lib/format";
 import { kodeDariError, pesanRamah } from "@/lib/errors";
+import { notifyCirculationChange } from "@/components/circulation/circulation-watcher";
 import type { BookCopy } from "@/lib/types";
 
 export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
@@ -59,8 +60,12 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
     setErr("");
     const res = await returnAction(copy.id);
     setProcessing(false);
-    if (res.ok) setReceipt(res.receipt);
-    else setErr(pesanRamah(res.code));
+    if (res.ok) {
+      setReceipt(res.receipt);
+      notifyCirculationChange({ type: "RETURN", copyId: copy.id });
+    } else {
+      setErr(pesanRamah(res.code));
+    }
   };
 
   if (receipt) {

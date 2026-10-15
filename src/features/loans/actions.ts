@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole } from "@/lib/auth";
 import { normalisasiKode } from "@/lib/format";
@@ -124,12 +124,25 @@ export async function borrowAction(
     return { ok: false, code: kodeDariError(e) || "UNKNOWN" };
   }
   const receipt = await buildReceipt(copyId, studentId);
+  revalidatePath("/", "layout");
   revalidatePath("/admin");
+  revalidatePath("/admin/copies");
+  revalidatePath("/admin/books");
   revalidatePath("/admin/transactions");
   revalidatePath("/admin/borrow");
   revalidatePath("/books");
-  revalidateTag("admin-dashboard", { expire: 0 });
-  revalidateTag("catalog", { expire: 0 });
+  try {
+    updateTag("catalog");
+    updateTag("admin-dashboard");
+  } catch {
+    /* ignore if outside action context */
+  }
+  try {
+    revalidateTag("admin-dashboard", { expire: 0 });
+    revalidateTag("catalog", { expire: 0 });
+  } catch {
+    /* ignore */
+  }
   return { ok: true, receipt };
 }
 
@@ -146,12 +159,25 @@ export async function returnAction(
     if (error) throw new Error(kodeDariError(error) || "UNKNOWN");
     const r = data as { loan_id: string; student_id: string; late_days: number; fine: number };
     const receipt = await buildReceipt(copyId, r.student_id, r.late_days, Number(r.fine));
+    revalidatePath("/", "layout");
     revalidatePath("/admin");
+    revalidatePath("/admin/copies");
+    revalidatePath("/admin/books");
     revalidatePath("/admin/transactions");
     revalidatePath("/admin/return");
     revalidatePath("/books");
-    revalidateTag("admin-dashboard", { expire: 0 });
-    revalidateTag("catalog", { expire: 0 });
+    try {
+      updateTag("catalog");
+      updateTag("admin-dashboard");
+    } catch {
+      /* ignore if outside action context */
+    }
+    try {
+      revalidateTag("admin-dashboard", { expire: 0 });
+      revalidateTag("catalog", { expire: 0 });
+    } catch {
+      /* ignore */
+    }
     return { ok: true, receipt };
   } catch (e) {
     return { ok: false, code: kodeDariError(e) || "UNKNOWN" };

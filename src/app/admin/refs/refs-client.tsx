@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createCategory, deleteCategory, createClass, deleteClass } from "@/features/admin/refs";
 import { Field, Input } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { pesanRamah, kodeDariError } from "@/lib/errors";
 import type { Category, ClassRow } from "@/lib/types";
 
@@ -30,6 +31,7 @@ function useRefOp() {
 
 export function CategoryPanel({ categories }: { categories: Category[] }) {
   const { msg, busy, run } = useRefOp();
+  const confirm = useConfirm();
 
   return (
     <section className="rounded-card border border-rule bg-card p-5 shadow-card">
@@ -60,8 +62,15 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
             <button
               type="button"
               disabled={busy}
-              onClick={() => {
-                if (window.confirm(`Hapus kategori "${c.name}"?`)) run(() => deleteCategory(c.id));
+              onClick={async () => {
+                const ok = await confirm({
+                  title: "Hapus Kategori Buku",
+                  message: `Hapus kategori "${c.name}"? Buku dalam kategori ini akan diperbarui.`,
+                  confirmText: "Hapus",
+                  cancelText: "Batal",
+                  tone: "danger",
+                });
+                if (ok) run(() => deleteCategory(c.id));
               }}
               className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50 active:bg-danger/10"
             >
@@ -76,6 +85,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
 
 export function ClassPanel({ classes }: { classes: ClassRow[] }) {
   const { msg, busy, run } = useRefOp();
+  const confirm = useConfirm();
 
   return (
     <section className="rounded-card border border-rule bg-card p-5 shadow-card">
@@ -106,8 +116,15 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
             <button
               type="button"
               disabled={busy}
-              onClick={() => {
-                if (window.confirm(`Hapus kelas "${c.name}"?`)) run(() => deleteClass(c.id));
+              onClick={async () => {
+                const ok = await confirm({
+                  title: "Hapus Rombel Kelas",
+                  message: `Hapus rombel kelas "${c.name}"? Pastikan data siswa telah disesuaikan.`,
+                  confirmText: "Hapus",
+                  cancelText: "Batal",
+                  tone: "danger",
+                });
+                if (ok) run(() => deleteClass(c.id));
               }}
               className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1 text-label font-semibold text-danger hover:bg-danger-bg disabled:opacity-50 active:bg-danger/10"
             >

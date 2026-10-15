@@ -15,6 +15,7 @@ import {
 } from "@/features/loans/actions";
 import { formatTanggal } from "@/lib/format";
 import { kodeDariError, pesanRamah } from "@/lib/errors";
+import { notifyCirculationChange } from "@/components/circulation/circulation-watcher";
 import type { BookCopy } from "@/lib/types";
 
 interface SuccessAlertData {
@@ -109,6 +110,7 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
     const res = await borrowAction(ctx.student.id, copy.id);
     setBusy3(false);
     if (res.ok) {
+      notifyCirculationChange({ type: "BORROW", copyId: copy.id });
       setSuccessAlert({
         bookTitle: res.receipt.book_title,
         inventoryCode: res.receipt.inventory_code,

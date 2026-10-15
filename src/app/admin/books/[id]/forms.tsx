@@ -8,6 +8,7 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
 import { QrQuickViewButton } from "@/components/library/qr-modal";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { CheckCircle2 } from "lucide-react";
 import { pesanRamah, kodeDariError } from "@/lib/errors";
 import type { Book, Category } from "@/lib/types";
@@ -141,10 +142,18 @@ export function AddCopiesForm({ bookId }: { bookId: string }) {
 
 export function DeleteBookButton({ bookId }: { bookId: string }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [msg, setMsg] = useState<string | null>(null);
 
   async function onDelete() {
-    if (!window.confirm("Hapus buku ini beserta seluruh eksemplarnya? Tindakan ini tidak dapat dibatalkan.")) return;
+    const ok = await confirm({
+      title: "Hapus Buku & Seluruh Eksemplar",
+      message: "Hapus buku ini beserta seluruh eksemplar fisiknya dari sistem perpustakaan? Tindakan ini bersifat permanen dan tidak dapat dibatalkan.",
+      confirmText: "Ya, Hapus Buku",
+      cancelText: "Batal",
+      tone: "danger",
+    });
+    if (!ok) return;
     const res = await deleteBook(bookId);
     if (res.ok) {
       router.push("/admin/books");
