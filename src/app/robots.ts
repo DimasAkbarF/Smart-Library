@@ -10,8 +10,22 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
+        userAgent: "Googlebot-Favicon",
+        allow: ["/"],
+      },
+      {
         userAgent: "*",
-        allow: ["/", "/books", "/books/*", "/login"],
+        allow: [
+          "/",
+          "/books",
+          "/books/*",
+          "/login",
+          "/favicon.ico",
+          "/favicon-*.png",
+          "/icon*.png",
+          "/apple-*.png",
+          "/manifest.webmanifest",
+        ],
         disallow: ["/admin/", "/api/", "/change-password", "/card/"],
       },
       {
