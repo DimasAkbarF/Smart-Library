@@ -10,8 +10,11 @@ export const metadata: Metadata = {
   description:
     "Portal masuk resmi Smart Library SMP Negeri 17 Tangerang Selatan untuk petugas perpustakaan dan staf administrasi.",
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "/login",
   },
 };
 

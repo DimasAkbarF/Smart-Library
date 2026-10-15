@@ -82,9 +82,6 @@ export const metadata: Metadata = {
   publisher: "SMP Negeri 17 Tangerang Selatan",
   category: "education",
   robots: { index: true, follow: true },
-  alternates: {
-    canonical: "/",
-  },
   verification: {
     google: "moQUHIkJGba0sgC0I_eMpolduulMFTkFLafDnO5YSOI",
   },
@@ -113,7 +110,10 @@ export const metadata: Metadata = {
     images: ["/logo-smpn17.png"],
   },
   icons: {
-    icon: "/icon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
     apple: "/apple-icon.png",
   },
 };

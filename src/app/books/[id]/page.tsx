@@ -29,6 +29,9 @@ export async function generateMetadata({
       "katalog buku smpn 17",
       "perpustakaan smpn 17 tangerang selatan",
     ],
+    alternates: {
+      canonical: `/books/${id}`,
+    },
   };
 }
 

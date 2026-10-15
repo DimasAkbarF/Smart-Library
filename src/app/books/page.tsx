@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     "perpustakaan smpn 17 tangsel",
     "buku perpustakaan smpn 17 tangerang selatan",
   ],
+  alternates: {
+    canonical: "/books",
+  },
 };
 
 type SP = { q?: string; cat?: string; avail?: string; page?: string };

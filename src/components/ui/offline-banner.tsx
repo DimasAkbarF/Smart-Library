@@ -43,7 +43,7 @@ export function OfflineBanner({
       role="status"
       aria-live="polite"
       className={cn(
-        "flex items-center justify-center gap-2 border-b border-warning/30 bg-warning-bg px-4 py-2 text-xs font-medium text-warning font-plex-sans transition-colors",
+        "no-print print:hidden flex items-center justify-center gap-2 border-b border-warning/30 bg-warning-bg px-4 py-2 text-xs font-medium text-warning font-plex-sans transition-colors",
         className,
       )}
     >

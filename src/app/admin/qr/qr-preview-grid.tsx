@@ -102,7 +102,7 @@ export function QrPreviewGrid({
           <div
             key={c.id}
             onClick={() => setSelectedCopy(c)}
-            className="group relative flex flex-col items-center rounded-card border border-rule bg-card p-4 text-center shadow-xs transition-all duration-200 hover:border-primary hover:shadow-card cursor-pointer"
+            className="qr-label print:break-inside-avoid group relative flex flex-col items-center rounded-card border border-rule bg-card p-4 text-center shadow-xs transition-all duration-200 hover:border-primary hover:shadow-card cursor-pointer"
           >
             {/* Quick hover action pill */}
             <div className="no-print absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">

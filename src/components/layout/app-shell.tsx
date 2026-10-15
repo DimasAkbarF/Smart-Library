@@ -248,7 +248,7 @@ export function AppShell({
             {/* DESKTOP SIDEBAR ADMIN (248px, Collapsible 64px) */}
             <aside
               className={cn(
-                "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-rule bg-white transition-[width] duration-200 ease-in-out md:flex",
+                "no-print print:hidden fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-rule bg-white transition-[width] duration-200 ease-in-out md:flex",
                 collapsed ? "w-16" : "w-[248px]",
               )}
             >
@@ -328,12 +328,12 @@ export function AppShell({
             {/* AREA UTAMA ADMIN DENGAN TOPBAR 56px */}
             <div
               className={cn(
-                "flex min-h-dvh flex-col transition-[padding] duration-200 ease-in-out",
+                "flex min-h-dvh flex-col transition-[padding] duration-200 ease-in-out print:min-h-0 print:pl-0",
                 collapsed ? "md:pl-16" : "md:pl-[248px]",
               )}
             >
               {/* TOPBAR ADMIN */}
-              <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-white px-4 md:px-6 lg:px-8">
+              <header className="no-print print:hidden sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-white px-4 md:px-6 lg:px-8">
                 <div className="flex min-w-0 items-center gap-3">
                   {/* Hamburger Menu di Mobile */}
                   <button
@@ -380,14 +380,14 @@ export function AppShell({
               </header>
 
               {/* Konten Halaman Admin */}
-              <main className="flex-1 p-4 md:p-8">
-                <div className="mx-auto w-full max-w-[1280px]">{children}</div>
+              <main className="flex-1 p-4 md:p-8 print:p-0">
+                <div className="mx-auto w-full max-w-[1280px] print:max-w-none">{children}</div>
               </main>
             </div>
 
             {/* DRAWER MOBILE NAVIGASI ADMIN */}
             {mobileMenuOpen && (
-              <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
+              <div className="no-print print:hidden fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
                 <div
                   className="fixed inset-0 bg-[#161B26]/45 transition-opacity"
                   onClick={() => setMobileMenuOpen(false)}
