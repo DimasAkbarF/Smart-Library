@@ -201,39 +201,86 @@ h1, h2, h3 {
   }
 }
 
-/* ---------- Print: label QR siap cetak (admin/qr/print) ---------- */
+/* ---------- Print: label QR dan kartu siswa siap cetak ---------- */
 @media print {
-  .no-print {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  header,
+  nav,
+  aside,
+  footer,
+  [role="dialog"],
+  [role="navigation"],
+  .no-print,
+  .print\:hidden {
     display: none !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    top: -99999px !important;
+    left: -99999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 8mm 6mm;
   }
   .print-sheet {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
   }
   .qr-label {
-    border: 1.5px solid #0f172a;
-    border-radius: 8px;
-    padding: 10px;
-    text-align: center;
-    break-inside: avoid;
-    box-shadow: none !important;
-  }
-  /* Kartu Siswa Siap Cetak (A4: 2 kolom kartu) */
-  .print-student-cards {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-  }
-  .print-student-card {
+    border: 1.5px solid #0f172a !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    text-align: center !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
     box-shadow: none !important;
   }
-  body {
-    background: #fff;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  /* Kartu Siswa Siap Cetak (A4: 2 kolom kartu presisi tanpa tumpang tindih) */
+  .print-student-cards {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    gap: 6mm 6mm !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+  .print-student-card {
+    width: calc(50% - 3mm) !important;
+    max-width: calc(50% - 3mm) !important;
+    flex: 0 0 calc(50% - 3mm) !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
   }
 }
 

@@ -179,37 +179,79 @@ export function StudentCardActions({
                 text-transform: uppercase;
               }
               .body-content {
-                display: grid;
-                grid-template-columns: 13mm 1fr 17mm;
-                gap: 2.2mm;
+                display: flex;
                 align-items: center;
+                justify-content: space-between;
+                gap: 2.5mm;
                 position: relative;
                 z-index: 2;
-                margin: 0.8mm 0;
+                margin: 1mm 0;
               }
-              .avatar {
-                width: 13mm;
-                height: 16mm;
-                border: 1px solid #0f172a;
-                border-radius: 1.2mm;
-                background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+              .identity-box {
+                flex: 1;
+                min-width: 0;
+              }
+              .student-header {
+                display: flex;
+                align-items: center;
+                gap: 2mm;
+                margin-bottom: 1.2mm;
+              }
+              .avatar-circle {
+                width: 7.5mm;
+                height: 7.5mm;
+                border-radius: 50%;
+                background: #1e3a8a;
                 color: #ffffff;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 9.5pt;
+                font-size: 7.5pt;
                 font-weight: 900;
+                flex-shrink: 0;
               }
-              .info { font-size: 5.8pt; line-height: 1.25; }
-              .info-label { font-size: 4.5pt; color: #64748b; text-transform: uppercase; }
-              .info-value { font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 36mm; }
+              .name-container {
+                min-width: 0;
+                flex: 1;
+              }
+              .info-label { font-size: 4.5pt; color: #64748b; text-transform: uppercase; font-weight: 600; }
+              .status-badge {
+                display: inline-block;
+                background: #e0f2fe;
+                color: #0369a1;
+                font-size: 4pt;
+                font-weight: 700;
+                padding: 0.2mm 1.2mm;
+                border-radius: 0.6mm;
+                text-transform: uppercase;
+                margin-left: 1mm;
+              }
+              .info-name {
+                font-size: 7.5pt;
+                font-weight: 900;
+                color: #0f172a;
+                line-height: 1.1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+              .meta-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5mm;
+                padding-top: 0.8mm;
+                border-top: 0.6px solid #e2e8f0;
+              }
               .info-nis { font-family: monospace; font-size: 6.8pt; font-weight: 900; color: #1e3a8a; }
+              .info-val { font-size: 6.2pt; font-weight: 800; color: #0f172a; }
+              .validity-note { font-size: 4.2pt; color: #64748b; margin-top: 0.8mm; }
               .qr-box {
                 text-align: center;
                 background: #ffffff;
                 border: 0.8px solid #cbd5e1;
                 border-radius: 1.2mm;
                 padding: 0.8mm;
+                flex-shrink: 0;
               }
               .qr-img { width: 14.5mm; height: 14.5mm; display: block; margin: 0 auto; }
               .qr-code-txt { font-family: monospace; font-size: 4.5pt; font-weight: 800; margin-top: 0.4mm; color: #0f172a; }
@@ -243,20 +285,25 @@ export function StudentCardActions({
                 </div>
                 <div class="ribbon">Kartu Anggota Perpustakaan</div>
                 <div class="body-content">
-                  <div class="avatar">${initials}</div>
-                  <div class="info">
-                    <div>
-                      <div class="info-label">Nama Siswa</div>
-                      <div class="info-value" style="font-size: 6.5pt;">${safeName}</div>
+                  <div class="identity-box">
+                    <div class="student-header">
+                      <div class="avatar-circle">${initials}</div>
+                      <div class="name-container">
+                        <div class="info-label">Nama Lengkap <span class="status-badge">Siswa Aktif</span></div>
+                        <div class="info-name">${safeName}</div>
+                      </div>
                     </div>
-                    <div style="margin-top: 0.8mm;">
-                      <div class="info-label">Nomor Induk (NIS)</div>
-                      <div class="info-nis">${safeNis}</div>
+                    <div class="meta-grid">
+                      <div>
+                        <div class="info-label">Nomor Induk (NIS)</div>
+                        <div class="info-nis">${safeNis}</div>
+                      </div>
+                      <div>
+                        <div class="info-label">Rombel / Kelas</div>
+                        <div class="info-val">${safeClass}</div>
+                      </div>
                     </div>
-                    <div style="margin-top: 0.8mm;">
-                      <div class="info-label">Kelas / Rombel</div>
-                      <div class="info-value">${safeClass}</div>
-                    </div>
+                    <div class="validity-note">Masa Berlaku: <strong style="color: #0f172a;">Selama Siswa Aktif</strong></div>
                   </div>
                   <div class="qr-box">
                     <img class="qr-img" src="${qrDataUrl}" alt="QR" />

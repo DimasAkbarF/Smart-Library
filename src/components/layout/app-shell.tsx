@@ -237,7 +237,7 @@ export function AppShell({
 
   return (
     <ToastProvider>
-      <div className="flex min-h-dvh flex-col bg-paper font-plex-sans text-ink">
+      <div className="flex min-h-dvh flex-col bg-paper font-plex-sans text-ink print:min-h-0 print:bg-white print:block">
         {/* Banner offline otomatis */}
         <OfflineBanner />
 
@@ -328,7 +328,7 @@ export function AppShell({
             {/* AREA UTAMA ADMIN DENGAN TOPBAR 56px */}
             <div
               className={cn(
-                "flex min-h-dvh flex-col transition-[padding] duration-200 ease-in-out print:min-h-0 print:pl-0",
+                "flex min-h-dvh flex-col transition-[padding] duration-200 ease-in-out print:min-h-0 print:pl-0 print:block",
                 collapsed ? "md:pl-16" : "md:pl-[248px]",
               )}
             >
@@ -380,8 +380,8 @@ export function AppShell({
               </header>
 
               {/* Konten Halaman Admin */}
-              <main className="flex-1 p-4 md:p-8 print:p-0">
-                <div className="mx-auto w-full max-w-[1280px] print:max-w-none">{children}</div>
+              <main className="flex-1 p-4 md:p-8 print:p-0 print:m-0 print:block">
+                <div className="mx-auto w-full max-w-[1280px] print:max-w-none print:w-full print:block">{children}</div>
               </main>
             </div>
 

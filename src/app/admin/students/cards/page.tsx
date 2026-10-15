@@ -43,9 +43,9 @@ export default async function StudentCardsPrintPage({
   const selectedClass = classes.find((c) => c.id === classId);
 
   return (
-    <div className="space-y-6 animate-rise">
+    <div className="space-y-6 animate-rise print:space-y-0 print:animate-none">
       {/* Top Header */}
-      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-5">
+      <div className="no-print print:hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <Link
@@ -72,7 +72,7 @@ export default async function StudentCardsPrintPage({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="no-print space-y-3">
+      <div className="no-print print:hidden space-y-3">
         {classes.length > 0 && (
           <div
             className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
@@ -141,7 +141,7 @@ export default async function StudentCardsPrintPage({
 
           {/* Pagination Navigation */}
           {data.pageCount > 1 && (
-            <nav className="no-print flex items-center justify-center gap-2 pt-4" aria-label="Paginasi">
+            <nav className="no-print print:hidden flex items-center justify-center gap-2 pt-4" aria-label="Paginasi">
               {page > 1 && (
                 <Link
                   href={pageHref(page - 1)}
