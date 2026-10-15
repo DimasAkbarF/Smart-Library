@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useOptimistic, startTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Drawer } from "@/components/ui/drawer";
@@ -29,6 +29,15 @@ export function TransactionsClient({
 }) {
   const router = useRouter();
   const sweetAlert = useSweetAlert();
+  const [optimisticLoans, setOptimisticReturned] = useOptimistic(
+    loans,
+    (state, returnedId: string) =>
+      state.map((item) =>
+        item.id === returnedId
+          ? { ...item, status: "RETURNED" as const, returned_at: new Date().toISOString() }
+          : item
+      )
+  );
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [returningId, setReturningId] = useState<string | null>(null);
@@ -53,6 +62,9 @@ export function TransactionsClient({
     try {
       const res = await returnAction(loan.book_copy_id);
       if (res.ok) {
+        startTransition(() => {
+          setOptimisticReturned(loan.id);
+        });
         notifyCirculationChange({ type: "RETURN", copyId: loan.book_copy_id });
         router.refresh();
         setSelectedLoan(null);
@@ -85,13 +97,13 @@ export function TransactionsClient({
     return `${baseUrl}${sep}page=${p}`;
   };
 
-  const allSelected = loans.length > 0 && selectedIds.length === loans.length;
+  const allSelected = optimisticLoans.length > 0 && selectedIds.length === optimisticLoans.length;
 
   const toggleSelectAll = () => {
     if (allSelected) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(loans.map((l) => l.id));
+      setSelectedIds(optimisticLoans.map((l) => l.id));
     }
   };
 
@@ -172,7 +184,7 @@ export function TransactionsClient({
             </tr>
           </thead>
           <tbody className="divide-y divide-outline/70">
-            {loans.map((r) => {
+            {optimisticLoans.map((r) => {
               const isSelected = selectedIds.includes(r.id);
               const telat = hariTelat(r.due_at);
 

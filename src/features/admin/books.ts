@@ -231,6 +231,7 @@ export async function setCopyStatus(copyId: string, status: BookCopy["status"]) 
   await tulisAudit(session.userId, "copy.status", "book_copy", copyId, { status });
   globalThis.__lastCirculationTs = Date.now();
   revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
   revalidatePath("/admin");
   revalidatePath("/admin/copies");
   revalidatePath("/admin/books");

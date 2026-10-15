@@ -151,13 +151,23 @@ async function fetchDashboardChartData(): Promise<{ date: string; pinjam: number
   return days;
 }
 
+function getStartOfDayWIB(): Date {
+  const now = new Date();
+  const wibDateStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
+  return new Date(`${wibDateStr}T00:00:00+07:00`);
+}
+
 export async function adminDashboard() {
   await assertRole("admin");
   void refreshOverdue();
 
   const svc = serviceClient();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = getStartOfDayWIB();
 
   const [
     { count: titles },

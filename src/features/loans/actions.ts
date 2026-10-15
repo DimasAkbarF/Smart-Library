@@ -126,6 +126,7 @@ export async function borrowAction(
   const receipt = await buildReceipt(copyId, studentId);
   globalThis.__lastCirculationTs = Date.now();
   revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
   revalidatePath("/admin");
   revalidatePath("/admin/copies");
   revalidatePath("/admin/qr");
@@ -165,6 +166,7 @@ export async function returnAction(
     const receipt = await buildReceipt(copyId, r.student_id, r.late_days, Number(r.fine));
     globalThis.__lastCirculationTs = Date.now();
     revalidatePath("/", "layout");
+    revalidatePath("/admin", "layout");
     revalidatePath("/admin");
     revalidatePath("/admin/copies");
     revalidatePath("/admin/qr");

@@ -78,7 +78,7 @@ export function CirculationWatcher() {
   const router = useRouter();
   const pathname = usePathname();
   const lastRefreshRef = useRef(0);
-  const lastServerVersionRef = useRef(0);
+  const lastServerVersionRef = useRef(-1);
   const lastPathnameRef = useRef(pathname);
 
   // Trigger refresh dengan debounce (maks 1x per 350ms)
@@ -101,10 +101,10 @@ export function CirculationWatcher() {
         pathname.startsWith("/admin/books") ||
         pathname.startsWith("/books")
       ) {
-        triggerRefresh();
+        router.refresh();
       }
     }
-  }, [pathname, triggerRefresh]);
+  }, [pathname, router]);
 
   useEffect(() => {
     // 0. Listener tab/window aktif saat ini
@@ -130,23 +130,8 @@ export function CirculationWatcher() {
     };
     window.addEventListener("storage", onStorage);
 
-    // 3. Window focus & tab visibility listener (sinkron saat kembali membuka tab perpustakaan)
-    const onVisibilityOrFocus = () => {
-      if (document.visibilityState === "visible") {
-        triggerRefresh();
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibilityOrFocus);
-    window.addEventListener("focus", onVisibilityOrFocus);
-
-    // 4. Supabase Realtime WebSocket listener (Broadcast instan)
-    const sharedCh = getSharedChannel();
-    if (sharedCh) {
-      sharedCh.on("broadcast", { event: "change" }, () => triggerRefresh());
-    }
-
-    // 5. Background Heartbeat Fallback (setiap 3,5 detik saat tab aktif & terlihat)
-    const interval = setInterval(async () => {
+    // 3. Pemeriksa Versi Database Sirkulasi (Sinkronisasi Antar Perangkat & Tab)
+    const checkServerVersion = async () => {
       if (document.visibilityState !== "visible") return;
       try {
         const res = await fetch("/api/circulation-sync", {
@@ -155,17 +140,44 @@ export function CirculationWatcher() {
         });
         if (res.ok) {
           const data = (await res.json()) as { version: number };
-          if (data.version > 0 && lastServerVersionRef.current === 0) {
+          if (lastServerVersionRef.current === -1) {
+            // Catat baseline awal saat halaman pertama kali dibuka
             lastServerVersionRef.current = data.version;
           } else if (data.version > lastServerVersionRef.current) {
+            // Ada transaksi baru di database (dari perangkat/tab lain)!
             lastServerVersionRef.current = data.version;
-            triggerRefresh();
+            router.refresh();
           }
         }
       } catch {
         /* ignore network errors */
       }
-    }, 3500);
+    };
+
+    // Jalankan pengecekan baseline segera
+    void checkServerVersion();
+
+    // 4. Window focus & tab visibility listener (sinkron seketika saat membuka tab)
+    const onVisibilityOrFocus = () => {
+      if (document.visibilityState === "visible") {
+        void checkServerVersion();
+        router.refresh();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityOrFocus);
+    window.addEventListener("focus", onVisibilityOrFocus);
+
+    // 5. Supabase Realtime WebSocket listener (Broadcast instan)
+    const sharedCh = getSharedChannel();
+    if (sharedCh) {
+      sharedCh.on("broadcast", { event: "change" }, () => {
+        void checkServerVersion();
+        triggerRefresh();
+      });
+    }
+
+    // 6. Background Heartbeat Fallback (setiap 1.5 detik saat tab aktif & terlihat)
+    const interval = setInterval(checkServerVersion, 1500);
 
     return () => {
       window.removeEventListener(LOCAL_EVENT, onLocalSync);
@@ -175,7 +187,7 @@ export function CirculationWatcher() {
       window.removeEventListener("focus", onVisibilityOrFocus);
       clearInterval(interval);
     };
-  }, [triggerRefresh]);
+  }, [triggerRefresh, router]);
 
   return null;
 }
