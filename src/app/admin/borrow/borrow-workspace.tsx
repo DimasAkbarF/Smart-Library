@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { QrScanner } from "@/components/library/qr-scanner";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ interface SuccessAlertData {
 }
 
 export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number }) {
+  const router = useRouter();
   const { success: toastSuccess } = useToast();
   const [ctx, setCtx] = useState<StudentContext | null>(null);
   const [copy, setCopy] = useState<BookCopy | null>(null);
@@ -111,6 +113,7 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
     setBusy3(false);
     if (res.ok) {
       notifyCirculationChange({ type: "BORROW", copyId: copy.id });
+      router.refresh();
       setSuccessAlert({
         bookTitle: res.receipt.book_title,
         inventoryCode: res.receipt.inventory_code,

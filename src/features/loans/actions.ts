@@ -127,6 +127,7 @@ export async function borrowAction(
   revalidatePath("/", "layout");
   revalidatePath("/admin");
   revalidatePath("/admin/copies");
+  revalidatePath("/admin/qr");
   revalidatePath("/admin/books");
   revalidatePath("/admin/transactions");
   revalidatePath("/admin/borrow");
@@ -164,6 +165,7 @@ export async function returnAction(
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     revalidatePath("/admin/copies");
+    revalidatePath("/admin/qr");
     revalidatePath("/admin/books");
     revalidatePath("/admin/transactions");
     revalidatePath("/admin/return");

@@ -46,8 +46,6 @@ export async function librarianDashboard() {
   };
 }
 
-import { unstable_cache } from "next/cache";
-
 export interface ReportData {
   perDay: { date: string; pinjam: number; kembali: number }[];
   topBooks: { title: string; count: number }[];
@@ -153,77 +151,66 @@ async function fetchDashboardChartData(): Promise<{ date: string; pinjam: number
   return days;
 }
 
-/** Cached dashboard data (stale-while-revalidate 30s) untuk akses secepat kilat < 5ms. */
-const getCachedAdminDashboard = unstable_cache(
-  async () => {
-    const svc = serviceClient();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const [
-      { count: titles },
-      { count: copies },
-      { count: borrowed },
-      { count: overdue },
-      { count: students },
-      { count: damagedCopies },
-      { count: studentsWithoutClass },
-      { count: borrowedToday },
-      { count: returnedToday },
-      audit,
-      chartData,
-    ] = await Promise.all([
-      svc.from("books").select("id", { count: "exact", head: true }),
-      svc.from("book_copies").select("id", { count: "exact", head: true }),
-      svc.from("loans").select("id", { count: "exact", head: true }).in("status", ["ACTIVE", "OVERDUE"]),
-      svc.from("loans").select("id", { count: "exact", head: true }).eq("status", "OVERDUE"),
-      svc.from("students").select("id", { count: "exact", head: true }).eq("status", "active"),
-      svc.from("book_copies").select("id", { count: "exact", head: true }).in("status", ["DAMAGED", "LOST"]),
-      svc.from("students").select("id", { count: "exact", head: true }).is("class_id", null).eq("status", "active"),
-      svc.from("loans").select("id", { count: "exact", head: true }).gte("borrowed_at", today.toISOString()),
-      svc.from("loans").select("id", { count: "exact", head: true }).gte("returned_at", today.toISOString()),
-      svc.from("audit_logs").select("id, action, entity_type, entity_id, metadata, created_at, profiles(full_name)").order("created_at", { ascending: false }).limit(8),
-      fetchDashboardChartData(),
-    ]);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const activity: AuditLog[] = (audit.data ?? []).map((a: any) => ({
-      id: a.id,
-      actor_name: a.profiles?.full_name ?? null,
-      action: a.action,
-      entity_type: a.entity_type,
-      entity_id: a.entity_id,
-      metadata: a.metadata ?? {},
-      created_at: a.created_at,
-    }));
-    const lastImport = activity.find((a) => a.action.startsWith("import.")) ?? null;
-
-    return {
-      titles: titles ?? 0,
-      copies: copies ?? 0,
-      borrowed: borrowed ?? 0,
-      borrowedToday: borrowedToday ?? 0,
-      returnedToday: returnedToday ?? 0,
-      overdue: overdue ?? 0,
-      students: students ?? 0,
-      damagedCopies: damagedCopies ?? 0,
-      studentsWithoutClass: studentsWithoutClass ?? 0,
-      chartData,
-      activity,
-      lastImport,
-    };
-  },
-  ["admin-dashboard-summary"],
-  {
-    revalidate: 30,
-    tags: ["admin-dashboard"],
-  },
-);
-
 export async function adminDashboard() {
   await assertRole("admin");
   void refreshOverdue();
-  return getCachedAdminDashboard();
+
+  const svc = serviceClient();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [
+    { count: titles },
+    { count: copies },
+    { count: borrowed },
+    { count: overdue },
+    { count: students },
+    { count: damagedCopies },
+    { count: studentsWithoutClass },
+    { count: borrowedToday },
+    { count: returnedToday },
+    audit,
+    chartData,
+  ] = await Promise.all([
+    svc.from("books").select("id", { count: "exact", head: true }),
+    svc.from("book_copies").select("id", { count: "exact", head: true }),
+    svc.from("loans").select("id", { count: "exact", head: true }).in("status", ["ACTIVE", "OVERDUE"]),
+    svc.from("loans").select("id", { count: "exact", head: true }).eq("status", "OVERDUE"),
+    svc.from("students").select("id", { count: "exact", head: true }).eq("status", "active"),
+    svc.from("book_copies").select("id", { count: "exact", head: true }).in("status", ["DAMAGED", "LOST"]),
+    svc.from("students").select("id", { count: "exact", head: true }).is("class_id", null).eq("status", "active"),
+    svc.from("loans").select("id", { count: "exact", head: true }).gte("borrowed_at", today.toISOString()),
+    svc.from("loans").select("id", { count: "exact", head: true }).gte("returned_at", today.toISOString()),
+    svc.from("audit_logs").select("id, action, entity_type, entity_id, metadata, created_at, profiles(full_name)").order("created_at", { ascending: false }).limit(8),
+    fetchDashboardChartData(),
+  ]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const activity: AuditLog[] = (audit.data ?? []).map((a: any) => ({
+    id: a.id,
+    actor_name: a.profiles?.full_name ?? null,
+    action: a.action,
+    entity_type: a.entity_type,
+    entity_id: a.entity_id,
+    metadata: a.metadata ?? {},
+    created_at: a.created_at,
+  }));
+  const lastImport = activity.find((a) => a.action.startsWith("import.")) ?? null;
+
+  return {
+    titles: titles ?? 0,
+    copies: copies ?? 0,
+    borrowed: borrowed ?? 0,
+    borrowedToday: borrowedToday ?? 0,
+    returnedToday: returnedToday ?? 0,
+    overdue: overdue ?? 0,
+    students: students ?? 0,
+    damagedCopies: damagedCopies ?? 0,
+    studentsWithoutClass: studentsWithoutClass ?? 0,
+    chartData,
+    activity,
+    lastImport,
+  };
 }
 
 export async function listAudit(opts: { page?: number; q?: string }): Promise<{

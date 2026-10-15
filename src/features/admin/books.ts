@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag, updateTag, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
@@ -250,38 +250,6 @@ export async function setCopyStatus(copyId: string, status: BookCopy["status"]) 
   }
 }
 
-const getCachedCopies = unstable_cache(
-  async (status: string, bookId: string, page: number, pageSize: number) => {
-    const svc = serviceClient();
-    let query = svc
-      .from("book_copies")
-      .select("id, book_id, inventory_code, qr_token, condition, location, status, books(title)", { count: "exact" });
-    if (status) query = query.eq("status", status);
-    if (bookId) query = query.eq("book_id", bookId);
-    const { data, count } = await query
-      .order("inventory_code")
-      .range((page - 1) * pageSize, page * pageSize - 1);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rows = (data ?? []).map((c: any) => ({
-      id: c.id,
-      book_id: c.book_id,
-      book_title: c.books?.title ?? "—",
-      inventory_code: c.inventory_code,
-      qr_token: c.qr_token,
-      condition: c.condition,
-      location: c.location,
-      status: c.status,
-    }));
-    const total = count ?? rows.length;
-    return { rows, total, page, pageCount: Math.max(1, Math.ceil(total / pageSize)) };
-  },
-  ["copies-list-v1"],
-  {
-    revalidate: 30,
-    tags: ["copies"],
-  },
-);
-
 export async function listCopies(opts: {
   q?: string;
   status?: string;
@@ -293,11 +261,6 @@ export async function listCopies(opts: {
   const page = Math.max(1, opts.page ?? 1);
   const pageSize = opts.pageSize ?? 25;
   const q = opts.q ? sanitizeSearchTerm(opts.q) : "";
-
-  // Tanpa keyword pencarian manual, gunakan server cache (latensi ~1ms)
-  if (!q) {
-    return getCachedCopies(opts.status ?? "", opts.bookId ?? "", page, pageSize);
-  }
 
   const svc = serviceClient();
   let query = svc

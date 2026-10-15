@@ -7,13 +7,21 @@ import { createClient } from "@/lib/supabase/client";
 const CHANNEL_NAME = "circulation-sync";
 const BC_NAME = "smart-library-circulation";
 const STORAGE_KEY = "sl_circulation_sync";
+const LOCAL_EVENT = "sl_circulation_local_sync";
 
 export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
 
   const data = { ts: Date.now(), ...payload };
 
-  // 1. BroadcastChannel (same browser tab-to-tab)
+  // 0. Sinyal instan ke window/tab aktif saat ini (0ms)
+  try {
+    window.dispatchEvent(new CustomEvent(LOCAL_EVENT, { detail: data }));
+  } catch {
+    /* ignore */
+  }
+
+  // 1. BroadcastChannel (antar tab di browser yang sama)
   try {
     if (typeof BroadcastChannel !== "undefined") {
       const bc = new BroadcastChannel(BC_NAME);
@@ -24,14 +32,14 @@ export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
     /* ignore */
   }
 
-  // 2. Storage event (cross-window fallback on same origin)
+  // 2. Storage event (fallback antar window origin yang sama)
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch {
     /* ignore */
   }
 
-  // 3. Supabase Realtime broadcast (cross-device & external sessions)
+  // 3. Supabase Realtime broadcast (antar perangkat & sesi eksternal)
   try {
     const supabase = createClient();
     const ch = supabase.channel(CHANNEL_NAME);
@@ -42,7 +50,9 @@ export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
           event: "change",
           payload: data,
         }).finally(() => {
-          supabase.removeChannel(ch);
+          setTimeout(() => {
+            supabase.removeChannel(ch);
+          }, 1000);
         });
       }
     });
@@ -63,7 +73,11 @@ export function CirculationWatcher() {
       router.refresh();
     };
 
-    // 1. Same-browser cross-tab listener
+    // 0. Listener tab/window aktif saat ini
+    const onLocalSync = () => triggerRefresh();
+    window.addEventListener(LOCAL_EVENT, onLocalSync);
+
+    // 1. Same-browser cross-tab listener via BroadcastChannel
     let bc: BroadcastChannel | null = null;
     if (typeof BroadcastChannel !== "undefined") {
       try {
@@ -82,7 +96,7 @@ export function CirculationWatcher() {
     };
     window.addEventListener("storage", onStorage);
 
-    // 3. Tab visibility listener (only triggers when returning from another app/tab if visible)
+    // 3. Tab visibility listener (sinkron saat kembali membuka tab perpustakaan)
     const onVisibility = () => {
       if (document.visibilityState === "visible") {
         triggerRefresh();
@@ -90,7 +104,7 @@ export function CirculationWatcher() {
     };
     document.addEventListener("visibilitychange", onVisibility);
 
-    // 4. Supabase Realtime WebSocket listener (instant cross-device sync)
+    // 4. Supabase Realtime WebSocket listener (Broadcast + PostgreSQL CDC)
     let supabaseChannel: ReturnType<ReturnType<typeof createClient>["channel"]> | null = null;
     let supabaseClient: ReturnType<typeof createClient> | null = null;
     try {
@@ -98,12 +112,23 @@ export function CirculationWatcher() {
       supabaseChannel = supabaseClient.channel(CHANNEL_NAME);
       supabaseChannel
         .on("broadcast", { event: "change" }, () => triggerRefresh())
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "loans" },
+          () => triggerRefresh(),
+        )
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "book_copies" },
+          () => triggerRefresh(),
+        )
         .subscribe();
     } catch {
       /* ignore */
     }
 
     return () => {
+      window.removeEventListener(LOCAL_EVENT, onLocalSync);
       if (bc) bc.close();
       window.removeEventListener("storage", onStorage);
       document.removeEventListener("visibilitychange", onVisibility);

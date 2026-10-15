@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { QrScanner } from "@/components/library/qr-scanner";
 import { TransactionReceipt } from "@/components/library/receipt";
 import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/components/ui/confirm-dialog";
+import { useToast } from "@/components/ui/toast";
 import {
   resolveQr,
   returnAction,
@@ -16,6 +19,10 @@ import { notifyCirculationChange } from "@/components/circulation/circulation-wa
 import type { BookCopy } from "@/lib/types";
 
 export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
+  const router = useRouter();
+  const confirmDialog = useConfirm();
+  const { success: toastSuccess } = useToast();
+
   const [copy, setCopy] = useState<BookCopy | null>(null);
   const [loan, setLoan] = useState<ActiveLoanInfo | null>(null);
   const [msg, setMsg] = useState("");
@@ -30,6 +37,7 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
     setMsg("");
     setErr("");
     setReceipt(null);
+    router.refresh();
   };
 
   const onDetected = async (token: string) => {
@@ -55,7 +63,17 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
   };
 
   const confirm = async () => {
-    if (!copy) return;
+    if (!copy || !loan) return;
+
+    const ok = await confirmDialog({
+      title: "Konfirmasi Pengembalian",
+      message: `Proses pengembalian buku "${copy.book_title}" (${copy.inventory_code}) atas nama ${loan.student_name}?`,
+      confirmText: "Ya, Kembalikan",
+      cancelText: "Batal",
+      tone: "primary",
+    });
+    if (!ok) return;
+
     setProcessing(true);
     setErr("");
     const res = await returnAction(copy.id);
@@ -63,6 +81,8 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
     if (res.ok) {
       setReceipt(res.receipt);
       notifyCirculationChange({ type: "RETURN", copyId: copy.id });
+      router.refresh();
+      toastSuccess(`Buku "${copy.book_title}" berhasil dikembalikan!`, "Pengembalian Selesai");
     } else {
       setErr(pesanRamah(res.code));
     }
