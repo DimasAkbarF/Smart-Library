@@ -82,16 +82,15 @@ export function CirculationWatcher() {
     };
     window.addEventListener("storage", onStorage);
 
-    // 3. Auto-update when tab gains focus or visibility
+    // 3. Tab visibility listener (only triggers when returning from another app/tab if visible)
     const onVisibility = () => {
       if (document.visibilityState === "visible") {
         triggerRefresh();
       }
     };
     document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("focus", onVisibility);
 
-    // 4. Supabase Realtime WebSocket listener
+    // 4. Supabase Realtime WebSocket listener (instant cross-device sync)
     let supabaseChannel: ReturnType<ReturnType<typeof createClient>["channel"]> | null = null;
     let supabaseClient: ReturnType<typeof createClient> | null = null;
     try {
@@ -104,19 +103,10 @@ export function CirculationWatcher() {
       /* ignore */
     }
 
-    // 5. Periodic heartbeat fallback (every 6 seconds while tab is visible)
-    const timer = setInterval(() => {
-      if (document.visibilityState === "visible") {
-        triggerRefresh();
-      }
-    }, 6000);
-
     return () => {
       if (bc) bc.close();
       window.removeEventListener("storage", onStorage);
       document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("focus", onVisibility);
-      clearInterval(timer);
       if (supabaseChannel && supabaseClient) {
         try {
           supabaseClient.removeChannel(supabaseChannel);

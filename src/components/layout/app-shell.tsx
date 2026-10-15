@@ -70,6 +70,7 @@ function AdminNavItemLink({
     <div className="group relative">
       <Link
         href={item.href}
+        prefetch={true}
         onClick={onNavigate}
         aria-current={active ? "page" : undefined}
         className={cn(

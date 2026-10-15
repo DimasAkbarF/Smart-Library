@@ -32,6 +32,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-1.5 sm:gap-2.5">
             <Link
               href="/books"
+              prefetch={true}
               className={cn(
                 "flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-btn transition-colors",
                 isCatalog
@@ -45,6 +46,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
 
             <Link
               href="/informasi"
+              prefetch={true}
               className={cn(
                 "flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-btn transition-colors",
                 isInfo
@@ -58,6 +60,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
 
             <Link
               href="/login"
+              prefetch={true}
               className="flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink px-3 py-1.5 rounded-btn border border-rule hover:bg-surface-sunken-ed transition-colors ml-1"
             >
               <LogIn className="size-3.5 shrink-0" />

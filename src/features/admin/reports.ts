@@ -115,6 +115,44 @@ export async function reportSummary(): Promise<ReportData> {
   return fetchReportSummaryData();
 }
 
+/** Ringkasan 14 hari khusus chart dashboard (hanya tanggal pinjam & kembali, hemat join ~1000ms). */
+async function fetchDashboardChartData(): Promise<{ date: string; pinjam: number; kembali: number }[]> {
+  const svc = serviceClient();
+  const since = new Date();
+  since.setDate(since.getDate() - 13);
+  since.setHours(0, 0, 0, 0);
+
+  const { data: loans } = await svc
+    .from("loans")
+    .select("borrowed_at, returned_at")
+    .gte("borrowed_at", since.toISOString())
+    .limit(2000);
+
+  const days: { date: string; pinjam: number; kembali: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push({
+      date: d.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+      pinjam: 0,
+      kembali: 0,
+    });
+  }
+  const key = (iso: string) =>
+    new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+
+  for (const l of loans ?? []) {
+    const day = days.find((d) => d.date === key(l.borrowed_at));
+    if (day) day.pinjam += 1;
+    if (l.returned_at) {
+      const rd = days.find((d) => d.date === key(l.returned_at!));
+      if (rd) rd.kembali += 1;
+    }
+  }
+
+  return days;
+}
+
 /** Cached dashboard data (stale-while-revalidate 30s) untuk akses secepat kilat < 5ms. */
 const getCachedAdminDashboard = unstable_cache(
   async () => {
@@ -145,7 +183,7 @@ const getCachedAdminDashboard = unstable_cache(
       svc.from("loans").select("id", { count: "exact", head: true }).gte("borrowed_at", today.toISOString()),
       svc.from("loans").select("id", { count: "exact", head: true }).gte("returned_at", today.toISOString()),
       svc.from("audit_logs").select("id, action, entity_type, entity_id, metadata, created_at, profiles(full_name)").order("created_at", { ascending: false }).limit(8),
-      fetchReportSummaryData(),
+      fetchDashboardChartData(),
     ]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -170,7 +208,7 @@ const getCachedAdminDashboard = unstable_cache(
       students: students ?? 0,
       damagedCopies: damagedCopies ?? 0,
       studentsWithoutClass: studentsWithoutClass ?? 0,
-      chartData: chartData.perDay,
+      chartData,
       activity,
       lastImport,
     };
@@ -184,7 +222,7 @@ const getCachedAdminDashboard = unstable_cache(
 
 export async function adminDashboard() {
   await assertRole("admin");
-  await refreshOverdue();
+  void refreshOverdue();
   return getCachedAdminDashboard();
 }
 

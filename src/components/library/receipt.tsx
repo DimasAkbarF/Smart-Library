@@ -9,11 +9,13 @@ export function TransactionReceipt({
   receipt,
   nextHref,
   nextLabel,
+  onNext,
 }: {
   kind: "borrow" | "return";
   receipt: Receipt;
-  nextHref: string;
-  nextLabel: string;
+  nextHref?: string;
+  nextLabel?: string;
+  onNext?: () => void;
 }) {
   return (
     <div className="grid gap-5">
@@ -53,10 +55,16 @@ export function TransactionReceipt({
         )}
       </dl>
 
-      <div>
-        <Link href={nextHref}>
-          <Button size="lg">{nextLabel}</Button>
-        </Link>
+      <div className="flex flex-wrap items-center gap-3">
+        {onNext ? (
+          <Button size="lg" onClick={onNext} autoFocus>
+            {nextLabel ?? "Transaksi berikutnya"}
+          </Button>
+        ) : nextHref ? (
+          <Link href={nextHref}>
+            <Button size="lg">{nextLabel ?? "Transaksi berikutnya"}</Button>
+          </Link>
+        ) : null}
       </div>
     </div>
   );

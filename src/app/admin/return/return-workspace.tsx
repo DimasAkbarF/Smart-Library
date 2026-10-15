@@ -71,12 +71,12 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
   if (receipt) {
     return (
       <div className="grid gap-3">
-        <TransactionReceipt kind="return" receipt={receipt} nextHref="/admin/return" nextLabel="Transaksi berikutnya" />
-        <div>
-          <Button variant="secondary" onClick={resetAll}>
-            Scan lagi tanpa pindah halaman
-          </Button>
-        </div>
+        <TransactionReceipt
+          kind="return"
+          receipt={receipt}
+          onNext={resetAll}
+          nextLabel="Transaksi berikutnya"
+        />
       </div>
     );
   }
