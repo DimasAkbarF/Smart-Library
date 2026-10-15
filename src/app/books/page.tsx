@@ -90,6 +90,7 @@ export default async function PublicBooksPage({
       >
         <Link
           href={href(sp, { cat: undefined, page: undefined })}
+          aria-current={!sp.cat ? "true" : undefined}
           className={cn(
             "shrink-0 inline-flex min-h-[36px] items-center rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
             !sp.cat
@@ -103,7 +104,7 @@ export default async function PublicBooksPage({
           <Link
             key={c.id}
             href={href(sp, { cat: sp.cat === c.id ? undefined : c.id, page: undefined })}
-            aria-pressed={sp.cat === c.id}
+            aria-current={sp.cat === c.id ? "true" : undefined}
             className={cn(
               "shrink-0 inline-flex min-h-[36px] items-center rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
               sp.cat === c.id
@@ -116,7 +117,7 @@ export default async function PublicBooksPage({
         ))}
         <Link
           href={href(sp, { avail: sp.avail === "1" ? undefined : "1", page: undefined })}
-          aria-pressed={sp.avail === "1"}
+          aria-current={sp.avail === "1" ? "true" : undefined}
           className={cn(
             "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-xs font-medium transition-colors",
             sp.avail === "1"
