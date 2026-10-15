@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag, updateTag } from "next/cache";
+import { revalidatePath, revalidateTag, updateTag, unstable_cache } from "next/cache";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole } from "@/lib/auth";
 import { normalisasiKode } from "@/lib/format";
@@ -226,18 +226,29 @@ export async function listLoans(f: LoanFilters, pageSize = 15) {
   return { rows, total: count ?? rows.length, page, pageCount: Math.max(1, Math.ceil((count ?? rows.length) / pageSize)) };
 }
 
+const getCachedPolicy = unstable_cache(
+  async (): Promise<Policy> => {
+    const svc = serviceClient();
+    const { data } = await svc.from("library_policies").select("*").eq("id", 1).single();
+    return (
+      data ?? {
+        max_active_loans: 2,
+        loan_duration_days: 7,
+        fine_per_day: 0,
+        allow_renewal: false,
+        max_renewal_count: 0,
+      }
+    );
+  },
+  ["library-policy-cache-v1"],
+  {
+    revalidate: 3600,
+    tags: ["policy"],
+  },
+);
+
 export async function getPolicy(): Promise<Policy> {
-  const svc = serviceClient();
-  const { data } = await svc.from("library_policies").select("*").eq("id", 1).single();
-  return (
-    data ?? {
-      max_active_loans: 2,
-      loan_duration_days: 7,
-      fine_per_day: 0,
-      allow_renewal: false,
-      max_renewal_count: 0,
-    }
-  );
+  return getCachedPolicy();
 }
 
 /**

@@ -15,27 +15,33 @@ const CIRCULATION_ACTIONS = [
   "book.delete",
 ];
 
-export async function GET() {
-  let dbTs = 0;
-  try {
-    const svc = serviceClient();
-    const { data } = await svc
-      .from("audit_logs")
-      .select("created_at")
-      .in("action", CIRCULATION_ACTIONS)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+let cachedDbTs = 0;
+let lastDbCheck = 0;
 
-    if (data?.created_at) {
-      dbTs = new Date(data.created_at).getTime();
+export async function GET() {
+  const now = Date.now();
+  if (now - lastDbCheck > 2000) {
+    lastDbCheck = now;
+    try {
+      const svc = serviceClient();
+      const { data } = await svc
+        .from("audit_logs")
+        .select("created_at")
+        .in("action", CIRCULATION_ACTIONS)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (data?.created_at) {
+        cachedDbTs = new Date(data.created_at).getTime();
+      }
+    } catch {
+      /* fallback ke memory jika database lambat merespons */
     }
-  } catch {
-    /* fallback ke memory jika database lambat merespons */
   }
 
   const memoryTs = globalThis.__lastCirculationTs || 0;
-  const version = Math.max(dbTs, memoryTs);
+  const version = Math.max(cachedDbTs, memoryTs);
 
   return NextResponse.json(
     { version },

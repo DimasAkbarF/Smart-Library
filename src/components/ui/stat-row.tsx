@@ -29,6 +29,7 @@ export function StatPanel({ metrics }: { metrics: MetricCell[] }) {
         <Link
           key={m.label}
           href={m.href}
+          prefetch={true}
           className="group flex flex-col justify-between bg-white p-4 sm:p-5 transition-colors duration-150 hover:bg-surface-sunken-ed focus-visible:outline-2 focus-visible:outline-primary focus-visible:z-10"
         >
           <div>

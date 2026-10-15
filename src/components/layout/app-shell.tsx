@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LogOut,
   ChevronLeft,
@@ -31,6 +31,7 @@ function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <Link
       href="/"
+      prefetch={true}
       className="group flex min-w-0 items-center gap-2.5 focus-visible:outline-2 focus-visible:outline-primary"
     >
       <div className="shrink-0">
@@ -60,6 +61,7 @@ function AdminNavItemLink({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const active =
     item.href === "/admin"
       ? pathname === "/admin"
@@ -71,7 +73,9 @@ function AdminNavItemLink({
     <div className="group relative">
       <Link
         href={item.href}
-        prefetch={false}
+        prefetch={true}
+        onMouseEnter={() => router.prefetch(item.href)}
+        onTouchStart={() => router.prefetch(item.href)}
         onClick={onNavigate}
         aria-current={active ? "page" : undefined}
         className={cn(
@@ -138,7 +142,7 @@ function Breadcrumb() {
       aria-label="Breadcrumb"
       className="hidden items-center gap-1.5 text-xs font-plex-sans text-ink-muted sm:flex"
     >
-      <Link href="/admin" className="transition-colors hover:text-primary">
+      <Link href="/admin" prefetch={true} className="transition-colors hover:text-primary">
         Perpustakaan
       </Link>
       {segments.map((seg, idx) => {
@@ -154,7 +158,7 @@ function Breadcrumb() {
                 {label}
               </span>
             ) : (
-              <Link href={href} className="transition-colors hover:text-primary">
+              <Link href={href} prefetch={true} className="transition-colors hover:text-primary">
                 {label}
               </Link>
             )}

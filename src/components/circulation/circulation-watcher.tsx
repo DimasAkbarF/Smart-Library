@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const CHANNEL_NAME = "circulation-sync";
@@ -76,10 +76,8 @@ export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
 
 export function CirculationWatcher() {
   const router = useRouter();
-  const pathname = usePathname();
   const lastRefreshRef = useRef(0);
   const lastServerVersionRef = useRef(-1);
-  const lastPathnameRef = useRef(pathname);
 
   // Trigger refresh dengan debounce (maks 1x per 350ms)
   const triggerRefresh = useCallback(() => {
@@ -88,23 +86,6 @@ export function CirculationWatcher() {
     lastRefreshRef.current = now;
     router.refresh();
   }, [router]);
-
-  // Refresh saat navigasi antar halaman sirkulasi admin agar tidak ada router cache usang
-  useEffect(() => {
-    if (lastPathnameRef.current !== pathname) {
-      lastPathnameRef.current = pathname;
-      if (
-        pathname === "/admin" ||
-        pathname.startsWith("/admin/copies") ||
-        pathname.startsWith("/admin/transactions") ||
-        pathname.startsWith("/admin/qr") ||
-        pathname.startsWith("/admin/books") ||
-        pathname.startsWith("/books")
-      ) {
-        router.refresh();
-      }
-    }
-  }, [pathname, router]);
 
   useEffect(() => {
     // 0. Listener tab/window aktif saat ini
@@ -157,11 +138,10 @@ export function CirculationWatcher() {
     // Jalankan pengecekan baseline segera
     void checkServerVersion();
 
-    // 4. Window focus & tab visibility listener (sinkron seketika saat membuka tab)
+    // 4. Window focus & tab visibility listener (periksa versi seketika saat membuka/fokus tab)
     const onVisibilityOrFocus = () => {
       if (document.visibilityState === "visible") {
         void checkServerVersion();
-        router.refresh();
       }
     };
     document.addEventListener("visibilitychange", onVisibilityOrFocus);
@@ -176,8 +156,8 @@ export function CirculationWatcher() {
       });
     }
 
-    // 6. Background Heartbeat Fallback (setiap 1.5 detik saat tab aktif & terlihat)
-    const interval = setInterval(checkServerVersion, 1500);
+    // 6. Background Heartbeat Fallback (setiap 3.5 detik saat tab aktif & terlihat)
+    const interval = setInterval(checkServerVersion, 3500);
 
     return () => {
       window.removeEventListener(LOCAL_EVENT, onLocalSync);

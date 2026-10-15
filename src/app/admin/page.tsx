@@ -107,7 +107,7 @@ export default async function AdminPage() {
 
         {/* Aksi utama */}
         <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-2.5 md:w-auto md:flex-wrap">
-          <Link href="/admin/borrow" className="min-w-0 flex-1 md:flex-initial">
+          <Link href="/admin/borrow" prefetch={true} className="min-w-0 flex-1 md:flex-initial">
             <Button
               size="sm"
               className="h-11 min-h-11 w-full min-w-0 gap-2 whitespace-nowrap px-3.5 text-[13.5px] font-semibold md:h-12 md:min-h-12 md:px-5 md:text-body justify-center"
@@ -116,7 +116,7 @@ export default async function AdminPage() {
               <span>Pinjamkan Buku</span>
             </Button>
           </Link>
-          <Link href="/admin/return" className="min-w-0 flex-1 md:flex-initial">
+          <Link href="/admin/return" prefetch={true} className="min-w-0 flex-1 md:flex-initial">
             <Button
               variant="secondary"
               size="sm"
@@ -143,6 +143,7 @@ export default async function AdminPage() {
         <div className="flex flex-wrap items-center gap-x-6 gap-y-1 px-1 font-plex-sans text-xs text-ink-muted">
           <Link
             href="/admin/books"
+            prefetch={true}
             className="hover:text-primary transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-primary rounded-xs"
           >
             <span>Total koleksi: </span>
@@ -153,6 +154,7 @@ export default async function AdminPage() {
           <span className="hidden sm:inline text-rule-strong select-none" aria-hidden>·</span>
           <Link
             href="/admin/students"
+            prefetch={true}
             className="hover:text-primary transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-primary rounded-xs"
           >
             <span>Siswa terdaftar: </span>
