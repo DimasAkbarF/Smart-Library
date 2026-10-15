@@ -338,7 +338,7 @@ export default function InformasiPage() {
           </div>
           <div className="flex items-center gap-2.5">
             <Phone className="size-4 text-primary shrink-0" />
-            <span>Telepon Sekolah: <strong className="text-ink">(021) 5374823</strong></span>
+            <span>Telepon Sekolah: <strong className="text-ink">(021) 7401615</strong></span>
           </div>
         </div>
       </section>

@@ -27,12 +27,14 @@ export default function LoginPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Library",
+    "@id": "https://perpustakaansmp17tangsel.web.id/#library",
     "name": "Perpustakaan SMP Negeri 17 Tangerang Selatan",
     "alternateName": ["Smart Library SMPN 17 Tangsel", "SMP Negeri 17 Tangerang Selatan"],
     "url": "https://perpustakaansmp17tangsel.web.id",
     "logo": "https://perpustakaansmp17tangsel.web.id/logo-smpn17.png",
     "image": "https://perpustakaansmp17tangsel.web.id/logo-smpn17.png",
     "description": "Sistem perpustakaan sekolah dan sirkulasi digital berbasis QR untuk SMP Negeri 17 Tangerang Selatan.",
+    "telephone": "+62-21-7401615",
     "email": "perpustakaan@smpn17tangsel.sch.id",
     "address": {
       "@type": "PostalAddress",
@@ -41,6 +43,11 @@ export default function LoginPage() {
       "addressRegion": "Banten",
       "postalCode": "15417",
       "addressCountry": "ID",
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -6.3378,
+      "longitude": 106.7329,
     },
     "openingHoursSpecification": [
       {

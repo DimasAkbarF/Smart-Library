@@ -58,6 +58,7 @@ export default async function PublicBookDetail({
     ...(book.cover_url ? { "image": book.cover_url } : {}),
     "provider": {
       "@type": "Library",
+      "@id": "https://perpustakaansmp17tangsel.web.id/#library",
       "name": "Smart Library SMP Negeri 17 Tangerang Selatan",
       "url": "https://perpustakaansmp17tangsel.web.id",
     },

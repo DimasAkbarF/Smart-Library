@@ -38,6 +38,9 @@ export const metadata: Metadata = {
   description:
     "Smart Library SMPN 17 Tangerang Selatan (Perpus SMP 17 Tangsel) — Sistem perpustakaan digital sekolah berbasis QR: katalog koleksi buku, peminjaman, pengembalian, dan informasi literasi siswa.",
   applicationName: "Smart Library SMPN 17 Tangsel",
+  alternates: {
+    canonical: "/",
+  },
   keywords: [
     "smp negeri 17 tangerang selatan",
     "smpn 17 tangerang selatan",
@@ -132,6 +135,7 @@ const jsonLd = {
       "@id": "https://perpustakaansmp17tangsel.web.id/#school",
       "name": "SMP Negeri 17 Tangerang Selatan",
       "alternateName": [
+        "UPTD SMP Negeri 17 Kota Tangerang Selatan",
         "SMPN 17 Tangerang Selatan",
         "SMPN 17 Tangsel",
         "SMP 17 Tangsel",
@@ -155,13 +159,14 @@ const jsonLd = {
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": -6.3429,
-        "longitude": 106.7352,
+        "latitude": -6.3378,
+        "longitude": 106.7329,
       },
-      "telephone": "+62-21-5374823",
+      "telephone": "+62-21-7401615",
       "email": "info@smpn17tangsel.sch.id",
       "sameAs": [
         "https://sekolah.data.kemendikdasmen.go.id/profil-sekolah/B02D9BEE-C8FC-E111-BB25-F71AE7B520E6",
+        "https://www.wikidata.org/wiki/Q12515093",
       ],
     },
     {
@@ -180,7 +185,7 @@ const jsonLd = {
       },
       "description":
         "Perpustakaan digital resmi SMP Negeri 17 Tangerang Selatan (NPSN 20613593) berbasis QR Code, menyediakan katalog buku Kurikulum Merdeka, karya sastra, referensi belajar, dan sistem sirkulasi peminjaman terpadu.",
-      "telephone": "+62-21-5374823",
+      "telephone": "+62-21-7401615",
       "email": "perpustakaan@smpn17tangsel.sch.id",
       "isAccessibleForFree": true,
       "address": {
@@ -193,8 +198,8 @@ const jsonLd = {
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": -6.3429,
-        "longitude": 106.7352,
+        "latitude": -6.3378,
+        "longitude": 106.7329,
       },
       "openingHoursSpecification": [
         {
