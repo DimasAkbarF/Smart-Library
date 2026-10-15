@@ -23,11 +23,11 @@ export const metadata: Metadata = {
     "smpn 17 tangerang selatan",
     "katalog buku smpn 17 tangsel",
     "katalog perpustakaan smp 17 tangsel",
-    "npsn 20603332",
+    "npsn 20613593",
     "jam buka perpustakaan smp 17 tangsel",
     "alamat perpustakaan smpn 17 tangsel",
     "peminjaman buku smp 17 tangsel",
-    "lengkong gudang timur serpong",
+    "pamulang permai tangsel",
   ],
   alternates: {
     canonical: "/books",
@@ -69,7 +69,7 @@ export default async function PublicBooksPage({
       <header className="border-b border-rule pb-5">
         <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase mb-1">
           <span className="size-2 rounded-chip bg-primary shrink-0" />
-          <span>Perpustakaan Digital Resmi · SMP Negeri 17 Tangerang Selatan (NPSN 20603332)</span>
+          <span>Perpustakaan Digital Resmi · SMP Negeri 17 Tangerang Selatan (NPSN 20613593)</span>
         </div>
         <h1 className="font-serif text-3xl font-bold tracking-tight text-ink sm:text-4xl">
           Katalog Koleksi Buku SMPN 17 Tangerang Selatan

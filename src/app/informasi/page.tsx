@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Profil, Layanan & FAQ Perpustakaan SMPN 17 Tangerang Selatan",
   description:
-    "Informasi resmi Smart Library SMP Negeri 17 Tangerang Selatan (NPSN 20603332). Profil perpustakaan, jam layanan operasional, panduan sirkulasi QR Code, koleksi buku Kurikulum Merdeka, dan tanya jawab (FAQ).",
+    "Informasi resmi Smart Library SMP Negeri 17 Tangerang Selatan (NPSN 20613593). Profil perpustakaan, jam layanan operasional, panduan sirkulasi QR Code, koleksi buku Kurikulum Merdeka, dan tanya jawab (FAQ).",
   keywords: [
     "perpustakaan smpn 17 tangsel",
     "perpustakaan smp 17 tangsel",
@@ -30,8 +30,9 @@ export const metadata: Metadata = {
     "jam buka perpustakaan smp 17 tangsel",
     "alamat perpustakaan smpn 17 tangsel",
     "peminjaman buku smp 17 tangsel",
-    "npsn 20603332",
+    "npsn 20613593",
     "kurikulum merdeka smpn 17",
+    "pamulang permai tangsel",
   ],
   alternates: {
     canonical: "/informasi",
@@ -41,11 +42,11 @@ export const metadata: Metadata = {
 const faqItems = [
   {
     q: "Apa itu Smart Library SMP Negeri 17 Tangerang Selatan?",
-    a: "Smart Library adalah sistem perpustakaan digital dan fisik resmi milik SMP Negeri 17 Tangerang Selatan (NPSN 20603332). Platform ini memfasilitasi pencarian katalog koleksi buku Kurikulum Merdeka secara online, peminjaman instan menggunakan QR Code, serta kartu perpustakaan digital siswa untuk mewujudkan ekosistem literasi sekolah yang modern.",
+    a: "Smart Library adalah sistem perpustakaan digital dan fisik resmi milik SMP Negeri 17 Tangerang Selatan (NPSN 20613593). Platform ini memfasilitasi pencarian katalog koleksi buku Kurikulum Merdeka secara online, peminjaman instan menggunakan QR Code, serta kartu perpustakaan digital siswa untuk mewujudkan ekosistem literasi sekolah yang modern.",
   },
   {
     q: "Di mana alamat dan jam buka pelayanan Perpustakaan SMPN 17 Tangsel?",
-    a: "Perpustakaan berlokasi di kampus SMP Negeri 17 Tangerang Selatan, Jl. Lengkong Gudang Timur RT 01 RW 01, Kelurahan Lengkong Gudang Timur, Kecamatan Serpong, Kota Tangerang Selatan, Banten 15321. Jam layanan perpustakaan buka setiap hari Senin hingga Jumat pukul 07.00 – 15.00 WIB. Layanan tutup pada hari Sabtu, Minggu, dan hari libur nasional.",
+    a: "Perpustakaan berlokasi di kampus SMP Negeri 17 Tangerang Selatan, Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat, Kec. Pamulang, Kota Tangerang Selatan, Prov. Banten 15417. Jam layanan perpustakaan buka setiap hari Senin hingga Jumat pukul 07.00 – 15.00 WIB. Layanan tutup pada hari Sabtu, Minggu, dan hari libur nasional.",
   },
   {
     q: "Bagaimana alur dan tata cara meminjam buku di perpustakaan?",
@@ -115,7 +116,7 @@ export default function InformasiPage() {
           Profil, Layanan & FAQ Perpustakaan SMPN 17 Tangerang Selatan
         </h1>
         <p className="mt-4 text-sm sm:text-base text-ink-muted leading-relaxed max-w-3xl">
-          Smart Library SMP Negeri 17 Tangerang Selatan adalah perpustakaan sekolah digital dan fisik resmi di bawah naungan <strong>SMP Negeri 17 Kota Tangerang Selatan (NPSN 20603332)</strong>. Kami melayani kebutuhan literasi siswa, guru, dan tenaga kependidikan dengan sistem katalog daring terpadu dan sirkulasi peminjaman cepat berbasis QR Code.
+          Smart Library SMP Negeri 17 Tangerang Selatan adalah perpustakaan sekolah digital dan fisik resmi di bawah naungan <strong>SMP Negeri 17 Kota Tangerang Selatan (NPSN 20613593)</strong>. Kami melayani kebutuhan literasi siswa, guru, dan tenaga kependidikan dengan sistem katalog daring terpadu dan sirkulasi peminjaman cepat berbasis QR Code.
         </p>
       </section>
 
@@ -132,7 +133,7 @@ export default function InformasiPage() {
             </div>
             <p className="text-sm font-semibold text-ink">SMPN 17 Tangsel</p>
             <p className="text-xs text-ink-muted leading-relaxed">
-              NPSN: <strong>20603332</strong> · Akreditasi A. Naungan Dinas Pendidikan Kota Tangerang Selatan.
+              NPSN: <strong>20613593</strong> · Akreditasi A. Naungan Dinas Pendidikan Kota Tangerang Selatan.
             </p>
           </div>
 
@@ -143,7 +144,7 @@ export default function InformasiPage() {
             </div>
             <p className="text-sm font-semibold text-ink">Kampus SMPN 17</p>
             <p className="text-xs text-ink-muted leading-relaxed">
-              Jl. Lengkong Gudang Timur RT 01 RW 01, Serpong, Tangerang Selatan, Banten 15321.
+              Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat, Kec. Pamulang, Kota Tangerang Selatan, Prov. Banten 15417.
             </p>
           </div>
 

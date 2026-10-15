@@ -8,7 +8,7 @@ export function SchoolFooter() {
       <div className="mb-2 space-y-1 text-xs text-[#333842] lg:hidden">
         <p className="font-medium text-[#161B26]">Jam Layanan: Sen – Jum 07.00 – 15.00 WIB</p>
         <p>Sabtu, Minggu & Hari Libur: Tutup</p>
-        <p>Jl. Lengkong Gudang Timur, Serpong, Tangerang Selatan</p>
+        <p>Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat, Kec. Pamulang, Kota Tangerang Selatan, Prov. Banten</p>
         <p>Kontak: perpustakaan@smpn17tangsel.sch.id</p>
       </div>
       <p className="font-medium text-[#161B26]">Smart Library — SMP Negeri 17 Tangerang Selatan</p>

@@ -19,7 +19,7 @@ export async function generateMetadata({
   }
   return {
     title: `${book.title} karya ${book.author} — Smart Library SMPN 17 Tangsel`,
-    description: `Buku ${book.title} karya ${book.author}. Ketersediaan di Perpustakaan SMP Negeri 17 Tangerang Selatan (NPSN 20603332): ${book.available_copies} dari ${book.total_copies} eksemplar tersedia untuk dipinjam.`,
+    description: `Buku ${book.title} karya ${book.author}. Ketersediaan di Perpustakaan SMP Negeri 17 Tangerang Selatan (NPSN 20613593): ${book.available_copies} dari ${book.total_copies} eksemplar tersedia untuk dipinjam.`,
     keywords: [
       book.title,
       book.author,

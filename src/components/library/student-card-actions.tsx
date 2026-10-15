@@ -280,7 +280,7 @@ export function StudentCardActions({
                     <div class="inst-1">Pemerintah Kota Tangerang Selatan</div>
                     <div class="inst-2">Dinas Pendidikan dan Kebudayaan</div>
                     <div class="school-name">SMP NEGERI 17 TANGERANG SELATAN</div>
-                    <div class="address">Jl. Lengkong Gudang Timur, Serpong, Tangerang Selatan</div>
+                    <div class="address">Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat, Kec. Pamulang, Kota Tangerang Selatan</div>
                   </div>
                 </div>
                 <div class="ribbon">Kartu Anggota Perpustakaan</div>
@@ -289,7 +289,7 @@ export function StudentCardActions({
                     <div class="student-header">
                       <div class="avatar-circle">${initials}</div>
                       <div class="name-container">
-                        <div class="info-label">Nama Lengkap <span class="status-badge">Siswa Aktif</span></div>
+                        <div class="info-label">Nama Lengkap</div>
                         <div class="info-name">${safeName}</div>
                       </div>
                     </div>
@@ -303,7 +303,7 @@ export function StudentCardActions({
                         <div class="info-val">${safeClass}</div>
                       </div>
                     </div>
-                    <div class="validity-note">Masa Berlaku: <strong style="color: #0f172a;">Selama Siswa Aktif</strong></div>
+                    <div class="validity-note">Masa Berlaku: <strong style="color: #0f172a;">Berlaku Selama Terdaftar</strong></div>
                   </div>
                   <div class="qr-box">
                     <img class="qr-img" src="${qrDataUrl}" alt="QR" />
@@ -311,7 +311,7 @@ export function StudentCardActions({
                   </div>
                 </div>
                 <div class="footer">
-                  <span>* Berlaku selama menjadi siswa aktif</span>
+                  <span>* Tunjukkan kartu ini saat sirkulasi buku</span>
                   <span style="font-weight: 700;">SMPN 17 TANGSEL</span>
                 </div>
               </div>

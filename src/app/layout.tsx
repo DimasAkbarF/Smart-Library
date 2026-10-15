@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     "smpn 17 tangsel",
     "smp 17 tangsel",
     "smp 17 tangerang selatan",
-    "npsn 20603332",
+    "npsn 20613593",
     "perpussmp17tangsel",
     "perpus smp 17 tangsel",
     "perpus smpn 17 tangsel",
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     "dapodik smpn 17 tangerang selatan",
     "kemendikbud smpn 17 tangerang selatan",
     "buku kurikulum merdeka smpn 17 tangsel",
-    "lengkong gudang timur serpong",
+    "pamulang permai tangsel",
   ],
   authors: [{ name: "SMP Negeri 17 Tangerang Selatan" }],
   creator: "SMP Negeri 17 Tangerang Selatan",
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
     siteName: "Smart Library SMPN 17 Tangerang Selatan",
     title: "Smart Library — SMPN 17 Tangerang Selatan",
     description:
-      "Situs resmi Smart Library & Perpustakaan Digital SMP Negeri 17 Tangerang Selatan (NPSN 20603332). Katalog buku resmi, peminjaman QR code, dan literasi siswa.",
+      "Situs resmi Smart Library & Perpustakaan Digital SMP Negeri 17 Tangerang Selatan (NPSN 20613593). Katalog buku resmi, peminjaman QR code, dan literasi siswa.",
     images: [
       {
         url: "/logo-smpn17.png",
@@ -140,23 +140,23 @@ const jsonLd = {
       "identifier": {
         "@type": "PropertyValue",
         "name": "NPSN",
-        "value": "20603332",
+        "value": "20613593",
       },
       "url": "https://perpustakaansmp17tangsel.web.id",
       "logo": "https://perpustakaansmp17tangsel.web.id/logo-smpn17.png",
       "image": "https://perpustakaansmp17tangsel.web.id/logo-smpn17.png",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Jl. Lengkong Gudang Timur, RT 01 RW 01",
-        "addressLocality": "Serpong",
+        "streetAddress": "Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat",
+        "addressLocality": "Pamulang",
         "addressRegion": "Banten",
-        "postalCode": "15321",
+        "postalCode": "15417",
         "addressCountry": "ID",
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": -6.3117,
-        "longitude": 106.6784,
+        "latitude": -6.3429,
+        "longitude": 106.7352,
       },
       "telephone": "+62-21-5374823",
       "email": "info@smpn17tangsel.sch.id",
@@ -179,22 +179,22 @@ const jsonLd = {
         "@id": "https://perpustakaansmp17tangsel.web.id/#school",
       },
       "description":
-        "Perpustakaan digital resmi SMP Negeri 17 Tangerang Selatan (NPSN 20603332) berbasis QR Code, menyediakan katalog buku Kurikulum Merdeka, karya sastra, referensi belajar, dan sistem sirkulasi peminjaman terpadu.",
+        "Perpustakaan digital resmi SMP Negeri 17 Tangerang Selatan (NPSN 20613593) berbasis QR Code, menyediakan katalog buku Kurikulum Merdeka, karya sastra, referensi belajar, dan sistem sirkulasi peminjaman terpadu.",
       "telephone": "+62-21-5374823",
       "email": "perpustakaan@smpn17tangsel.sch.id",
       "isAccessibleForFree": true,
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Jl. Lengkong Gudang Timur, RT 01 RW 01",
-        "addressLocality": "Serpong",
+        "streetAddress": "Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat",
+        "addressLocality": "Pamulang",
         "addressRegion": "Banten",
-        "postalCode": "15321",
+        "postalCode": "15417",
         "addressCountry": "ID",
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": -6.3117,
-        "longitude": 106.6784,
+        "latitude": -6.3429,
+        "longitude": 106.7352,
       },
       "openingHoursSpecification": [
         {
@@ -221,7 +221,7 @@ const jsonLd = {
           "name": "Apa itu Smart Library SMP Negeri 17 Tangerang Selatan?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel) adalah perpustakaan digital resmi sekolah (NPSN 20603332) berbasis QR Code yang menyediakan katalog buku pelajaran Kurikulum Merdeka, karya sastra fiksi, referensi belajar, sistem sirkulasi peminjaman cepat, dan kartu anggota digital siswa.",
+            "text": "Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel) adalah perpustakaan digital resmi sekolah (NPSN 20613593) berbasis QR Code yang menyediakan katalog buku pelajaran Kurikulum Merdeka, karya sastra fiksi, referensi belajar, sistem sirkulasi peminjaman cepat, dan kartu anggota digital siswa.",
           },
         },
         {
@@ -229,7 +229,7 @@ const jsonLd = {
           "name": "Di mana lokasi dan jam buka Perpustakaan SMPN 17 Tangerang Selatan?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Perpustakaan berlokasi di SMP Negeri 17 Tangerang Selatan, Jl. Lengkong Gudang Timur RT 01 RW 01, Serpong, Kota Tangerang Selatan, Banten 15321. Jam layanan operasional buka setiap hari Senin hingga Jumat pukul 07.00 – 15.00 WIB (Sabtu, Minggu, dan hari libur nasional tutup).",
+            "text": "Perpustakaan berlokasi di SMP Negeri 17 Tangerang Selatan, Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat, Kec. Pamulang, Kota Tangerang Selatan, Prov. Banten 15417. Jam layanan operasional buka setiap hari Senin hingga Jumat pukul 07.00 – 15.00 WIB (Sabtu, Minggu, dan hari libur nasional tutup).",
           },
         },
         {

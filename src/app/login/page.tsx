@@ -36,9 +36,10 @@ export default function LoginPage() {
     "email": "perpustakaan@smpn17tangsel.sch.id",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Jl. Lengkong Gudang Timur, Serpong",
-      "addressLocality": "Tangerang Selatan",
+      "streetAddress": "Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat",
+      "addressLocality": "Pamulang, Tangerang Selatan",
       "addressRegion": "Banten",
+      "postalCode": "15417",
       "addressCountry": "ID",
     },
     "openingHoursSpecification": [

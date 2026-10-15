@@ -100,7 +100,7 @@ export function SchoolBrandPanel() {
 
       {/* Bagian Bawah: Metadata Alamat & Kontak Resmi */}
       <div className="border-t border-white/20 pt-6 font-plex-sans text-xs text-white/90 space-y-1.5">
-        <p className="text-white font-medium">Jl. Lengkong Gudang Timur, Serpong, Tangerang Selatan</p>
+        <p className="text-white font-medium">Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat, Kec. Pamulang, Kota Tangerang Selatan, Prov. Banten</p>
         <p className="text-white/90">Kontak: perpustakaan@smpn17tangsel.sch.id</p>
       </div>
     </section>

@@ -75,8 +75,8 @@ export function StudentCard({ student, className }: StudentCardProps) {
             <h1 className="font-display text-[10.5px] sm:text-[14px] print:text-[10.5px] font-extrabold tracking-tight text-sky-deep uppercase leading-tight mt-0.5">
               SMP NEGERI 17 TANGERANG SELATAN
             </h1>
-            <p className="text-[6px] sm:text-[8px] print:text-[6px] text-ink-muted leading-tight">
-              Jl. Lengkong Gudang Timur, Kec. Serpong, Kota Tangerang Selatan
+            <p className="text-[5.5px] sm:text-[7.5px] print:text-[5.5px] text-ink-muted leading-tight">
+              Jl. Komp. Pamulang Permai I Rt. 3 Rw. 10, Pamulang Barat, Kec. Pamulang, Kota Tangerang Selatan
             </p>
           </div>
         </div>
@@ -104,16 +104,11 @@ export function StudentCard({ student, className }: StudentCardProps) {
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[7px] sm:text-[8px] print:text-[7px] font-semibold text-ink-muted uppercase tracking-wider">
-                  Nama Lengkap
-                </span>
-                <span className="rounded-chip bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 font-plex-sans text-[6.5px] sm:text-[7.5px] print:text-[6.5px] font-bold uppercase leading-none">
-                  {student.status === "graduated" ? "Alumni" : "Siswa Aktif"}
-                </span>
-              </div>
+              <span className="text-[7px] sm:text-[8px] print:text-[7px] font-semibold text-ink-muted uppercase tracking-wider block">
+                Nama Lengkap
+              </span>
               <span
-                className="font-display text-[11.5px] sm:text-[14px] print:text-[11.5px] font-extrabold text-ink leading-tight line-clamp-1 block"
+                className="font-display text-[12px] sm:text-[14.5px] print:text-[12px] font-extrabold text-ink leading-tight line-clamp-1 block mt-0.5"
                 title={student.name}
               >
                 {student.name}
@@ -144,7 +139,7 @@ export function StudentCard({ student, className }: StudentCardProps) {
           {/* Masa Berlaku */}
           <div>
             <span className="text-[6.5px] sm:text-[7.5px] print:text-[6.5px] text-ink-muted block truncate">
-              Masa Berlaku: <strong className="text-ink font-semibold">Selama Siswa Aktif</strong>
+              Masa Berlaku: <strong className="text-ink font-semibold">Berlaku Selama Terdaftar</strong>
             </span>
           </div>
         </div>
