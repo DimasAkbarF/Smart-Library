@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Drawer } from "@/components/ui/drawer";
 import { LoanStatusChip } from "@/components/ui/status-chip";
 import { Button } from "@/components/ui/button";
+import { useSweetAlert } from "@/components/ui/confirm-dialog";
+import { returnAction } from "@/features/loans/actions";
+import { notifyCirculationChange } from "@/components/circulation/circulation-watcher";
 import { formatTanggal, hariTelat } from "@/lib/format";
-import { User, Book, Calendar, AlertCircle, FileSpreadsheet, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { pesanRamah } from "@/lib/errors";
+import { User, Book, Calendar, AlertCircle, FileSpreadsheet, ChevronLeft, ChevronRight, X, RotateCcw } from "lucide-react";
 import type { Loan } from "@/lib/types";
 
 export function TransactionsClient({
@@ -22,8 +27,58 @@ export function TransactionsClient({
   baseUrl: string;
   total: number;
 }) {
+  const router = useRouter();
+  const sweetAlert = useSweetAlert();
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [returningId, setReturningId] = useState<string | null>(null);
+
+  const handleQuickReturn = async (loan: Loan) => {
+    const ok = await sweetAlert.confirm({
+      title: "Konfirmasi Pengembalian Buku",
+      message: `Proses pengembalian buku "${loan.book_title}" (${loan.inventory_code}) yang dipinjam oleh ${loan.student_name}?`,
+      confirmText: "Ya, Kembalikan Buku",
+      cancelText: "Batal",
+      tone: "primary",
+      details: [
+        { label: "Judul Buku", value: loan.book_title },
+        { label: "Kode Eksemplar", value: loan.inventory_code },
+        { label: "Peminjam", value: `${loan.student_name} (${loan.student_nis})` },
+        { label: "Jatuh Tempo", value: formatTanggal(loan.due_at) },
+      ],
+    });
+    if (!ok) return;
+
+    setReturningId(loan.id);
+    try {
+      const res = await returnAction(loan.book_copy_id);
+      if (res.ok) {
+        notifyCirculationChange({ type: "RETURN", copyId: loan.book_copy_id });
+        router.refresh();
+        setSelectedLoan(null);
+        await sweetAlert.alert({
+          title: "Buku Berhasil Dikembalikan!",
+          message: `Transaksi peminjaman buku "${res.receipt.book_title}" telah selesai dan eksemplar kini berstatus Tersedia.`,
+          tone: "success",
+          confirmText: "Selesai",
+          details: [
+            { label: "Judul Buku", value: res.receipt.book_title },
+            { label: "Kode Eksemplar", value: res.receipt.inventory_code },
+            { label: "Peminjam", value: `${res.receipt.student_name} (${res.receipt.student_nis})` },
+          ],
+        });
+      } else {
+        await sweetAlert.alert({
+          title: "Gagal Mengembalikan Buku",
+          message: pesanRamah(res.code),
+          tone: "danger",
+          confirmText: "Mengerti",
+        });
+      }
+    } finally {
+      setReturningId(null);
+    }
+  };
 
   const href = (p: number) => {
     const sep = baseUrl.includes("?") ? "&" : "?";
@@ -237,25 +292,41 @@ export function TransactionsClient({
         description="Informasi transaksi sirkulasi dan status peminjam"
         footer={
           selectedLoan && (
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/admin/students?q=${encodeURIComponent(selectedLoan.student_nis)}`}
-                className="flex-1"
-              >
-                <Button variant="secondary" size="md" className="w-full gap-2 text-label">
-                  <User className="size-3.5" />
-                  <span>Lihat Siswa</span>
+            <div className="flex flex-col gap-2 w-full">
+              {(selectedLoan.status === "ACTIVE" || selectedLoan.status === "OVERDUE") && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  disabled={returningId === selectedLoan.id}
+                  onClick={() => handleQuickReturn(selectedLoan)}
+                  className="w-full gap-2 text-label"
+                >
+                  <RotateCcw className="size-3.5" />
+                  <span>
+                    {returningId === selectedLoan.id ? "Memproses Pengembalian…" : "Kembalikan Buku Sekarang"}
+                  </span>
                 </Button>
-              </Link>
-              <Link
-                href={`/admin/copies?q=${encodeURIComponent(selectedLoan.inventory_code)}`}
-                className="flex-1"
-              >
-                <Button variant="secondary" size="md" className="w-full gap-2 text-label">
-                  <Book className="size-3.5" />
-                  <span>Lihat Buku</span>
-                </Button>
-              </Link>
+              )}
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/admin/students?q=${encodeURIComponent(selectedLoan.student_nis)}`}
+                  className="flex-1"
+                >
+                  <Button variant="secondary" size="md" className="w-full gap-2 text-label">
+                    <User className="size-3.5" />
+                    <span>Lihat Siswa</span>
+                  </Button>
+                </Link>
+                <Link
+                  href={`/admin/copies?q=${encodeURIComponent(selectedLoan.inventory_code)}`}
+                  className="flex-1"
+                >
+                  <Button variant="secondary" size="md" className="w-full gap-2 text-label">
+                    <Book className="size-3.5" />
+                    <span>Lihat Buku</span>
+                  </Button>
+                </Link>
+              </div>
             </div>
           )
         }

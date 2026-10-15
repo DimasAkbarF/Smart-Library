@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { setCopyStatus } from "@/features/admin/books";
 import { pesanRamah, kodeDariError } from "@/lib/errors";
 import { notifyCirculationChange } from "@/components/circulation/circulation-watcher";
-import { useConfirm } from "@/components/ui/confirm-dialog";
+import { useSweetAlert } from "@/components/ui/confirm-dialog";
 import type { CopyStatus } from "@/lib/types";
 
 const TARGETS: { value: CopyStatus; label: string }[] = [
@@ -17,11 +17,11 @@ const TARGETS: { value: CopyStatus; label: string }[] = [
 
 export function CopyStatusButtons({ id, status }: { id: string; status: string }) {
   const router = useRouter();
-  const confirm = useConfirm();
+  const sweetAlert = useSweetAlert();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  async function ubah(next: CopyStatus) {
+  async function ubah(next: CopyStatus, label: string) {
     if (next === status) return;
     setBusy(true);
     setMsg(null);
@@ -29,6 +29,12 @@ export function CopyStatusButtons({ id, status }: { id: string; status: string }
       await setCopyStatus(id, next);
       notifyCirculationChange({ type: "STATUS_CHANGE", copyId: id });
       router.refresh();
+      await sweetAlert.alert({
+        title: "Status Eksemplar Diperbarui",
+        message: `Status eksemplar berhasil diubah menjadi "${label}". Perubahan langsung tercermin di katalog dan pencarian.`,
+        tone: "success",
+        confirmText: "Mengerti",
+      });
     } catch (e) {
       setMsg(pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined));
     } finally {
@@ -50,7 +56,7 @@ export function CopyStatusButtons({ id, status }: { id: string; status: string }
           if (val) {
             const targetObj = TARGETS.find((t) => t.value === val);
             const label = targetObj?.label ?? val;
-            const confirmed = await confirm({
+            const confirmed = await sweetAlert.confirm({
               title: "Konfirmasi Perubahan Status",
               message: `Apakah Anda yakin ingin mengubah status eksemplar ini menjadi "${label}"? Status ketersediaan katalog akan langsung diperbarui.`,
               confirmText: `Ya, Ubah ke ${label}`,
@@ -58,7 +64,7 @@ export function CopyStatusButtons({ id, status }: { id: string; status: string }
               tone: val === "DAMAGED" || val === "LOST" ? "danger" : val === "AVAILABLE" ? "success" : "warning",
             });
             if (confirmed) {
-              ubah(val);
+              ubah(val, label);
             }
           }
         }}

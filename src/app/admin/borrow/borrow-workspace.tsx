@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
 import { QrScanner } from "@/components/library/qr-scanner";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
 import { CopyStatusChip } from "@/components/ui/status-chip";
 import { useToast } from "@/components/ui/toast";
+import { useSweetAlert } from "@/components/ui/confirm-dialog";
 import {
   borrowAction,
   getStudentContext,
@@ -19,16 +18,9 @@ import { kodeDariError, pesanRamah } from "@/lib/errors";
 import { notifyCirculationChange } from "@/components/circulation/circulation-watcher";
 import type { BookCopy } from "@/lib/types";
 
-interface SuccessAlertData {
-  bookTitle: string;
-  inventoryCode: string;
-  studentName: string;
-  studentNis: string;
-  dueAt: string;
-}
-
 export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number }) {
   const router = useRouter();
+  const sweetAlert = useSweetAlert();
   const { success: toastSuccess } = useToast();
   const [ctx, setCtx] = useState<StudentContext | null>(null);
   const [copy, setCopy] = useState<BookCopy | null>(null);
@@ -38,7 +30,6 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
   const [busy1, setBusy1] = useState(false);
   const [busy2, setBusy2] = useState(false);
   const [busy3, setBusy3] = useState(false);
-  const [successAlert, setSuccessAlert] = useState<SuccessAlertData | null>(null);
 
   const resetAll = () => {
     setCtx(null);
@@ -46,11 +37,6 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
     setStep1Msg("");
     setStep2Msg("");
     setErr("");
-  };
-
-  const handleCloseAlert = () => {
-    setSuccessAlert(null);
-    resetAll();
   };
 
   const onStudent = async (token: string) => {
@@ -107,6 +93,21 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
 
   const confirm = async () => {
     if (!ctx || !copy) return;
+
+    const ok = await sweetAlert.confirm({
+      title: "Konfirmasi Peminjaman Buku",
+      message: "Pastikan data siswa dan eksemplar buku sudah sesuai sebelum melanjutkan pencatatan.",
+      confirmText: "Ya, Catat Pinjaman",
+      cancelText: "Batal",
+      tone: "primary",
+      details: [
+        { label: "Peminjam", value: `${ctx.student.name} (${ctx.student.nis})` },
+        { label: "Buku", value: copy.book_title },
+        { label: "Kode Eksemplar", value: copy.inventory_code },
+      ],
+    });
+    if (!ok) return;
+
     setBusy3(true);
     setErr("");
     const res = await borrowAction(ctx.student.id, copy.id);
@@ -114,14 +115,20 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
     if (res.ok) {
       notifyCirculationChange({ type: "BORROW", copyId: copy.id });
       router.refresh();
-      setSuccessAlert({
-        bookTitle: res.receipt.book_title,
-        inventoryCode: res.receipt.inventory_code,
-        studentName: res.receipt.student_name,
-        studentNis: res.receipt.student_nis,
-        dueAt: res.receipt.due_at,
-      });
       toastSuccess("Peminjaman buku berhasil dicatat!", "Berhasil");
+      await sweetAlert.alert({
+        title: "Buku Berhasil Dipinjam!",
+        message: "Transaksi peminjaman telah berhasil dicatat ke dalam sistem perpustakaan.",
+        tone: "success",
+        confirmText: "OK, Transaksi Berikutnya",
+        details: [
+          { label: "Judul Buku", value: res.receipt.book_title },
+          { label: "Kode Eksemplar", value: res.receipt.inventory_code },
+          { label: "Peminjam", value: `${res.receipt.student_name} (${res.receipt.student_nis})` },
+          { label: "Jatuh Tempo", value: formatTanggal(res.receipt.due_at) },
+        ],
+      });
+      resetAll();
     } else {
       setErr(pesanRamah(res.code));
     }
@@ -309,67 +316,6 @@ export function BorrowWorkspace({ maxLoansFallback }: { maxLoansFallback: number
           </Button>
         </div>
       </aside>
-
-      {/* Modal Alert Peminjaman Berhasil (Custom Dialog) */}
-      {successAlert && (
-        <Dialog
-          open={!!successAlert}
-          onClose={handleCloseAlert}
-          title="Peminjaman Berhasil"
-          className="w-[min(460px,calc(100vw-2rem))]"
-        >
-          <div className="space-y-5 text-center font-plex-sans">
-            <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-success-bg border border-success-line text-success shadow-xs">
-              <CheckCircle2 className="size-8" aria-hidden />
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="font-display text-lg font-bold text-ink">
-                Buku Berhasil Dipinjam!
-              </h3>
-              <p className="text-meta text-ink-muted">
-                Transaksi peminjaman telah berhasil dicatat ke dalam sistem perpustakaan.
-              </p>
-            </div>
-
-            <div className="rounded-btn border border-rule bg-surface-sunken-ed p-4 text-left space-y-2.5 text-xs">
-              <div className="flex justify-between items-baseline gap-2">
-                <span className="text-ink-subtle">Judul Buku:</span>
-                <span className="font-semibold text-ink text-right truncate max-w-[220px]">
-                  {successAlert.bookTitle}
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline gap-2">
-                <span className="text-ink-subtle">Kode Eksemplar:</span>
-                <span className="font-mono font-semibold text-primary">{successAlert.inventoryCode}</span>
-              </div>
-              <div className="flex justify-between items-baseline gap-2">
-                <span className="text-ink-subtle">Peminjam:</span>
-                <span className="font-semibold text-ink">
-                  {successAlert.studentName} ({successAlert.studentNis})
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline gap-2 pt-2 border-t border-rule">
-                <span className="text-ink-subtle">Jatuh Tempo:</span>
-                <span className="font-semibold text-success font-mono">
-                  {formatTanggal(successAlert.dueAt)}
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-1">
-              <Button
-                size="md"
-                className="w-full"
-                onClick={handleCloseAlert}
-                autoFocus
-              >
-                OK, Transaksi Berikutnya
-              </Button>
-            </div>
-          </div>
-        </Dialog>
-      )}
     </div>
   );
 }

@@ -229,6 +229,7 @@ export async function setCopyStatus(copyId: string, status: BookCopy["status"]) 
   const { error } = await svc.from("book_copies").update({ status }).eq("id", copyId);
   if (error) throw new Error("Gagal mengubah status.");
   await tulisAudit(session.userId, "copy.status", "book_copy", copyId, { status });
+  globalThis.__lastCirculationTs = Date.now();
   revalidatePath("/", "layout");
   revalidatePath("/admin");
   revalidatePath("/admin/copies");

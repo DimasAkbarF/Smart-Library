@@ -7,22 +7,38 @@ import { cn } from "@/lib/utils";
 
 export type ConfirmTone = "danger" | "warning" | "primary" | "success";
 
+export interface DialogDetailItem {
+  label: string;
+  value: React.ReactNode;
+}
+
 export interface ConfirmOptions {
   title: string;
   message: string;
   confirmText?: string;
   cancelText?: string;
   tone?: ConfirmTone;
+  details?: DialogDetailItem[];
+}
+
+export interface AlertOptions {
+  title: string;
+  message: string;
+  confirmText?: string;
+  tone?: ConfirmTone;
+  details?: DialogDetailItem[];
 }
 
 interface ConfirmContextValue {
   confirm: (options: ConfirmOptions) => Promise<boolean>;
+  alert: (options: AlertOptions) => Promise<void>;
 }
 
 const ConfirmContext = createContext<ConfirmContextValue | null>(null);
 
 export function ConfirmProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"confirm" | "alert">("confirm");
   const [options, setOptions] = useState<ConfirmOptions>({
     title: "",
     message: "",
@@ -31,8 +47,10 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     tone: "primary",
   });
   const resolverRef = useRef<((value: boolean) => void) | null>(null);
+  const alertResolverRef = useRef<(() => void) | null>(null);
 
   const confirm = useCallback((opts: ConfirmOptions): Promise<boolean> => {
+    setMode("confirm");
     setOptions({
       confirmText: "Lanjutkan",
       cancelText: "Batal",
@@ -45,11 +63,31 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const alert = useCallback((opts: AlertOptions): Promise<void> => {
+    setMode("alert");
+    setOptions({
+      confirmText: opts.confirmText || "OK",
+      cancelText: undefined,
+      tone: opts.tone || "success",
+      title: opts.title,
+      message: opts.message,
+      details: opts.details,
+    });
+    setOpen(true);
+    return new Promise<void>((resolve) => {
+      alertResolverRef.current = resolve;
+    });
+  }, []);
+
   const handleConfirm = useCallback(() => {
     setOpen(false);
     if (resolverRef.current) {
       resolverRef.current(true);
       resolverRef.current = null;
+    }
+    if (alertResolverRef.current) {
+      alertResolverRef.current();
+      alertResolverRef.current = null;
     }
   }, []);
 
@@ -58,6 +96,10 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     if (resolverRef.current) {
       resolverRef.current(false);
       resolverRef.current = null;
+    }
+    if (alertResolverRef.current) {
+      alertResolverRef.current();
+      alertResolverRef.current = null;
     }
   }, []);
 
@@ -73,7 +115,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
   }, [open, handleCancel]);
 
   return (
-    <ConfirmContext.Provider value={{ confirm }}>
+    <ConfirmContext.Provider value={{ confirm, alert }}>
       {children}
       {open && (
         <div
@@ -90,7 +132,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={handleCancel}
-              aria-label="Tutup dialog konfirmasi"
+              aria-label="Tutup dialog"
               className="absolute right-4 top-4 flex size-7 cursor-pointer items-center justify-center rounded-btn text-ink-muted hover:bg-surface-sunken-ed hover:text-ink transition-colors"
             >
               <X className="size-4" />
@@ -100,12 +142,12 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
               {/* SweetAlert-style circular icon */}
               <div
                 className={cn(
-                  "flex size-12 shrink-0 items-center justify-center rounded-full mb-3 sm:mb-0",
-                  options.tone === "danger" && "bg-danger-bg text-danger border border-danger/20",
-                  options.tone === "warning" && "bg-warning-bg text-warning border border-warning/20",
-                  options.tone === "success" && "bg-success-bg text-success border border-success/20",
+                  "flex size-12 shrink-0 items-center justify-center rounded-full mb-3 sm:mb-0 shadow-xs",
+                  options.tone === "danger" && "bg-danger-bg text-danger border border-danger/25",
+                  options.tone === "warning" && "bg-warning-bg text-warning border border-warning/25",
+                  options.tone === "success" && "bg-success-bg text-success border border-success/25",
                   (!options.tone || options.tone === "primary") &&
-                    "bg-primary-soft text-primary border border-primary/20",
+                    "bg-primary-soft text-primary border border-primary/25",
                 )}
               >
                 {options.tone === "danger" && <AlertTriangle className="size-6" />}
@@ -114,35 +156,62 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                 {(!options.tone || options.tone === "primary") && <HelpCircle className="size-6" />}
               </div>
 
-              <div className="flex-1 space-y-1.5">
+              <div className="flex-1 space-y-1.5 w-full">
                 <h3 id="confirm-dialog-title" className="font-serif text-lg font-bold text-ink">
                   {options.title}
                 </h3>
                 <p className="font-plex-sans text-xs sm:text-sm text-ink-muted leading-relaxed">
                   {options.message}
                 </p>
+
+                {options.details && options.details.length > 0 && (
+                  <div className="mt-3.5 w-full rounded-btn border border-rule bg-surface-sunken-ed p-3.5 text-left space-y-2 text-xs font-plex-sans">
+                    {options.details.map((d, i) => (
+                      <div key={i} className="flex justify-between items-baseline gap-2">
+                        <span className="text-ink-subtle">{d.label}:</span>
+                        <span className="font-semibold text-ink text-right">{d.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5">
-              <Button
-                type="button"
-                variant="secondary"
-                size="md"
-                onClick={handleCancel}
-                className="w-full sm:w-auto min-w-[80px]"
-              >
-                {options.cancelText}
-              </Button>
-              <Button
-                type="button"
-                variant={options.tone === "danger" ? "danger" : "primary"}
-                size="md"
-                onClick={handleConfirm}
-                className="w-full sm:w-auto min-w-[110px]"
-              >
-                {options.confirmText}
-              </Button>
+              {mode === "confirm" ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="md"
+                    onClick={handleCancel}
+                    className="w-full sm:w-auto min-w-[80px]"
+                  >
+                    {options.cancelText || "Batal"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={options.tone === "danger" ? "danger" : "primary"}
+                    size="md"
+                    onClick={handleConfirm}
+                    className="w-full sm:w-auto min-w-[110px]"
+                    autoFocus
+                  >
+                    {options.confirmText || "Lanjutkan"}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  type="button"
+                  variant={options.tone === "danger" ? "danger" : "primary"}
+                  size="md"
+                  onClick={handleConfirm}
+                  className="w-full sm:w-auto min-w-[120px]"
+                  autoFocus
+                >
+                  {options.confirmText || "OK"}
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -157,4 +226,20 @@ export function useConfirm() {
     throw new Error("useConfirm must be used within a ConfirmProvider");
   }
   return ctx.confirm;
+}
+
+export function useAlert() {
+  const ctx = useContext(ConfirmContext);
+  if (!ctx) {
+    throw new Error("useAlert must be used within a ConfirmProvider");
+  }
+  return ctx.alert;
+}
+
+export function useSweetAlert() {
+  const ctx = useContext(ConfirmContext);
+  if (!ctx) {
+    throw new Error("useSweetAlert must be used within a ConfirmProvider");
+  }
+  return { confirm: ctx.confirm, alert: ctx.alert };
 }

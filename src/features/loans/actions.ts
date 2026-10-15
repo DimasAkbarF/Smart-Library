@@ -124,6 +124,7 @@ export async function borrowAction(
     return { ok: false, code: kodeDariError(e) || "UNKNOWN" };
   }
   const receipt = await buildReceipt(copyId, studentId);
+  globalThis.__lastCirculationTs = Date.now();
   revalidatePath("/", "layout");
   revalidatePath("/admin");
   revalidatePath("/admin/copies");
@@ -162,6 +163,7 @@ export async function returnAction(
     if (error) throw new Error(kodeDariError(error) || "UNKNOWN");
     const r = data as { loan_id: string; student_id: string; late_days: number; fine: number };
     const receipt = await buildReceipt(copyId, r.student_id, r.late_days, Number(r.fine));
+    globalThis.__lastCirculationTs = Date.now();
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     revalidatePath("/admin/copies");

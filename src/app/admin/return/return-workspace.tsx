@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { QrScanner } from "@/components/library/qr-scanner";
 import { TransactionReceipt } from "@/components/library/receipt";
 import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/components/ui/confirm-dialog";
+import { useSweetAlert } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/ui/toast";
 import {
   resolveQr,
@@ -20,7 +20,7 @@ import type { BookCopy } from "@/lib/types";
 
 export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
   const router = useRouter();
-  const confirmDialog = useConfirm();
+  const sweetAlert = useSweetAlert();
   const { success: toastSuccess } = useToast();
 
   const [copy, setCopy] = useState<BookCopy | null>(null);
@@ -62,15 +62,24 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
     }
   };
 
+  const late = loan ? Math.max(loan.late_days, hariTelat(loan.due_at)) : 0;
+
   const confirm = async () => {
     if (!copy || !loan) return;
 
-    const ok = await confirmDialog({
-      title: "Konfirmasi Pengembalian",
+    const ok = await sweetAlert.confirm({
+      title: "Konfirmasi Pengembalian Buku",
       message: `Proses pengembalian buku "${copy.book_title}" (${copy.inventory_code}) atas nama ${loan.student_name}?`,
-      confirmText: "Ya, Kembalikan",
+      confirmText: "Ya, Terima Pengembalian",
       cancelText: "Batal",
       tone: "primary",
+      details: [
+        { label: "Judul Buku", value: copy.book_title },
+        { label: "Kode Eksemplar", value: copy.inventory_code },
+        { label: "Peminjam", value: `${loan.student_name} (${loan.student_nis})` },
+        { label: "Keterlambatan", value: late > 0 ? `${late} hari` : "Tepat waktu" },
+        { label: "Denda", value: late > 0 ? formatRupiah(late * finePerDay) : "Rp 0" },
+      ],
     });
     if (!ok) return;
 
@@ -79,10 +88,29 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
     const res = await returnAction(copy.id);
     setProcessing(false);
     if (res.ok) {
-      setReceipt(res.receipt);
       notifyCirculationChange({ type: "RETURN", copyId: copy.id });
       router.refresh();
       toastSuccess(`Buku "${copy.book_title}" berhasil dikembalikan!`, "Pengembalian Selesai");
+      await sweetAlert.alert({
+        title: "Buku Berhasil Dikembalikan!",
+        message: `Pengembalian buku "${res.receipt.book_title}" telah selesai dicatat. Eksemplar buku kini kembali Tersedia di katalog perpustakaan.`,
+        tone: "success",
+        confirmText: "Lihat Struk Sirkulasi",
+        details: [
+          { label: "Judul Buku", value: res.receipt.book_title },
+          { label: "Kode Eksemplar", value: res.receipt.inventory_code },
+          { label: "Peminjam", value: `${res.receipt.student_name} (${res.receipt.student_nis})` },
+          {
+            label: "Keterlambatan",
+            value: (res.receipt.late_days ?? 0) > 0 ? `${res.receipt.late_days} hari` : "Tepat waktu",
+          },
+          {
+            label: "Denda",
+            value: (res.receipt.fine ?? 0) > 0 ? formatRupiah(res.receipt.fine ?? 0) : "Rp 0 (Nihil)",
+          },
+        ],
+      });
+      setReceipt(res.receipt);
     } else {
       setErr(pesanRamah(res.code));
     }
@@ -100,8 +128,6 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
       </div>
     );
   }
-
-  const late = loan ? Math.max(loan.late_days, hariTelat(loan.due_at)) : 0;
 
   return (
     <div className="grid max-w-3xl gap-5">

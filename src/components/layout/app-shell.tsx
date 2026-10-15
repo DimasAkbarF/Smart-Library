@@ -25,6 +25,7 @@ import { NotificationsPanel } from "./notifications-panel";
 import { ToastProvider } from "@/components/ui/toast";
 import { SchoolLogo } from "@/components/ui/school-logo";
 import { OfflineBanner } from "@/components/ui/offline-banner";
+import { useSweetAlert } from "@/components/ui/confirm-dialog";
 
 function Brand({ collapsed = false }: { collapsed?: boolean }) {
   return (
@@ -70,7 +71,7 @@ function AdminNavItemLink({
     <div className="group relative">
       <Link
         href={item.href}
-        prefetch={true}
+        prefetch={false}
         onClick={onNavigate}
         aria-current={active ? "page" : undefined}
         className={cn(
@@ -197,9 +198,28 @@ export function AppShell({
   userName: string;
   children: React.ReactNode;
 }) {
+  const sweetAlert = useSweetAlert();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const navGroups = NAV_GROUPS[role] || [];
+
+  const handleLogout = async (e?: React.MouseEvent | React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (loggingOut) return;
+
+    const confirmed = await sweetAlert.confirm({
+      title: "Konfirmasi Keluar",
+      message: "Apakah Anda yakin ingin mengakhiri sesi dan keluar dari akun staff perpustakaan?",
+      confirmText: "Ya, Keluar",
+      cancelText: "Batal",
+      tone: "danger",
+    });
+    if (confirmed) {
+      setLoggingOut(true);
+      await logout();
+    }
+  };
 
   const isCollapsed = useSyncExternalStore(
     sidebarStore.subscribe,
@@ -302,26 +322,28 @@ export function AppShell({
                       <p className="truncate text-xs font-semibold text-ink">{userName}</p>
                       <p className="text-[11px] text-ink-muted">{ROLE_LABEL[role]}</p>
                     </div>
-                    <form action={logout}>
-                      <button
-                        type="submit"
-                        aria-label="Keluar"
-                        className="flex size-7 items-center justify-center rounded-btn text-ink-muted transition-colors hover:bg-danger-bg hover:text-danger focus-visible:outline-2 focus-visible:outline-primary"
-                      >
-                        <LogOut className="size-3.5" />
-                      </button>
-                    </form>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={loggingOut}
+                      aria-label="Keluar"
+                      className="flex size-7 items-center justify-center rounded-btn text-ink-muted transition-colors hover:bg-danger-bg hover:text-danger focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 cursor-pointer"
+                    >
+                      <LogOut className="size-3.5" />
+                    </button>
                   </div>
                 ) : (
-                  <form action={logout} className="flex justify-center">
+                  <div className="flex justify-center">
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={loggingOut}
                       aria-label="Keluar"
-                      className="flex size-8 items-center justify-center rounded-btn text-ink-muted transition-colors hover:bg-danger-bg hover:text-danger focus-visible:outline-2 focus-visible:outline-primary"
+                      className="flex size-8 items-center justify-center rounded-btn text-ink-muted transition-colors hover:bg-danger-bg hover:text-danger focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 cursor-pointer"
                     >
                       <LogOut className="size-4" />
                     </button>
-                  </form>
+                  </div>
                 )}
               </div>
             </aside>
@@ -428,15 +450,17 @@ export function AppShell({
                   </div>
 
                   <div className="border-t border-rule pt-3">
-                    <form action={logout}>
-                      <button
-                        type="submit"
-                        className="flex min-h-[40px] w-full items-center gap-2 rounded-btn px-3 py-2 text-xs font-semibold text-ink-muted hover:bg-danger-bg hover:text-danger active:bg-danger-bg transition-colors"
-                      >
-                        <LogOut className="size-4 shrink-0" />
-                        <span className="truncate">Keluar ({userName})</span>
-                      </button>
-                    </form>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={loggingOut}
+                      className="flex min-h-[40px] w-full items-center gap-2 rounded-btn px-3 py-2 text-xs font-semibold text-ink-muted hover:bg-danger-bg hover:text-danger active:bg-danger-bg transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      <LogOut className="size-4 shrink-0" />
+                      <span className="truncate">
+                        {loggingOut ? "Mengakhiri sesi…" : `Keluar (${userName})`}
+                      </span>
+                    </button>
                   </div>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useCallback } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const CHANNEL_NAME = "circulation-sync";
@@ -9,13 +9,33 @@ const BC_NAME = "smart-library-circulation";
 const STORAGE_KEY = "sl_circulation_sync";
 const LOCAL_EVENT = "sl_circulation_local_sync";
 
+let sharedSupabaseChannel: ReturnType<ReturnType<typeof createClient>["channel"]> | null = null;
+
+function getSharedChannel() {
+  if (typeof window === "undefined") return null;
+  if (!sharedSupabaseChannel) {
+    try {
+      const supabase = createClient();
+      sharedSupabaseChannel = supabase.channel(CHANNEL_NAME, {
+        config: { broadcast: { self: false } },
+      });
+      sharedSupabaseChannel.subscribe();
+    } catch {
+      /* ignore */
+    }
+  }
+  return sharedSupabaseChannel;
+}
+
 export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
 
-  const data = { ts: Date.now(), ...payload };
+  const ts = Date.now();
+  const data = { ts, ...payload };
 
   // 0. Sinyal instan ke window/tab aktif saat ini (0ms)
   try {
+    sessionStorage.setItem("sl_last_circulation", ts.toString());
     window.dispatchEvent(new CustomEvent(LOCAL_EVENT, { detail: data }));
   } catch {
     /* ignore */
@@ -41,21 +61,14 @@ export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
 
   // 3. Supabase Realtime broadcast (antar perangkat & sesi eksternal)
   try {
-    const supabase = createClient();
-    const ch = supabase.channel(CHANNEL_NAME);
-    ch.subscribe((status) => {
-      if (status === "SUBSCRIBED") {
-        ch.send({
-          type: "broadcast",
-          event: "change",
-          payload: data,
-        }).finally(() => {
-          setTimeout(() => {
-            supabase.removeChannel(ch);
-          }, 1000);
-        });
-      }
-    });
+    const ch = getSharedChannel();
+    if (ch) {
+      ch.send({
+        type: "broadcast",
+        event: "change",
+        payload: data,
+      });
+    }
   } catch {
     /* ignore */
   }
@@ -63,16 +76,37 @@ export function notifyCirculationChange(payload: Record<string, unknown> = {}) {
 
 export function CirculationWatcher() {
   const router = useRouter();
+  const pathname = usePathname();
   const lastRefreshRef = useRef(0);
+  const lastServerVersionRef = useRef(0);
+  const lastPathnameRef = useRef(pathname);
+
+  // Trigger refresh dengan debounce (maks 1x per 350ms)
+  const triggerRefresh = useCallback(() => {
+    const now = Date.now();
+    if (now - lastRefreshRef.current < 350) return;
+    lastRefreshRef.current = now;
+    router.refresh();
+  }, [router]);
+
+  // Refresh saat navigasi antar halaman sirkulasi admin agar tidak ada router cache usang
+  useEffect(() => {
+    if (lastPathnameRef.current !== pathname) {
+      lastPathnameRef.current = pathname;
+      if (
+        pathname === "/admin" ||
+        pathname.startsWith("/admin/copies") ||
+        pathname.startsWith("/admin/transactions") ||
+        pathname.startsWith("/admin/qr") ||
+        pathname.startsWith("/admin/books") ||
+        pathname.startsWith("/books")
+      ) {
+        triggerRefresh();
+      }
+    }
+  }, [pathname, triggerRefresh]);
 
   useEffect(() => {
-    const triggerRefresh = () => {
-      const now = Date.now();
-      if (now - lastRefreshRef.current < 400) return;
-      lastRefreshRef.current = now;
-      router.refresh();
-    };
-
     // 0. Listener tab/window aktif saat ini
     const onLocalSync = () => triggerRefresh();
     window.addEventListener(LOCAL_EVENT, onLocalSync);
@@ -96,51 +130,52 @@ export function CirculationWatcher() {
     };
     window.addEventListener("storage", onStorage);
 
-    // 3. Tab visibility listener (sinkron saat kembali membuka tab perpustakaan)
-    const onVisibility = () => {
+    // 3. Window focus & tab visibility listener (sinkron saat kembali membuka tab perpustakaan)
+    const onVisibilityOrFocus = () => {
       if (document.visibilityState === "visible") {
         triggerRefresh();
       }
     };
-    document.addEventListener("visibilitychange", onVisibility);
+    document.addEventListener("visibilitychange", onVisibilityOrFocus);
+    window.addEventListener("focus", onVisibilityOrFocus);
 
-    // 4. Supabase Realtime WebSocket listener (Broadcast + PostgreSQL CDC)
-    let supabaseChannel: ReturnType<ReturnType<typeof createClient>["channel"]> | null = null;
-    let supabaseClient: ReturnType<typeof createClient> | null = null;
-    try {
-      supabaseClient = createClient();
-      supabaseChannel = supabaseClient.channel(CHANNEL_NAME);
-      supabaseChannel
-        .on("broadcast", { event: "change" }, () => triggerRefresh())
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "loans" },
-          () => triggerRefresh(),
-        )
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "book_copies" },
-          () => triggerRefresh(),
-        )
-        .subscribe();
-    } catch {
-      /* ignore */
+    // 4. Supabase Realtime WebSocket listener (Broadcast instan)
+    const sharedCh = getSharedChannel();
+    if (sharedCh) {
+      sharedCh.on("broadcast", { event: "change" }, () => triggerRefresh());
     }
+
+    // 5. Background Heartbeat Fallback (setiap 3,5 detik saat tab aktif & terlihat)
+    const interval = setInterval(async () => {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const res = await fetch("/api/circulation-sync", {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { version: number };
+          if (data.version > 0 && lastServerVersionRef.current === 0) {
+            lastServerVersionRef.current = data.version;
+          } else if (data.version > lastServerVersionRef.current) {
+            lastServerVersionRef.current = data.version;
+            triggerRefresh();
+          }
+        }
+      } catch {
+        /* ignore network errors */
+      }
+    }, 3500);
 
     return () => {
       window.removeEventListener(LOCAL_EVENT, onLocalSync);
       if (bc) bc.close();
       window.removeEventListener("storage", onStorage);
-      document.removeEventListener("visibilitychange", onVisibility);
-      if (supabaseChannel && supabaseClient) {
-        try {
-          supabaseClient.removeChannel(supabaseChannel);
-        } catch {
-          /* ignore */
-        }
-      }
+      document.removeEventListener("visibilitychange", onVisibilityOrFocus);
+      window.removeEventListener("focus", onVisibilityOrFocus);
+      clearInterval(interval);
     };
-  }, [router]);
+  }, [triggerRefresh]);
 
   return null;
 }
