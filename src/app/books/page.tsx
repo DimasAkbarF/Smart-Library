@@ -8,17 +8,26 @@ import { SearchInput } from "@/components/ui/search-input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { MapPin, Clock, BookOpen, QrCode, Building2, HelpCircle } from "lucide-react";
+
 export const metadata: Metadata = {
   title: "Katalog Koleksi Buku Perpustakaan",
   description:
-    "Jelajahi koleksi buku resmi Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel). Temukan ketersediaan buku dan referensi belajar.",
+    "Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel). Katalog buku resmi Kurikulum Merdeka, sirkulasi peminjaman QR Code, dan informasi literasi siswa.",
   keywords: [
-    "perpussmp17tangsel",
+    "perpustakaan smpn 17 tangsel",
+    "perpustakaan smp 17 tangsel",
+    "perpus smp 17 tangsel",
+    "smart library smpn 17 tangsel",
+    "smp negeri 17 tangerang selatan",
+    "smpn 17 tangerang selatan",
     "katalog buku smpn 17 tangsel",
     "katalog perpustakaan smp 17 tangsel",
-    "perpus smp 17 tangsel",
-    "perpustakaan smpn 17 tangsel",
-    "buku perpustakaan smpn 17 tangerang selatan",
+    "npsn 20603332",
+    "jam buka perpustakaan smp 17 tangsel",
+    "alamat perpustakaan smpn 17 tangsel",
+    "peminjaman buku smp 17 tangsel",
+    "lengkong gudang timur serpong",
   ],
   alternates: {
     canonical: "/books",
@@ -156,6 +165,125 @@ export default async function PublicBooksPage({
           )}
         </nav>
       )}
+
+      {/* Profil Faktual & Informasi Layanan Perpustakaan untuk Pengunjung & AI Search (AEO/GEO) */}
+      <section
+        className="mt-8 rounded-panel border border-rule bg-white p-6 sm:p-8 space-y-6 shadow-xs"
+        aria-labelledby="library-info-heading"
+      >
+        <div>
+          <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase mb-1">
+            <Building2 className="size-4 shrink-0 text-primary" />
+            <span>Informasi Unit & Layanan Resmi</span>
+          </div>
+          <h2 id="library-info-heading" className="font-serif text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+            Profil Smart Library SMP Negeri 17 Tangerang Selatan
+          </h2>
+          <p className="mt-2 text-sm text-ink-muted leading-relaxed sm:text-base">
+            Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel) adalah perpustakaan sekolah digital dan fisik resmi di bawah naungan SMP Negeri 17 Kota Tangerang Selatan (NPSN 20603332). Perpustakaan ini melayani kebutuhan literasi siswa, guru, dan staf dengan sistem katalog daring Kurikulum Merdeka dan sirkulasi peminjaman cepat berbasis QR Code.
+          </p>
+        </div>
+
+        {/* 4 Kolom Kartu Fakta Kunci (Entitas AI) */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-2">
+          <div className="rounded-card border border-rule bg-surface p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-primary">
+              <MapPin className="size-4 shrink-0" />
+              <span className="text-xs font-semibold uppercase tracking-wider font-mono">Alamat & Lokasi</span>
+            </div>
+            <p className="text-xs font-semibold text-ink">Kampus SMPN 17 Tangsel</p>
+            <p className="text-xs text-ink-muted leading-relaxed">
+              Jl. Lengkong Gudang Timur RT 01 RW 01, Serpong, Tangerang Selatan 15321
+            </p>
+          </div>
+
+          <div className="rounded-card border border-rule bg-surface p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-primary">
+              <Clock className="size-4 shrink-0" />
+              <span className="text-xs font-semibold uppercase tracking-wider font-mono">Jam Operasional</span>
+            </div>
+            <p className="text-xs font-semibold text-ink">Senin – Jumat</p>
+            <p className="text-xs text-ink-muted leading-relaxed">
+              07.00 – 15.00 WIB<br />
+              <span className="text-ink-subtle">Sabtu, Minggu & Libur: Tutup</span>
+            </p>
+          </div>
+
+          <div className="rounded-card border border-rule bg-surface p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-primary">
+              <QrCode className="size-4 shrink-0" />
+              <span className="text-xs font-semibold uppercase tracking-wider font-mono">Sistem Sirkulasi</span>
+            </div>
+            <p className="text-xs font-semibold text-ink">Berbasis QR Code</p>
+            <p className="text-xs text-ink-muted leading-relaxed">
+              Maksimal 2 buku selama 7 hari kalender. Kartu anggota digital siswa.
+            </p>
+          </div>
+
+          <div className="rounded-card border border-rule bg-surface p-4 space-y-1.5">
+            <div className="flex items-center gap-2 text-primary">
+              <BookOpen className="size-4 shrink-0" />
+              <span className="text-xs font-semibold uppercase tracking-wider font-mono">Koleksi Buku</span>
+            </div>
+            <p className="text-xs font-semibold text-ink">Kurikulum Merdeka</p>
+            <p className="text-xs text-ink-muted leading-relaxed">
+              Buku teks SMP Kelas 7–9, karya sastra, ensiklopedia, dan buku pengayaan.
+            </p>
+          </div>
+        </div>
+
+        {/* FAQ Section untuk Google Mode AI */}
+        <div className="border-t border-rule pt-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="size-4 text-primary shrink-0" />
+            <h3 className="text-base font-semibold text-ink font-serif">
+              Tanya Jawab Seputar Perpustakaan SMPN 17 Tangsel (FAQ)
+            </h3>
+          </div>
+
+          <div className="space-y-3">
+            <details className="group rounded-card border border-rule bg-surface p-4 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-center justify-between font-medium text-ink text-sm">
+                <span>Apa itu Smart Library SMP Negeri 17 Tangerang Selatan?</span>
+                <span className="transition group-open:rotate-180">▾</span>
+              </summary>
+              <p className="mt-2 text-xs text-ink-muted leading-relaxed pt-2 border-t border-rule/60">
+                Smart Library adalah sistem perpustakaan sekolah digital dan fisik resmi milik SMP Negeri 17 Tangerang Selatan (NPSN 20603332). Platform ini menyediakan katalog daring buku Kurikulum Merdeka, peminjaman instan dengan QR Code, serta kartu perpustakaan digital siswa.
+              </p>
+            </details>
+
+            <details className="group rounded-card border border-rule bg-surface p-4 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-center justify-between font-medium text-ink text-sm">
+                <span>Di mana alamat dan jam buka Perpustakaan SMPN 17 Tangsel?</span>
+                <span className="transition group-open:rotate-180">▾</span>
+              </summary>
+              <p className="mt-2 text-xs text-ink-muted leading-relaxed pt-2 border-t border-rule/60">
+                Perpustakaan berlokasi di kampus SMP Negeri 17 Tangerang Selatan, Jl. Lengkong Gudang Timur RT 01 RW 01, Serpong, Kota Tangerang Selatan, Banten 15321. Jam buka pelayanan adalah hari Senin hingga Jumat pukul 07.00 – 15.00 WIB.
+              </p>
+            </details>
+
+            <details className="group rounded-card border border-rule bg-surface p-4 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-center justify-between font-medium text-ink text-sm">
+                <span>Bagaimana cara meminjam dan mengembalikan buku?</span>
+                <span className="transition group-open:rotate-180">▾</span>
+              </summary>
+              <p className="mt-2 text-xs text-ink-muted leading-relaxed pt-2 border-t border-rule/60">
+                Siswa mencari buku di katalog ini, mengambil buku fisik di perpustakaan, lalu petugas memindai label QR pada buku dan kartu anggota digital siswa. Batas pinjam adalah 2 eksemplar selama 7 hari dan dapat diperpanjang.
+              </p>
+            </details>
+
+            <details className="group rounded-card border border-rule bg-surface p-4 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-center justify-between font-medium text-ink text-sm">
+                <span>Buku apa saja yang tersedia di katalog Smart Library?</span>
+                <span className="transition group-open:rotate-180">▾</span>
+              </summary>
+              <p className="mt-2 text-xs text-ink-muted leading-relaxed pt-2 border-t border-rule/60">
+                Koleksi mencakup buku teks pelajaran Kurikulum Merdeka Kelas 7, 8, dan 9, novel sastra Indonesia dan dunia, ensiklopedia sains, buku referensi sejarah, buku keagamaan, serta bacaan fiksi dan non-fiksi edukatif.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: "Googlebot-Favicon",
+        userAgent: ["Googlebot", "Googlebot-Image", "Googlebot-Favicon", "Google-Extended"],
         allow: ["/"],
       },
       {

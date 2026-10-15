@@ -171,6 +171,7 @@ const jsonLd = {
       "alternateName": [
         "Perpustakaan SMPN 17 Tangsel",
         "Perpus SMP 17 Tangsel",
+        "Smart Library SMPN 17 Tangsel",
         "Perpustakaan Digital SMPN 17 Tangerang Selatan",
       ],
       "url": "https://perpustakaansmp17tangsel.web.id/books",
@@ -178,7 +179,76 @@ const jsonLd = {
         "@id": "https://perpustakaansmp17tangsel.web.id/#school",
       },
       "description":
-        "Perpustakaan digital resmi SMP Negeri 17 Tangerang Selatan (NPSN 20603332) berbasis QR Code, menyediakan katalog buku Kurikulum Merdeka, karya sastra, referensi belajar, dan sistem sirkulasi terpadu.",
+        "Perpustakaan digital resmi SMP Negeri 17 Tangerang Selatan (NPSN 20603332) berbasis QR Code, menyediakan katalog buku Kurikulum Merdeka, karya sastra, referensi belajar, dan sistem sirkulasi peminjaman terpadu.",
+      "telephone": "+62-21-5374823",
+      "email": "perpustakaan@smpn17tangsel.sch.id",
+      "isAccessibleForFree": true,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jl. Lengkong Gudang Timur, RT 01 RW 01",
+        "addressLocality": "Serpong",
+        "addressRegion": "Banten",
+        "postalCode": "15321",
+        "addressCountry": "ID",
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -6.3117,
+        "longitude": 106.6784,
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "07:00",
+          "closes": "15:00",
+        },
+      ],
+      "knowsAbout": [
+        "Kurikulum Merdeka",
+        "Katalog Buku Sekolah",
+        "Peminjaman Buku QR Code",
+        "Literasi Siswa SMP",
+        "Kartu Anggota Perpustakaan Digital",
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://perpustakaansmp17tangsel.web.id/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Apa itu Smart Library SMP Negeri 17 Tangerang Selatan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel) adalah perpustakaan digital resmi sekolah (NPSN 20603332) berbasis QR Code yang menyediakan katalog buku pelajaran Kurikulum Merdeka, karya sastra fiksi, referensi belajar, sistem sirkulasi peminjaman cepat, dan kartu anggota digital siswa.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "Di mana lokasi dan jam buka Perpustakaan SMPN 17 Tangerang Selatan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Perpustakaan berlokasi di SMP Negeri 17 Tangerang Selatan, Jl. Lengkong Gudang Timur RT 01 RW 01, Serpong, Kota Tangerang Selatan, Banten 15321. Jam layanan operasional buka setiap hari Senin hingga Jumat pukul 07.00 – 15.00 WIB (Sabtu, Minggu, dan hari libur nasional tutup).",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "Bagaimana cara meminjam dan mengembalikan buku di Perpustakaan SMPN 17 Tangsel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Siswa memilih buku di katalog daring Smart Library, membawa buku ke meja sirkulasi, lalu petugas memindai kode QR eksemplar bersama kartu anggota digital siswa. Batas peminjaman adalah maksimal 2 eksemplar selama 7 hari kalender dan dapat diperpanjang.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "Koleksi buku apa saja yang tersedia di Perpustakaan SMPN 17 Tangsel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Tersedia ratusan judul buku mencakup buku teks pelajaran Kurikulum Merdeka untuk jenjang SMP (Kelas 7, 8, dan 9), karya sastra novel, ensiklopedia sains, referensi sejarah, buku keagamaan, dan buku literasi sekolah.",
+          },
+        },
+      ],
     },
     {
       "@type": "WebSite",
