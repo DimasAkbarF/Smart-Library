@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
 import { normalisasiKode } from "@/lib/format";
@@ -122,5 +122,8 @@ export async function importBooks(
     failed: failed.length,
   });
   revalidatePath("/admin");
+  revalidateTag("copies", { expire: 0 });
+  revalidateTag("catalog", { expire: 0 });
+  revalidateTag("admin-dashboard", { expire: 0 });
   return { inserted: newTitles, failed, addedCopies, newTitles };
 }

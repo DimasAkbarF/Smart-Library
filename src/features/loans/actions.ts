@@ -134,12 +134,14 @@ export async function borrowAction(
   try {
     updateTag("catalog");
     updateTag("admin-dashboard");
+    updateTag("copies");
   } catch {
     /* ignore if outside action context */
   }
   try {
     revalidateTag("admin-dashboard", { expire: 0 });
     revalidateTag("catalog", { expire: 0 });
+    revalidateTag("copies", { expire: 0 });
   } catch {
     /* ignore */
   }
@@ -169,12 +171,14 @@ export async function returnAction(
     try {
       updateTag("catalog");
       updateTag("admin-dashboard");
+      updateTag("copies");
     } catch {
       /* ignore if outside action context */
     }
     try {
       revalidateTag("admin-dashboard", { expire: 0 });
       revalidateTag("catalog", { expire: 0 });
+      revalidateTag("copies", { expire: 0 });
     } catch {
       /* ignore */
     }

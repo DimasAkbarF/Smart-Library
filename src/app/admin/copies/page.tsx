@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { listCopies } from "@/features/admin/books";
 import { DataTable } from "@/components/ui/data-table";
 import { SearchInput } from "@/components/ui/search-input";
+import { StatusFilterNav } from "@/components/ui/status-filter-nav";
 import { CopyStatusChip } from "@/components/ui/status-chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { CopyStatusButtons } from "./copy-status-buttons";
 import { QrQuickViewButton } from "@/components/library/qr-modal";
 import type { BookCopy } from "@/lib/types";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 const FILTERS = [
   { value: "", label: "Semua" },
@@ -74,30 +74,10 @@ export default async function CopiesPage({
         </div>
       </header>
 
-      <div
-        className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
-        role="group"
-        aria-label="Filter status"
-      >
-        {FILTERS.map((f) => {
-          const isActive = (status || "") === f.value;
-          return (
-            <Link
-              key={f.value}
-              href={chipHref(f.value)}
-              aria-current={isActive ? "true" : undefined}
-              className={cn(
-                "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
-                isActive
-                  ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
-                  : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:bg-surface-sunken-ed",
-              )}
-            >
-              {f.label}
-            </Link>
-          );
-        })}
-      </div>
+      <StatusFilterNav
+        items={FILTERS.map((f) => ({ ...f, href: chipHref(f.value) }))}
+        activeValue={status}
+      />
 
       <Suspense fallback={null}>
         <SearchInput placeholder="Cari kode inventaris atau token QR…" />

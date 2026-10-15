@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { SearchInput } from "@/components/ui/search-input";
+import { StatusFilterNav } from "@/components/ui/status-filter-nav";
 import { EmptyState } from "@/components/ui/empty-state";
 import { listLoans } from "@/features/loans/actions";
 import { TransactionsClient } from "./transactions-client";
-import { cn } from "@/lib/utils";
 
 const FILTERS = [
   { label: "Semua Transaksi", value: "" },
@@ -60,27 +60,10 @@ export default async function TransactionsPage({
       </div>
 
       <div className="space-y-3">
-        <div
-          className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar"
-          role="group"
-          aria-label="Filter status"
-        >
-          {FILTERS.map((f) => (
-            <Link
-              key={f.label}
-              href={chipHref(f.value)}
-              aria-current={(status || "") === f.value ? "true" : undefined}
-              className={cn(
-                "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
-                (status || "") === f.value
-                  ? "border-primary bg-primary-soft text-primary font-bold shadow-xs"
-                  : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:bg-surface-sunken-ed",
-              )}
-            >
-              {f.label}
-            </Link>
-          ))}
-        </div>
+        <StatusFilterNav
+          items={FILTERS.map((f) => ({ ...f, href: chipHref(f.value) }))}
+          activeValue={status}
+        />
 
         <Suspense fallback={null}>
           <SearchInput placeholder="Cari nama siswa, NIS, judul buku, atau kode inventaris…" />

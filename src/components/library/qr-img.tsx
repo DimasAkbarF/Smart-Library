@@ -1,9 +1,15 @@
 import QRCode from "qrcode";
 import { cn } from "@/lib/utils";
 
+const qrSvgCache = new Map<string, { d: string; totalSize: number } | null>();
+
 function getQrSvgData(token: string): { d: string; totalSize: number } | null {
+  const key = token || "EMPTY";
+  const cached = qrSvgCache.get(key);
+  if (cached !== undefined) return cached;
+
   try {
-    const qr = QRCode.create(token || "EMPTY", { errorCorrectionLevel: "M" });
+    const qr = QRCode.create(key, { errorCorrectionLevel: "M" });
     const modSize = qr.modules.size;
     const data = qr.modules.data;
     const margin = 2;
@@ -17,8 +23,12 @@ function getQrSvgData(token: string): { d: string; totalSize: number } | null {
       }
     }
     const totalSize = modSize + margin * 2;
-    return { d, totalSize };
+    const result = { d, totalSize };
+    if (qrSvgCache.size > 2000) qrSvgCache.clear();
+    qrSvgCache.set(key, result);
+    return result;
   } catch {
+    qrSvgCache.set(key, null);
     return null;
   }
 }
