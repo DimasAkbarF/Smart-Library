@@ -22,6 +22,7 @@ Dalam pengujian dan deployment produksi, implementasi ini menimbulkan beberapa k
    - **Anti-Timing Attack (`dummyCryptoDelay`):** Mengeksekusi hashing PBKDF2 konstan dengan `timingSafeEqual` saat akun tidak ditemukan agar waktu respons seragam dan penyerang tidak dapat melakukan *username enumeration*.
    - **Audit Trail:** Mencatat seluruh peristiwa autentikasi (`auth.login_success`, `auth.failed`, `auth.rate_limited`) ke dalam tabel basis data `audit_logs`.
    - **Role-Based Access Control (RBAC):** Menolak secara tegas pengguna dengan `role` selain `admin` dan `librarian`.
+     > **Catatan (Migration 004):** role `librarian` sudah dimigrasi seluruhnya ke `admin`; constraint DB kini hanya mengizinkan `('student', 'admin')`. Yang berlaku saat ini: hanya `admin` — lihat CLAUDE.md §4.
 
 ## Alternatives Considered
 
