@@ -200,10 +200,31 @@ async function runAllFeatureTests() {
       t.includes("Audit") || t.includes("Aktivitas") || t.includes("Waktu")
     );
 
-    // 3.13 Manajemen Akun Staf/Pengguna (/admin/users)
-    await testAdminPage("Pengaturan: Pengguna & Akses", "/admin/users", (t) =>
-      (t.includes("Pengguna") || t.includes("Petugas") || t.includes("Role")) &&
-        t.includes("Reset Kata Sandi")
+    // 3.13 Manajemen Akun Staf/Pengguna (/admin/users) + dialog reset password (admin-ketik)
+    await gotoUrl(`${BASE_URL}/admin/users`);
+    const usersText = await page.evaluate(() => document.body.innerText);
+    const usersPageOk =
+      page.url().includes("/admin/users") &&
+      (usersText.includes("Pengguna") || usersText.includes("Petugas") || usersText.includes("Role")) &&
+      usersText.includes("Reset Kata Sandi");
+    const resetClicked = await page.evaluate(() => {
+      const btn = Array.from(document.querySelectorAll("button")).find(
+        (b) => b.textContent?.trim() === "Reset Kata Sandi",
+      );
+      if (!btn) return false;
+      btn.click();
+      return true;
+    });
+    const resetPwdField = resetClicked
+      ? await page.waitForSelector('input[name="new-password"]', { timeout: 5000 }).catch(() => null)
+      : null;
+    recordResult(
+      "Pengaturan: Pengguna & Akses",
+      "/admin/users",
+      usersPageOk && !!resetPwdField,
+      resetPwdField
+        ? "Tabel pengguna + dialog reset dengan field kata sandi baru"
+        : `Halaman OK: ${usersPageOk}; field reset ditemukan: ${!!resetPwdField}`
     );
 
     // 3.14 Pengaturan Kategori & Kelas (/admin/refs)

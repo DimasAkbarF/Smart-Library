@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { createUser, resetUserPassword, setUserStatus } from "@/features/admin/users";
 import { DataTable } from "@/components/ui/data-table";
 import { Dialog } from "@/components/ui/dialog";
-import { useSweetAlert } from "@/components/ui/confirm-dialog";
 import { Field, Input, Select } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,8 @@ import type { Profile } from "@/lib/types";
 export function UsersSection({ users }: { users: Profile[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [resetTarget, setResetTarget] = useState<Profile | null>(null);
+  const [msg, setMsg] = useState<{ text: string; tone: "danger" | "success" } | null>(null);
 
   async function toggle(u: Profile) {
     setMsg(null);
@@ -25,40 +25,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
       await setUserStatus(u.id, u.status === "active" ? "inactive" : "active");
       router.refresh();
     } catch (e) {
-      setMsg(pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined));
-    }
-  }
-
-  const { confirm, alert } = useSweetAlert();
-
-  async function resetPassword(u: Profile): Promise<void> {
-    setMsg(null);
-    const proceed = await confirm({
-      title: "Reset kata sandi?",
-      message: `Kata sandi ${u.full_name} akan diganti. Ia akan logout dan wajib ganti kata sandi saat masuk berikutnya.`,
-      confirmText: "Reset",
-      tone: "warning",
-    });
-    if (!proceed) return;
-    try {
-      const res = await resetUserPassword(u.id);
-      await alert({
-        title: "Kata Sandi Sementara",
-        message:
-          "Catat sekarang — hanya ditampilkan sekali. Sampaikan ke pengguna; ia wajib menggantinya saat login berikutnya.",
-        confirmText: "Selesai",
-        tone: "success",
-        details: [
-          { label: "Username", value: `@${u.username}` },
-          {
-            label: "Kata sandi sementara",
-            value: <code className="font-mono select-all">{res.tempPassword}</code>,
-          },
-        ],
-      });
-      router.refresh();
-    } catch (e) {
-      setMsg(pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined));
+      setMsg({ text: pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined), tone: "danger" });
     }
   }
 
@@ -66,8 +33,11 @@ export function UsersSection({ users }: { users: Profile[] }) {
     <div className="grid gap-3">
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {msg ? (
-          <p role="alert" className="text-body font-semibold text-danger">
-            {msg}
+          <p
+            role="alert"
+            className={cn("text-body font-semibold", msg.tone === "success" ? "text-success" : "text-danger")}
+          >
+            {msg.text}
           </p>
         ) : (
           <span />
@@ -154,7 +124,7 @@ export function UsersSection({ users }: { users: Profile[] }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => resetPassword(u)}
+                  onClick={() => setResetTarget(u)}
                   className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1.5 text-label font-semibold text-ink hover:bg-card hover:text-primary transition-colors active:bg-surface-sunken-ed"
                 >
                   Reset Kata Sandi
@@ -178,7 +148,66 @@ export function UsersSection({ users }: { users: Profile[] }) {
           }}
         />
       </Dialog>
+
+      <Dialog open={!!resetTarget} onClose={() => setResetTarget(null)} title="Reset kata sandi">
+        {resetTarget && (
+          <ResetPasswordForm
+            user={resetTarget}
+            onDone={(text) => {
+              setResetTarget(null);
+              setMsg({ text, tone: "success" });
+              router.refresh();
+            }}
+          />
+        )}
+      </Dialog>
     </div>
+  );
+}
+
+function ResetPasswordForm({ user, onDone }: { user: Profile; onDone: (msg: string) => void }) {
+  const [state, formAction] = useActionState(
+    async (prev: { message?: string }, fd: FormData) => {
+      const password = String(fd.get("new-password") ?? "");
+      try {
+        await resetUserPassword(user.id, password);
+        onDone(
+          `Kata sandi ${user.full_name} berhasil diubah. Pengguna akan diminta mengganti kata sandi saat login berikutnya.`,
+        );
+        return {};
+      } catch (e) {
+        return { message: pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined) };
+      }
+    },
+    {},
+  );
+
+  return (
+    <form action={formAction} className="grid gap-4">
+      <p className="text-body text-ink-muted">
+        Kata sandi untuk <span className="font-semibold text-ink">{user.full_name}</span> (@
+        {user.username}). Pengguna tetap diminta mengganti kata sandinya saat login berikutnya.
+      </p>
+      <Field
+        label="Kata sandi baru"
+        hint="Minimal 8 karakter, bukan kata sandi umum, tidak boleh sama dengan username atau email."
+      >
+        <Input
+          name="new-password"
+          type="password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+          placeholder="Kata sandi baru"
+        />
+      </Field>
+      {state?.message && (
+        <p role="alert" className="text-body font-semibold text-danger">
+          {state.message}
+        </p>
+      )}
+      <SubmitButton>Simpan Kata Sandi</SubmitButton>
+    </form>
   );
 }
 

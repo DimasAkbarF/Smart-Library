@@ -1,5 +1,3 @@
-import { randomBytes } from "node:crypto";
-
 const COMMON_PASSWORDS = new Set([
   "12345678",
   "123456789",
@@ -75,19 +73,6 @@ export function validatePassword(
   }
 
   return { valid: true };
-}
-
-/**
- * Menghasilkan kata sandi sementara acak yang kuat (12 karakter alfanumerik + simbol aman)
- */
-export function generateTemporaryPassword(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*";
-  const bytes = randomBytes(12);
-  let result = "";
-  for (let i = 0; i < 12; i++) {
-    result += chars[bytes[i] % chars.length];
-  }
-  return result;
 }
 
 /**

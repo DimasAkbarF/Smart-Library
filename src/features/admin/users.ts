@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
-import { generateTemporaryPassword, validatePassword } from "@/lib/password";
+import { validatePassword } from "@/lib/password";
 import { generateOtpAuthUri, generateTotpSecret, verifyTotpToken } from "@/lib/totp";
 import type { Profile } from "@/lib/types";
 
@@ -87,16 +87,30 @@ export async function createUser(
 
 /**
  * Reset kata sandi pengguna oleh admin:
- * Menghasilkan password sementara acak dan mewajibkan ganti password saat login.
+ * Admin mengetik kata sandi baru (divalidasi kekuatannya); pengguna tetap wajib
+ * mengganti kata sandi saat login berikutnya.
  */
-export async function resetUserPassword(userId: string): Promise<{ ok: boolean; tempPassword?: string }> {
+export async function resetUserPassword(userId: string, newPassword: string): Promise<{ ok: boolean }> {
   const session = await assertRole("admin");
   if (session.userId === userId) throw new Error("Reset hanya untuk pengguna lain. Untuk akun sendiri, gunakan halaman Ubah Kata Sandi.");
-  const tempPassword = generateTemporaryPassword();
   const svc = serviceClient();
 
+  const { data: target } = await svc
+    .from("profiles")
+    .select("username, email, full_name")
+    .eq("id", userId)
+    .single();
+  if (!target) throw new Error("Pengguna tidak ditemukan.");
+
+  const pwdCheck = validatePassword(newPassword, {
+    username: target.username,
+    email: target.email,
+    fullName: target.full_name,
+  });
+  if (!pwdCheck.valid) throw new Error(pwdCheck.message);
+
   const { error: authErr } = await svc.auth.admin.updateUserById(userId, {
-    password: tempPassword,
+    password: newPassword,
   });
   if (authErr) throw new Error("Gagal mereset kata sandi pengguna di auth server.");
 
@@ -104,7 +118,7 @@ export async function resetUserPassword(userId: string): Promise<{ ok: boolean; 
 
   await tulisAudit(session.userId, "user.reset_password_by_admin", "user", userId, {});
   revalidatePath("/admin/users");
-  return { ok: true, tempPassword };
+  return { ok: true };
 }
 
 /**
