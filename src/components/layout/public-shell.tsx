@@ -23,7 +23,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
               <span className="block font-serif text-[16px] font-semibold tracking-tight text-ink leading-tight group-hover:text-primary transition-colors">
                 Smart Library
               </span>
-              <span className="block text-[11.5px] text-ink-muted leading-none">
+              <span className="hidden sm:block text-[11.5px] text-ink-muted leading-none">
                 SMP Negeri 17 Tangerang Selatan
               </span>
             </div>
@@ -40,8 +40,8 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
                   : "text-ink-muted hover:text-ink hover:bg-surface-sunken-ed",
               )}
             >
-              <BookOpen className="size-4 shrink-0" />
-              <span>Katalog</span>
+              <BookOpen className="size-4 shrink-0" aria-hidden />
+              <span className="sr-only sm:not-sr-only">Katalog</span>
             </Link>
 
             <Link
@@ -54,8 +54,8 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
                   : "text-ink-muted hover:text-ink hover:bg-surface-sunken-ed",
               )}
             >
-              <Info className="size-4 shrink-0" />
-              <span>Profil & FAQ</span>
+              <Info className="size-4 shrink-0" aria-hidden />
+              <span className="sr-only sm:not-sr-only">Profil & FAQ</span>
             </Link>
 
             <Link
