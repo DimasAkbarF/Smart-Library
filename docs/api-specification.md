@@ -19,7 +19,7 @@ Dokumen ini mendefinisikan kontrak antarmuka publik, REST endpoints, Server Acti
 Mengunduh data perpustakaan dalam format CSV berstandar UTF-8 BOM dengan proteksi *CSV Formula Injection*.
 
 #### Otorisasi
-- **Role Wajib:** `admin` atau `librarian` (Memerlukan cookie sesi Supabase SSR yang valid).
+- **Role Wajib:** `admin` (Memerlukan cookie sesi Supabase SSR yang valid).
 - **Respons Tidak Terotentikasi:** HTTP 401/403:
   ```json
   {
@@ -122,7 +122,7 @@ Mengambil daftar riwayat sirkulasi dengan paginasi terstruktur:
 
 | Tipe Domain | Jenis Tipe | Nilai yang Didukung / Properti Kunci |
 |---|---|---|
-| `Role` | Enum Union | `"admin" \| "librarian"` *(staf terotentikasi)* |
+| `Role` | Enum Union | `"admin"` *(staf terotentikasi)* |
 | `CopyStatus` | Discriminated Enum | `"AVAILABLE" \| "BORROWED" \| "LOST" \| "DAMAGED" \| "INACTIVE"` |
 | `LoanStatus` | Discriminated Enum | `"ACTIVE" \| "RETURNED" \| "OVERDUE" \| "CANCELLED"` |
 | `Student` | Interface | `id, nis, name, class_id, qr_token, status` |

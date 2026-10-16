@@ -133,7 +133,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   const { data: profile } = await profileQuery.single();
 
   // Jika akun tidak ditemukan atau BUKAN role admin/petugas (siswa tidak boleh login ke portal admin/petugas)
-  if (!profile || (profile.role !== "admin" && profile.role !== "librarian")) {
+  if (!profile || profile.role !== "admin") {
     dummyCryptoDelay();
     await recordFailedAttempt(rateLimitKey, 5);
     await recordFailedAttempt(ipRateLimitKey, 10);

@@ -17,7 +17,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
    - `npm run lint` (0 errors, 0 warnings)
    - `npm test` (26/26 features passed via `scripts/test-all-features.mjs`)
 3. **Authentication Invariants:**
-   - Single staff portal at `/login` (`admin` / `librarian` roles only).
+   - Single staff portal at `/login` (`admin` role only; `librarian` sudah dimigrasi — Migration 004).
    - `/admin/login` redirects permanently (301) to `/login`.
    - Never reintroduce Cloudflare Turnstile or CAPTCHA dependencies. Security is server-side rate-limited (5 attempts per username, 10 per IP) with anti-timing delays.
    - Never call `auth.admin.updateUserById({ password })` inside the login action (it revokes active refresh tokens).

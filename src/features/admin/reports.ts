@@ -7,46 +7,6 @@ import { refreshOverdue } from "@/features/loans/actions";
 import { sanitizeSearchTerm } from "@/lib/utils";
 import type { AuditLog } from "@/lib/types";
 
-export async function librarianDashboard() {
-  await assertRole("admin");
-  await refreshOverdue();
-  const svc = serviceClient();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const [{ count: borrowedToday }, { count: returnedToday }, { count: active }, { count: overdue }] =
-    await Promise.all([
-      svc.from("loans").select("id", { count: "exact", head: true }).gte("borrowed_at", today.toISOString()),
-      svc.from("loans").select("id", { count: "exact", head: true }).gte("returned_at", today.toISOString()),
-      svc.from("loans").select("id", { count: "exact", head: true }).eq("status", "ACTIVE"),
-      svc.from("loans").select("id", { count: "exact", head: true }).eq("status", "OVERDUE"),
-    ]);
-
-  const { data: overdueRows } = await svc
-    .from("loans")
-    .select("id, due_at, students!inner(name, nis, classes(name)), book_copies!inner(inventory_code, books!inner(title))")
-    .eq("status", "OVERDUE")
-    .order("due_at")
-    .limit(8);
-
-  return {
-    borrowedToday: borrowedToday ?? 0,
-    returnedToday: returnedToday ?? 0,
-    active: active ?? 0,
-    overdue: overdue ?? 0,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    overdueRows: (overdueRows ?? []).map((l: any) => ({
-      id: l.id as string,
-      due_at: l.due_at as string,
-      student_name: l.students.name as string,
-      student_nis: l.students.nis as string,
-      class_name: (l.students.classes?.name ?? null) as string | null,
-      book_title: l.book_copies.books.title as string,
-      inventory_code: l.book_copies.inventory_code as string,
-    })),
-  };
-}
-
 export interface ReportData {
   perDay: { date: string; pinjam: number; kembali: number }[];
   topBooks: { title: string; count: number }[];

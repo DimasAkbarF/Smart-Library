@@ -37,7 +37,7 @@ Smart Library SMP Negeri 17 Tangerang Selatan is a high-reliability school libra
 ### Authentication & RBAC
 - **Single Portal:** The only staff login is at `/login`.
 - **Permanent Redirect:** `/admin/login` must permanently redirect (`HTTP 301 / permanentRedirect`) to `/login`.
-- **Allowed Roles:** Only `admin` and `librarian` can authenticate.
+- **Allowed Roles:** Only `admin` can authenticate. The legacy `librarian` role was migrated to `admin` (Migration 004).
 - **No Turnstile / Cloudflare:** Cloudflare Turnstile has been completely removed. Do NOT re-introduce any Turnstile or CAPTCHA dependencies. Security is enforced server-side via dual-key rate limiting (per-username & per-IP) and anti-timing cryptographic delays (`dummyCryptoDelay`).
 - **No Password Auto-Update on Login:** Never call `auth.admin.updateUserById` during login (it revokes active refresh tokens).
 
