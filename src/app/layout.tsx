@@ -5,7 +5,6 @@ import {
   IBM_Plex_Mono,
 } from "next/font/google";
 import "./globals.css";
-import { CirculationWatcher } from "@/components/circulation/circulation-watcher";
 import { ConfirmProvider } from "@/components/ui/confirm-dialog";
 
 const newsreader = Newsreader({
@@ -284,14 +283,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="id"
       className={`${newsreader.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full antialiased font-sans`}
     >
-      <head>
+      <body className="min-h-full bg-background text-ink font-sans">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
-      </head>
-      <body className="min-h-full bg-background text-ink font-sans">
-        <CirculationWatcher />
         <ConfirmProvider>{children}</ConfirmProvider>
       </body>
     </html>
