@@ -2,9 +2,10 @@
 
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createUser, setUserStatus } from "@/features/admin/users";
+import { createUser, resetUserPassword, setUserStatus } from "@/features/admin/users";
 import { DataTable } from "@/components/ui/data-table";
 import { Dialog } from "@/components/ui/dialog";
+import { useSweetAlert } from "@/components/ui/confirm-dialog";
 import { Field, Input, Select } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,39 @@ export function UsersSection({ users }: { users: Profile[] }) {
     setMsg(null);
     try {
       await setUserStatus(u.id, u.status === "active" ? "inactive" : "active");
+      router.refresh();
+    } catch (e) {
+      setMsg(pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined));
+    }
+  }
+
+  const { confirm, alert } = useSweetAlert();
+
+  async function resetPassword(u: Profile): Promise<void> {
+    setMsg(null);
+    const proceed = await confirm({
+      title: "Reset kata sandi?",
+      message: `Kata sandi ${u.full_name} akan diganti. Ia akan logout dan wajib ganti kata sandi saat masuk berikutnya.`,
+      confirmText: "Reset",
+      tone: "warning",
+    });
+    if (!proceed) return;
+    try {
+      const res = await resetUserPassword(u.id);
+      await alert({
+        title: "Kata Sandi Sementara",
+        message:
+          "Catat sekarang — hanya ditampilkan sekali. Sampaikan ke pengguna; ia wajib menggantinya saat login berikutnya.",
+        confirmText: "Selesai",
+        tone: "success",
+        details: [
+          { label: "Username", value: `@${u.username}` },
+          {
+            label: "Kata sandi sementara",
+            value: <code className="font-mono select-all">{res.tempPassword}</code>,
+          },
+        ],
+      });
       router.refresh();
     } catch (e) {
       setMsg(pesanRamah(kodeDariError(e), e instanceof Error ? e.message : undefined));
@@ -110,13 +144,22 @@ export function UsersSection({ users }: { users: Profile[] }) {
           {
             header: "Aksi",
             cell: (u) => (
-              <button
-                type="button"
-                onClick={() => toggle(u)}
-                className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1.5 text-label font-semibold text-ink hover:bg-card hover:text-primary transition-colors active:bg-surface-sunken-ed"
-              >
-                {u.status === "active" ? "Nonaktifkan" : "Aktifkan"}
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => toggle(u)}
+                  className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1.5 text-label font-semibold text-ink hover:bg-card hover:text-primary transition-colors active:bg-surface-sunken-ed"
+                >
+                  {u.status === "active" ? "Nonaktifkan" : "Aktifkan"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => resetPassword(u)}
+                  className="inline-flex min-h-[36px] items-center justify-center rounded-btn border border-rule px-3 py-1.5 text-label font-semibold text-ink hover:bg-card hover:text-primary transition-colors active:bg-surface-sunken-ed"
+                >
+                  Reset Kata Sandi
+                </button>
+              </div>
             ),
           },
         ]}

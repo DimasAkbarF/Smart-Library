@@ -202,7 +202,8 @@ async function runAllFeatureTests() {
 
     // 3.13 Manajemen Akun Staf/Pengguna (/admin/users)
     await testAdminPage("Pengaturan: Pengguna & Akses", "/admin/users", (t) =>
-      t.includes("Pengguna") || t.includes("Petugas") || t.includes("Role")
+      (t.includes("Pengguna") || t.includes("Petugas") || t.includes("Role")) &&
+        t.includes("Reset Kata Sandi")
     );
 
     // 3.14 Pengaturan Kategori & Kelas (/admin/refs)

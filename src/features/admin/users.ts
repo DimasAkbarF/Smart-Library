@@ -91,6 +91,7 @@ export async function createUser(
  */
 export async function resetUserPassword(userId: string): Promise<{ ok: boolean; tempPassword?: string }> {
   const session = await assertRole("admin");
+  if (session.userId === userId) throw new Error("Reset hanya untuk pengguna lain. Untuk akun sendiri, gunakan halaman Ubah Kata Sandi.");
   const tempPassword = generateTemporaryPassword();
   const svc = serviceClient();
 
