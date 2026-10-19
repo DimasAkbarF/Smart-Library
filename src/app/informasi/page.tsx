@@ -7,13 +7,14 @@ import {
   QrCode,
   Building2,
   HelpCircle,
-  Search,
+  ArrowRight,
   CheckCircle2,
   Phone,
   Mail,
   GraduationCap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CatalogSearch } from "@/components/library/catalog-search";
+import { searchBooks } from "@/features/catalog/queries";
 
 export const metadata: Metadata = {
   title: "Profil, Layanan & FAQ Perpustakaan SMPN 17 Tangerang Selatan",
@@ -66,7 +67,8 @@ const faqItems = [
   },
 ];
 
-export default function InformasiPage() {
+export default async function InformasiPage() {
+  const { total } = await searchBooks({});
   const pageJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -343,24 +345,37 @@ export default function InformasiPage() {
         </div>
       </section>
 
-      {/* Call to Action: Buka Katalog */}
-      <section className="rounded-panel border border-primary/20 bg-primary-soft/30 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h3 className="font-serif text-lg sm:text-xl font-bold text-primary">
-            Siap Menemukan Buku Bacaan Hari Ini?
-          </h3>
-          <p className="text-xs sm:text-sm text-ink-muted">
-            Jelajahi ratusan judul buku Kurikulum Merdeka, karya fiksi, dan ensiklopedia di katalog kami.
-          </p>
+      {/* Panel Katalog: pencarian langsung ke koleksi, bukan tombol CTA */}
+      <section
+        aria-labelledby="katalog-heading"
+        className="rounded-panel border border-rule bg-white p-6 sm:p-8"
+      >
+        <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase">
+          <span className="size-2 rounded-chip bg-primary shrink-0" />
+          <span>Perpustakaan Digital · Katalog Koleksi</span>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <Link href="/books">
-            <Button size="md" className="gap-2">
-              <Search className="size-4" />
-              <span>Buka Katalog Buku</span>
-            </Button>
-          </Link>
+        <h2
+          id="katalog-heading"
+          className="mt-2 font-serif text-xl sm:text-2xl font-bold tracking-tight text-ink"
+        >
+          Cari Buku di Katalog Perpustakaan SMP Negeri 17 Tangerang Selatan
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-muted">
+          Telusuri koleksi buku pelajaran Kurikulum Merdeka, karya sastra, dan ensiklopedia
+          sekolah. Hasil lengkap dapat disaring per kategori dan status ketersediaan.
+        </p>
+
+        <div className="mt-5 border-t border-rule pt-5">
+          <CatalogSearch total={total} />
         </div>
+
+        <Link
+          href="/books"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+        >
+          <span>Lihat seluruh koleksi</span>
+          <ArrowRight className="size-3.5" aria-hidden />
+        </Link>
       </section>
     </div>
   );

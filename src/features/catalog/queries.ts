@@ -150,3 +150,50 @@ const getCachedCategories = unstable_cache(
 export async function listCategories(): Promise<Category[]> {
   return getCachedCategories();
 }
+
+export interface BookSuggestion {
+  id: string;
+  title: string;
+  author: string;
+  isbn: string | null;
+  category_name: string | null;
+  available_copies: number;
+}
+
+/**
+ * Saran cepat untuk typeahead di halaman profil: judul/penulis/ISBN yang cocok.
+ * Query lean (tanpa count), maksimal 6 judul, plus status ketersediaan.
+ */
+export async function suggestBooks(q: string, limit = 6): Promise<BookSuggestion[]> {
+  const term = sanitizeSearchTerm(q ?? "");
+  if (term.length < 2) return [];
+
+  const svc = serviceClient();
+  const like = `%${term}%`;
+  const { data, error } = await svc
+    .from("books")
+    .select("id, isbn, title, author, categories(name)")
+    .or(`title.ilike.${like},author.ilike.${like},isbn.ilike.${like}`)
+    .order("title")
+    .limit(limit);
+  if (error) throw new Error("Gagal memuat saran buku.");
+
+  const ids = (data ?? []).map((b) => b.id);
+  const { data: copies } = ids.length
+    ? await svc.from("book_copies").select("book_id, status").in("book_id", ids)
+    : { data: [] };
+
+  const avail = new Map<string, number>();
+  for (const c of copies ?? []) {
+    if (c.status === "AVAILABLE") avail.set(c.book_id, (avail.get(c.book_id) ?? 0) + 1);
+  }
+
+  return (data ?? []).map((b) => ({
+    id: b.id,
+    title: b.title,
+    author: b.author,
+    isbn: b.isbn,
+    category_name: (b.categories as unknown as { name: string } | null)?.name ?? null,
+    available_copies: avail.get(b.id) ?? 0,
+  }));
+}

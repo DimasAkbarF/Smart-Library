@@ -103,6 +103,47 @@ async function runAllFeatureTests() {
     await gotoUrl(`${BASE_URL}/admin`);
     recordResult("Proteksi Rute Admin Tanpa Login", "/admin", page.url().includes("/login"), `Akses tanpa login ditolak ke ${page.url()}`);
 
+    // 1.9 Pencarian Katalog Langsung di Halaman Profil (/informasi)
+    await gotoUrl(`${BASE_URL}/informasi`);
+    const profilSearch = await page.evaluate(() => {
+      const form = document.querySelector('form[action="/books"]');
+      const input = form?.querySelector('input[name="q"]');
+      const label = input?.id ? document.querySelector(`label[for="${input.id}"]`) : null;
+      return {
+        hasForm: !!form && !!input,
+        hasLabel: !!label,
+        method: (form?.getAttribute("method") ?? "").toLowerCase(),
+      };
+    });
+    let typeaheadText = "";
+    if (profilSearch.hasForm) {
+      await page.type('form[action="/books"] input[name="q"]', "Cantik", { delay: 50 });
+      const link = await page
+        .waitForSelector('#catalog-search-results a[href^="/books/"]', { timeout: 10000 })
+        .catch(() => null);
+      if (link) typeaheadText = await page.evaluate((el) => el.textContent ?? "", link);
+    }
+    recordResult(
+      "Pencarian Katalog di Halaman Profil",
+      "/informasi",
+      profilSearch.hasForm && profilSearch.hasLabel && profilSearch.method === "get" && typeaheadText.includes("Cantik"),
+      `Form GET ke /books: ${profilSearch.hasForm}, label terlihat: ${profilSearch.hasLabel}, typeahead: ${typeaheadText.trim().slice(0, 60) || "tidak ada hasil"}`
+    );
+
+    // 1.10 Submit Pencarian Membawa ke Halaman Hasil Katalog (/books?q=)
+    if (profilSearch.hasForm) {
+      await page.keyboard.press("Enter");
+      await page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 1200));
+    }
+    const hasilSearch = await page.evaluate(() => document.body.innerText);
+    recordResult(
+      "Submit Pencarian ke Halaman Katalog",
+      "/informasi -> /books?q=Cantik",
+      page.url().includes("/books?q=Cantik") && hasilSearch.includes("Cantik"),
+      `URL: ${page.url()}`
+    );
+
     // ----------------------------------------------------
     // KATEGORI 2: LOGIN ADMIN & VERIFIKASI SESI
     // ----------------------------------------------------

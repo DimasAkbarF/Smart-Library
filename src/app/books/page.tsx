@@ -64,8 +64,44 @@ export default async function PublicBooksPage({
     listCategories(),
   ]);
 
+  const SITE = "https://perpustakaansmp17tangsel.web.id";
+  const catalogJsonLd = {
+    "@context": "https://schema.org",
+    "@type": sp.q ? "SearchResultsPage" : "CollectionPage",
+    "@id": `${SITE}/books`,
+    "name": "Katalog Koleksi Buku Perpustakaan SMPN 17 Tangerang Selatan",
+    "url": `${SITE}/books`,
+    "inLanguage": "id",
+    "isPartOf": { "@id": `${SITE}/#library` },
+    "about": { "@id": `${SITE}/#library` },
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": result.books.length,
+      "itemListElement": result.books.map((b, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "url": `${SITE}/books/${b.id}`,
+        "item": {
+          "@type": "Book",
+          "name": b.title,
+          "url": `${SITE}/books/${b.id}`,
+          "inLanguage": "id",
+          "author": { "@type": "Person", "name": b.author },
+          ...(b.isbn ? { isbn: b.isbn } : {}),
+          ...(b.publisher ? { publisher: { "@type": "Organization", "name": b.publisher } } : {}),
+          ...(b.publication_year ? { datePublished: String(b.publication_year) } : {}),
+          ...(b.category_name ? { genre: b.category_name } : {}),
+        },
+      })),
+    },
+  };
+
   return (
     <div className="grid gap-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogJsonLd).replace(/</g, "\\u003c") }}
+      />
       <header className="border-b border-rule pb-5">
         <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase mb-1">
           <span className="size-2 rounded-chip bg-primary shrink-0" />
