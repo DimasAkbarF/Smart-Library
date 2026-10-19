@@ -65,9 +65,9 @@ export function StatusFilterNav({
             onClick={() => handleSelect(item.value, item.href)}
             aria-current={isActive ? "true" : undefined}
             className={cn(
-              "shrink-0 inline-flex min-h-[36px] items-center gap-1.5 rounded-chip border px-3 py-1.5 text-label font-semibold transition-all duration-150 select-none cursor-pointer",
+              "shrink-0 inline-flex min-h-[36px] items-center gap-1.5 rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors duration-150 select-none cursor-pointer",
               isActive
-                ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
+                ? "border-primary bg-primary-soft text-primary font-bold"
                 : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:bg-surface-sunken-ed hover:text-ink",
             )}
           >

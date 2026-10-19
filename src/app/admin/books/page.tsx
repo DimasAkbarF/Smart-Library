@@ -87,12 +87,12 @@ export default async function BooksPage({
                       <img
                         src={b.cover_url}
                         alt=""
-                        className="h-12 w-9 rounded-xs object-cover border border-outline shrink-0 shadow-xs"
+                        className="h-12 w-9 rounded-xs object-cover border border-outline shrink-0"
                       />
                     ) : (
                       <span
                         aria-hidden
-                        className="flex h-12 w-9 shrink-0 items-center justify-center rounded-xs bg-sky-soft text-sky-deep font-display text-label font-bold shadow-xs border border-sky/20"
+                        className="flex h-12 w-9 shrink-0 items-center justify-center rounded-xs bg-primary-soft text-primary font-display text-label font-bold border border-primary/20"
                       >
                         {initials}
                       </span>
@@ -100,7 +100,7 @@ export default async function BooksPage({
                     <div className="min-w-0 max-w-sm">
                       <Link
                         href={`/admin/books/${b.id}`}
-                        className="block font-semibold text-ink hover:text-sky-deep truncate"
+                        className="block font-semibold text-ink hover:text-primary truncate"
                         title={b.title}
                       >
                         {b.title}
@@ -160,7 +160,7 @@ export default async function BooksPage({
               cell: (b) => (
                 <Link
                   href={`/admin/books/${b.id}`}
-                  className="inline-flex min-h-[36px] items-center justify-center rounded-md border border-outline px-3 py-1.5 text-label font-semibold text-ink hover:border-sky hover:bg-sky-soft hover:text-sky-deep transition-colors"
+                  className="inline-flex min-h-[36px] items-center justify-center rounded-md border border-outline px-3 py-1.5 text-label font-semibold text-ink hover:border-primary hover:bg-primary-soft hover:text-primary transition-colors"
                 >
                   Kelola Detail
                 </Link>

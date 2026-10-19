@@ -49,7 +49,7 @@ export default async function StudentsPage({
         <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
           <Link
             href={`/admin/students/cards${classId ? `?classId=${classId}` : ""}`}
-            className="inline-flex min-h-tap-min items-center justify-center rounded-btn bg-primary text-white px-4 text-label font-semibold hover:bg-primary-hover shadow-xs transition-colors w-full sm:w-auto gap-2"
+            className="inline-flex min-h-tap-min items-center justify-center rounded-btn bg-primary text-white px-4 text-label font-semibold hover:bg-primary-hover transition-colors w-full sm:w-auto gap-2"
           >
             <Printer className="size-4" />
             <span>Cetak Semua Kartu</span>
@@ -75,7 +75,7 @@ export default async function StudentsPage({
             className={cn(
               "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
               !classId
-                ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
+                ? "border-primary bg-primary-soft text-primary font-bold"
                 : "border-rule text-ink-muted hover:border-rule-strong hover:bg-card",
             )}
           >
@@ -91,7 +91,7 @@ export default async function StudentsPage({
                 className={cn(
                   "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
                   isActive
-                    ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
+                    ? "border-primary bg-primary-soft text-primary font-bold"
                     : "border-rule text-ink-muted hover:border-rule-strong hover:bg-card",
                 )}
               >

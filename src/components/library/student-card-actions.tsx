@@ -162,14 +162,14 @@ export function StudentCardActions({
               }
               .logo { width: 9.5mm; height: 9.5mm; object-fit: contain; flex-shrink: 0; }
               .header-text { flex: 1; text-align: center; line-height: 1.1; }
-              .inst-1 { font-size: 5pt; font-weight: 700; color: #475569; text-transform: uppercase; }
-              .inst-2 { font-size: 4.5pt; font-weight: 600; color: #64748b; text-transform: uppercase; }
-              .school-name { font-size: 7pt; font-weight: 900; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.02em; }
-              .address { font-size: 4pt; color: #64748b; }
+              .inst-1 { font-size: 5.5pt; font-weight: 700; color: #475569; text-transform: uppercase; }
+              .inst-2 { font-size: 5pt; font-weight: 600; color: #64748b; text-transform: uppercase; }
+              .school-name { font-size: 7.5pt; font-weight: 900; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.02em; }
+              .address { font-size: 4.6pt; color: #64748b; }
               .ribbon {
                 background: #1e3a8a;
                 color: #ffffff;
-                font-size: 5pt;
+                font-size: 5.5pt;
                 font-weight: 800;
                 text-align: center;
                 padding: 0.7mm 0;
@@ -214,7 +214,7 @@ export function StudentCardActions({
                 min-width: 0;
                 flex: 1;
               }
-              .info-label { font-size: 4.5pt; color: #64748b; text-transform: uppercase; font-weight: 600; }
+              .info-label { font-size: 5pt; color: #64748b; text-transform: uppercase; font-weight: 600; }
               .status-badge {
                 display: inline-block;
                 background: #e0f2fe;
@@ -227,7 +227,7 @@ export function StudentCardActions({
                 margin-left: 1mm;
               }
               .info-name {
-                font-size: 7.5pt;
+                font-size: 8pt;
                 font-weight: 900;
                 color: #0f172a;
                 line-height: 1.1;
@@ -242,9 +242,9 @@ export function StudentCardActions({
                 padding-top: 0.8mm;
                 border-top: 0.6px solid #e2e8f0;
               }
-              .info-nis { font-family: monospace; font-size: 6.8pt; font-weight: 900; color: #1e3a8a; }
-              .info-val { font-size: 6.2pt; font-weight: 800; color: #0f172a; }
-              .validity-note { font-size: 4.2pt; color: #64748b; margin-top: 0.8mm; }
+              .info-nis { font-family: monospace; font-size: 7.2pt; font-weight: 900; color: #1e3a8a; }
+              .info-val { font-size: 6.6pt; font-weight: 800; color: #0f172a; }
+              .validity-note { font-size: 4.8pt; color: #64748b; margin-top: 0.8mm; }
               .qr-box {
                 text-align: center;
                 background: #ffffff;
@@ -254,11 +254,11 @@ export function StudentCardActions({
                 flex-shrink: 0;
               }
               .qr-img { width: 14.5mm; height: 14.5mm; display: block; margin: 0 auto; }
-              .qr-code-txt { font-family: monospace; font-size: 4.5pt; font-weight: 800; margin-top: 0.4mm; color: #0f172a; }
+              .qr-code-txt { font-family: monospace; font-size: 5pt; font-weight: 800; margin-top: 0.4mm; color: #0f172a; }
               .footer {
                 border-top: 0.8px solid #cbd5e1;
                 padding-top: 0.8mm;
-                font-size: 4.2pt;
+                font-size: 4.6pt;
                 color: #64748b;
                 display: flex;
                 justify-content: space-between;
@@ -341,7 +341,7 @@ export function StudentCardActions({
         disabled={downloading}
         className="gap-2 min-h-[40px] sm:min-h-0 justify-center w-full sm:w-auto font-semibold"
       >
-        {downloaded ? <Check className="size-4 text-leaf-deep" /> : <Download className="size-4" />}
+        {downloaded ? <Check className="size-4 text-success" /> : <Download className="size-4" />}
         <span>{downloaded ? "QR Tersimpan!" : "Unduh QR Pelajar (PNG)"}</span>
       </Button>
 

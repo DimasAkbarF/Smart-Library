@@ -6,6 +6,7 @@ import { Download, Printer, Check, QrCode as QrIcon, IdCard } from "lucide-react
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { QrImg } from "./qr-img";
+import { escapeHtml } from "@/lib/utils";
 import { StudentCard } from "./student-card";
 
 interface QrModalProps {
@@ -79,7 +80,7 @@ export function QrModal({
           <html>
             <head>
               <meta charset="utf-8">
-              <title>Kartu Pelajar - ${title} (${code})</title>
+              <title>Kartu Pelajar - ${escapeHtml(title)} (${escapeHtml(code)})</title>
               <style>
                 @page {
                   size: auto;
@@ -316,16 +317,16 @@ export function QrModal({
                   <div class="body-content">
                     <div class="identity-box">
                       <div class="student-header">
-                        <div class="avatar-circle">${initials}</div>
+                        <div class="avatar-circle">${escapeHtml(initials)}</div>
                         <div class="name-container">
                           <div class="info-label">Nama Lengkap</div>
-                          <div class="info-name">${title}</div>
+                          <div class="info-name">${escapeHtml(title)}</div>
                         </div>
                       </div>
                       <div class="meta-grid">
                         <div>
                           <div class="info-label">Nomor Induk (NIS)</div>
-                          <div class="info-nis">${code}</div>
+                          <div class="info-nis">${escapeHtml(code)}</div>
                         </div>
                         <div>
                           <div class="info-label">Rombel / Kelas</div>
@@ -336,7 +337,7 @@ export function QrModal({
                     </div>
                     <div class="qr-box">
                       <img class="qr-img" src="${qrDataUrl}" alt="QR" />
-                      <div class="qr-code-txt">${token}</div>
+                      <div class="qr-code-txt">${escapeHtml(token)}</div>
                     </div>
                   </div>
                   <div class="footer">
@@ -361,7 +362,7 @@ export function QrModal({
           <html>
             <head>
               <meta charset="utf-8">
-              <title>Label QR Buku - ${code}</title>
+              <title>Label QR Buku - ${escapeHtml(code)}</title>
               <style>
                 @page { size: auto; margin: 8mm; }
                 body {
@@ -407,8 +408,8 @@ export function QrModal({
                 <div class="qr-box">
                   <img src="${qrDataUrl}" alt="QR Code" />
                 </div>
-                <div class="code">${code}</div>
-                <div class="main-title">${title}</div>
+                <div class="code">${escapeHtml(code)}</div>
+                <div class="main-title">${escapeHtml(title)}</div>
                 ${subtitle ? `<div class="meta">${subtitle}</div>` : ""}
                 ${meta ? `<div class="meta" style="font-weight:600; margin-top:2px;">${meta}</div>` : ""}
               </div>
@@ -449,7 +450,7 @@ export function QrModal({
             />
           </div>
         ) : (
-          <div className="rounded-panel border border-rule bg-surface-sunken-ed p-5 text-center shadow-xs space-y-3 font-plex-sans">
+          <div className="rounded-panel border border-rule bg-surface-sunken-ed p-5 text-center space-y-3 font-plex-sans">
             <div className="flex items-center justify-center gap-2">
               <Image src="/logo-smpn17.png" alt="Logo" width={24} height={24} className="object-contain" />
               <p className="font-mono text-meta font-bold tracking-wider text-primary uppercase">
@@ -457,7 +458,7 @@ export function QrModal({
               </p>
             </div>
 
-            <div className="mx-auto flex w-fit items-center justify-center rounded-panel border border-rule bg-white p-3 shadow-2xs">
+            <div className="mx-auto flex w-fit items-center justify-center rounded-panel border border-rule bg-white p-3">
               <QrImg token={token} size={150} />
             </div>
 
@@ -491,7 +492,7 @@ export function QrModal({
             type="button"
             onClick={handleDownloadPng}
             disabled={downloading}
-            className="flex-1 gap-2 shadow-xs"
+            className="flex-1 gap-2"
           >
             {downloaded ? <Check className="size-4" /> : <Download className="size-4" />}
             <span>{downloaded ? "Tersimpan!" : "Unduh QR (PNG)"}</span>
@@ -539,7 +540,7 @@ export function QrQuickViewButton({
         variant="secondary"
         size="sm"
         onClick={() => setOpen(true)}
-        className="gap-1.5 text-label py-1 px-2.5 h-auto shrink-0 shadow-2xs font-semibold"
+        className="gap-1.5 text-label py-1 px-2.5 h-auto shrink-0 font-semibold"
         title={type === "student" ? "Lihat Kartu Anggota Siswa" : "Lihat / Unduh Label QR"}
       >
         {type === "student" ? (

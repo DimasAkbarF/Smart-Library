@@ -41,7 +41,7 @@ export default async function TransactionsPage({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline pb-5">
         <div>
-          <span className="text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <span className="text-label font-semibold text-primary font-mono tracking-wider uppercase">
             Sirkulasi Buku · Transaksi
           </span>
           <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
@@ -53,7 +53,7 @@ export default async function TransactionsPage({
         </div>
         <Link
           href={exportHref}
-          className="inline-flex min-h-tap-min items-center justify-center rounded-md border border-outline bg-background px-4 py-2 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-all shadow-xs w-full sm:w-auto"
+          className="inline-flex min-h-tap-min items-center justify-center rounded-md border border-outline bg-surface px-4 py-2 text-label font-semibold text-ink hover:bg-surface-sunken-ed hover:text-primary transition-colors w-full sm:w-auto"
         >
           Ekspor Seluruh CSV
         </Link>

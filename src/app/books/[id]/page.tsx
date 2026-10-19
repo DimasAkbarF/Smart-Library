@@ -125,19 +125,19 @@ export default async function PublicBookDetail({
       )}
 
       {/* Main Book Detail Card */}
-      <article className="grid gap-6 rounded-card border border-rule bg-white p-6 shadow-xs sm:grid-cols-[180px_1fr]">
+      <article className="grid gap-6 rounded-card border border-rule bg-white p-6 sm:grid-cols-[180px_1fr]">
         <div className="flex justify-center sm:justify-start">
           {book.cover_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={book.cover_url}
               alt={`Sampul ${book.title}`}
-              className="h-64 w-44 rounded-sm object-cover shadow-sm border border-rule"
+              className="h-64 w-44 rounded-sm object-cover border border-rule"
             />
           ) : (
             <div
               aria-hidden
-              className="flex h-64 w-44 flex-col items-center justify-center gap-2 rounded-sm bg-primary-soft text-primary font-display font-bold shadow-sm border border-primary/20"
+              className="flex h-64 w-44 flex-col items-center justify-center gap-2 rounded-sm bg-primary-soft text-primary font-display font-bold border border-primary/20"
             >
               <BookOpen className="size-10 text-primary" />
               <span className="text-display-lg">{initials}</span>
@@ -197,7 +197,7 @@ export default async function PublicBookDetail({
       </article>
 
       {/* Lending Policy Card */}
-      <section className="rounded-card border border-rule bg-white p-6 shadow-xs space-y-4">
+      <section className="rounded-card border border-rule bg-white p-6 space-y-4">
         <div>
           <h2 className="font-serif text-xl font-bold text-ink">Ketentuan & Kebijakan Sirkulasi</h2>
           <p className="text-xs text-ink-muted mt-1">Aturan resmi peminjaman buku perpustakaan SMP Negeri 17 Tangerang Selatan.</p>

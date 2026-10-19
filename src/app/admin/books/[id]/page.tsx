@@ -32,7 +32,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
       <div>
         <Link
           href="/admin/books"
-          className="inline-flex items-center gap-1.5 text-body font-semibold text-ink-muted hover:text-sky-deep transition-colors mb-3"
+          className="inline-flex items-center gap-1.5 text-body font-semibold text-ink-muted hover:text-primary transition-colors mb-3"
         >
           <ArrowLeft className="size-4" />
           <span>Kembali ke Katalog Buku</span>
@@ -67,21 +67,21 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
         {/* Left Column: Visual Showcase & Danger Zone */}
         <div className="space-y-6">
           {/* Visual Showcase Card */}
-          <div className="rounded-card border border-outline bg-surface p-5 shadow-card space-y-5">
+          <div className="rounded-card border border-outline bg-surface p-5 space-y-5">
             <div className="flex justify-center">
               {book.cover_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={book.cover_url}
                   alt={`Sampul ${book.title}`}
-                  className="h-64 w-44 rounded-sm object-cover shadow-md border border-outline"
+                  className="h-64 w-44 rounded-sm object-cover border border-outline"
                 />
               ) : (
                 <div
                   aria-hidden
-                  className="flex h-64 w-44 flex-col items-center justify-center gap-2 rounded-sm bg-sky-soft text-sky-deep shadow-md border border-sky/20"
+                  className="flex h-64 w-44 flex-col items-center justify-center gap-2 rounded-sm bg-primary-soft text-primary border border-primary/20"
                 >
-                  <BookOpen className="size-10 text-sky" />
+                  <BookOpen className="size-10 text-primary" />
                   <span className="font-display text-display-sm font-bold">{initials}</span>
                 </div>
               )}
@@ -93,13 +93,13 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                   <span className="block font-mono text-title font-bold text-ink">{book.total_copies}</span>
                   <span className="block text-meta text-ink-muted">Total</span>
                 </div>
-                <div className="rounded-md bg-leaf-soft border border-leaf/20 p-2">
-                  <span className="block font-mono text-title font-bold text-leaf-deep">{book.available_copies}</span>
-                  <span className="block text-label text-leaf-deep">Tersedia</span>
+                <div className="rounded-md bg-success-bg border border-success-line/20 p-2">
+                  <span className="block font-mono text-title font-bold text-success">{book.available_copies}</span>
+                  <span className="block text-label text-success">Tersedia</span>
                 </div>
-                <div className="rounded-md bg-sun-soft border border-sun/30 p-2">
-                  <span className="block font-mono text-title font-bold text-sun-deep">{borrowedCount}</span>
-                  <span className="block text-label text-sun-deep">Dipinjam</span>
+                <div className="rounded-md bg-warning-bg border border-warning-line/30 p-2">
+                  <span className="block font-mono text-title font-bold text-warning">{borrowedCount}</span>
+                  <span className="block text-label text-warning">Dipinjam</span>
                 </div>
               </div>
 
@@ -146,7 +146,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
         {/* Right Column: Forms & Copies List */}
         <div className="lg:col-span-2 space-y-6">
           {/* Ubah Data Buku */}
-          <section className="rounded-card border border-outline bg-background p-6 shadow-card space-y-4">
+          <section className="rounded-card border border-outline bg-surface p-6 space-y-4">
             <div>
               <h2 className="font-display text-title font-bold text-ink">Informasi Bibliografi</h2>
               <p className="text-meta text-ink-muted">Perbarui data judul, pengarang, penerbit, nomor ISBN, atau tautan sampul.</p>
@@ -155,7 +155,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
           </section>
 
           {/* Tambah Eksemplar */}
-          <section className="rounded-card border border-outline bg-background p-6 shadow-card space-y-4">
+          <section className="rounded-card border border-outline bg-surface p-6 space-y-4">
             <div>
               <h2 className="font-display text-title font-bold text-ink">Tambah Eksemplar Fisik</h2>
               <p className="text-meta text-ink-muted">
@@ -166,7 +166,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
           </section>
 
           {/* Daftar Eksemplar */}
-          <section className="rounded-card border border-outline bg-background p-6 shadow-card space-y-4">
+          <section className="rounded-card border border-outline bg-surface p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-display text-title font-bold text-ink">
@@ -176,7 +176,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
               </div>
               <Link
                 href={`/admin/copies?q=${encodeURIComponent(book.title)}`}
-                className="text-label font-semibold text-sky-deep hover:underline"
+                className="text-label font-semibold text-primary hover:underline"
               >
                 Lihat di Manajer Eksemplar →
               </Link>

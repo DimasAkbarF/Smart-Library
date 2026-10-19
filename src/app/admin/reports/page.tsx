@@ -28,7 +28,7 @@ export default async function ReportsPage() {
             <a
               key={e.type}
               href={`/api/export?type=${e.type}`}
-              className="inline-flex min-h-[38px] sm:min-h-9 items-center justify-center gap-1.5 rounded-md border border-outline bg-background px-3 text-label font-semibold text-ink hover:bg-surface transition-colors w-full sm:w-auto"
+              className="inline-flex min-h-[38px] sm:min-h-9 items-center justify-center gap-1.5 rounded-md border border-outline bg-surface px-3 text-label font-semibold text-ink hover:bg-surface-sunken-ed transition-colors w-full sm:w-auto"
             >
               <Download className="size-3.5 text-ink-muted" />
               {e.label}
@@ -37,7 +37,7 @@ export default async function ReportsPage() {
         </div>
       </div>
 
-      <section className="rounded-card border border-outline bg-background p-4 sm:p-5 shadow-xs">
+      <section className="rounded-card border border-outline bg-surface p-4 sm:p-5">
         <h2 className="mb-3 font-bold text-ink">Peminjaman & Pengembalian per Hari</h2>
         <ul className="grid gap-3 sm:gap-2">
           {r.perDay.map((d) => (
@@ -63,7 +63,7 @@ export default async function ReportsPage() {
                     aria-valuenow={d.pinjam}
                     aria-valuemin={0}
                     aria-valuemax={maxDay}
-                    className="h-full rounded-sm bg-sky transition-all duration-300"
+                    className="h-full rounded-sm bg-primary transition-[width] duration-500 ease-out"
                     style={{ width: `${(d.pinjam / maxDay) * 100}%` }}
                   />
                 )}
@@ -74,7 +74,7 @@ export default async function ReportsPage() {
                     aria-valuenow={d.kembali}
                     aria-valuemin={0}
                     aria-valuemax={maxDay}
-                    className="h-full rounded-sm bg-leaf transition-all duration-300"
+                    className="h-full rounded-sm bg-success transition-[width] duration-500 ease-out"
                     style={{ width: `${(d.kembali / maxDay) * 100}%` }}
                   />
                 )}
@@ -89,16 +89,16 @@ export default async function ReportsPage() {
         </ul>
         <p className="mt-3 flex items-center gap-4 text-meta text-ink-muted border-t border-outline/40 pt-2.5">
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-sky" /> Pinjam
+            <span className="size-2.5 rounded-sm bg-primary" /> Pinjam
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-leaf" /> Kembali
+            <span className="size-2.5 rounded-sm bg-success" /> Kembali
           </span>
         </p>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-card border border-outline bg-background p-5 shadow-xs">
+        <section className="rounded-card border border-outline bg-surface p-5">
           <h2 className="mb-3 font-bold">Buku terpopuler</h2>
           {r.topBooks.length === 0 ? (
             <p className="text-ink-muted">Belum ada transaksi pada periode ini.</p>
@@ -118,7 +118,7 @@ export default async function ReportsPage() {
                     aria-valuemax={maxTop}
                     className="h-1.5 rounded-chip bg-surface-sunken-ed block border border-rule/50"
                   >
-                    <span className="block h-full rounded-chip bg-primary transition-all duration-300" style={{ width: `${(b.count / maxTop) * 100}%` }} />
+                    <span className="block h-full rounded-chip bg-primary transition-[width] duration-500 ease-out" style={{ width: `${(b.count / maxTop) * 100}%` }} />
                   </span>
                 </li>
               ))}
@@ -126,7 +126,7 @@ export default async function ReportsPage() {
           )}
         </section>
 
-        <section className="rounded-card border border-outline bg-background p-5 shadow-xs">
+        <section className="rounded-card border border-outline bg-surface p-5">
           <h2 className="mb-3 font-bold">Transaksi per status</h2>
           {r.byStatus.length === 0 ? (
             <p className="text-ink-muted">Belum ada transaksi pada periode ini.</p>

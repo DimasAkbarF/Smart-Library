@@ -26,7 +26,7 @@ export default async function ChangePasswordPage() {
         </div>
 
         {/* Panel Container */}
-        <div className="overflow-hidden rounded-panel border border-rule bg-surface shadow-xs lg:grid lg:grid-cols-[5fr_7fr]">
+        <div className="overflow-hidden rounded-panel border border-rule bg-surface lg:grid lg:grid-cols-[5fr_7fr]">
           <SchoolBrandPanel />
 
           <section className="flex flex-col items-center justify-center p-6 sm:p-8 lg:p-12">

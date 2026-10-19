@@ -65,7 +65,7 @@ export function InteractiveChart({
   const usableHeight = chartHeight - paddingBottom - paddingTop;
 
   return (
-    <div className="rounded-panel border border-rule bg-white p-5 sm:p-6 font-plex-sans shadow-xs">
+    <div className="rounded-panel border border-rule bg-white p-5 sm:p-6 font-plex-sans">
       {/* Header with Title and Range Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-4">
         <div>
@@ -105,7 +105,7 @@ export function InteractiveChart({
                 className={cn(
                   "inline-flex items-center justify-center min-h-[32px] rounded-xs px-3 py-1 text-label font-semibold transition-colors cursor-pointer",
                   period === tab.id
-                    ? "bg-white text-primary shadow-xs font-bold border border-rule/50"
+                    ? "bg-white text-primary font-bold border border-rule/50"
                     : "text-ink-muted hover:text-ink"
                 )}
               >
@@ -207,7 +207,7 @@ export function InteractiveChart({
                   height={Math.max(2, pinjamHeight)}
                   rx="2"
                   className={cn(
-                    "transition-all duration-200",
+                    "transition-colors duration-200",
                     isHovered ? "fill-primary-hover" : "fill-primary"
                   )}
                 />
@@ -220,7 +220,7 @@ export function InteractiveChart({
                   height={Math.max(2, kembaliHeight)}
                   rx="2"
                   className={cn(
-                    "transition-all duration-200",
+                    "transition-colors duration-200",
                     isHovered ? "fill-[#145334]" : "fill-success"
                   )}
                 />

@@ -98,7 +98,7 @@ export function CommandPalette({
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto w-[min(560px,calc(100vw-2rem))] transform rounded-panel border border-rule-strong bg-white shadow-dropdown transition-all font-plex-sans">
+      <div className="relative mx-auto w-[min(560px,calc(100vw-2rem))] transform rounded-panel border border-rule-strong bg-white shadow-dropdown font-plex-sans">
         {/* Search Input Bar */}
         <div className="flex items-center border-b border-rule px-4 py-3">
           <Search className="size-4.5 shrink-0 text-ink-subtle" aria-hidden />

@@ -75,8 +75,8 @@ export default async function PublicStudentCardPage({
               <StudentCard student={student} />
             </div>
 
-            {/* Action Buttons: Unduh & Cetak Kartu */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            {/* Action Buttons: Unduh & Cetak Kartu — tidak relevan untuk cetak halaman */}
+            <div className="no-print print:hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
               <StudentCardActions student={student} />
               <div className="flex items-center gap-1.5 text-xs text-ink-muted min-w-0">
                 <ShieldCheck className="size-4 text-success shrink-0" />
@@ -87,8 +87,8 @@ export default async function PublicStudentCardPage({
             </div>
           </section>
 
-          {/* Guidelines */}
-          <section className="rounded-card border border-rule bg-white p-5 shadow-xs space-y-3">
+          {/* Guidelines — hanya untuk tampilan layar */}
+          <section className="no-print print:hidden rounded-card border border-rule bg-white p-5 space-y-3">
             <div className="flex items-center gap-2 text-ink">
               <Info className="size-4 text-primary" />
               <h2 className="font-serif text-base font-semibold">Petunjuk Penggunaan Kartu</h2>

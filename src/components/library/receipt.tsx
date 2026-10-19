@@ -19,8 +19,8 @@ export function TransactionReceipt({
 }) {
   return (
     <div className="grid gap-5">
-      <div className="flex items-start gap-4 rounded-card border border-leaf-deep/30 bg-leaf-soft/40 p-5">
-        <CheckCircle2 className="size-9 shrink-0 text-leaf-deep" aria-hidden />
+      <div className="flex items-start gap-4 rounded-card border border-success-line/30 bg-success-bg/40 p-5">
+        <CheckCircle2 className="size-9 shrink-0 text-success" aria-hidden />
         <div>
           <h2 className="text-title font-bold">
             {kind === "borrow" ? "Peminjaman berhasil." : "Pengembalian berhasil."}

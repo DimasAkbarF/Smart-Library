@@ -70,7 +70,7 @@ export function SchoolLogo({
     return (
       <div
         className={cn(
-          "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[4px] bg-white border border-rule shadow-xs",
+          "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[4px] bg-white border border-rule",
           containerClass,
           className
         )}

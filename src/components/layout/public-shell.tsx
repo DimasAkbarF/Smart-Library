@@ -15,7 +15,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-paper font-plex-sans text-ink">
       {/* Public Top Navbar */}
-      <header className="no-print print:hidden sticky top-0 z-20 border-b border-rule bg-white shadow-xs">
+      <header className="no-print print:hidden sticky top-0 z-20 border-b border-rule bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/books" className="flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-primary">
             <SchoolLogo size="sm" />
@@ -36,7 +36,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
               className={cn(
                 "flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-btn transition-colors",
                 isCatalog
-                  ? "bg-primary-soft text-primary font-bold shadow-xs"
+                  ? "bg-primary-soft text-primary font-bold"
                   : "text-ink-muted hover:text-ink hover:bg-surface-sunken-ed",
               )}
             >
@@ -50,7 +50,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
               className={cn(
                 "flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-btn transition-colors",
                 isInfo
-                  ? "bg-primary-soft text-primary font-bold shadow-xs"
+                  ? "bg-primary-soft text-primary font-bold"
                   : "text-ink-muted hover:text-ink hover:bg-surface-sunken-ed",
               )}
             >

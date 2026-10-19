@@ -24,7 +24,7 @@ export interface MetricCell {
  */
 export function StatPanel({ metrics }: { metrics: MetricCell[] }) {
   return (
-    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-panel border border-rule bg-rule lg:grid-cols-4 font-plex-sans shadow-xs">
+    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-panel border border-rule bg-rule lg:grid-cols-4 font-plex-sans">
       {metrics.map((m) => (
         <Link
           key={m.label}

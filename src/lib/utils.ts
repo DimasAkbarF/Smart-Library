@@ -20,7 +20,7 @@ const customTwMerge = extendTailwindMerge({
         "rounded-btn",
         "rounded-panel",
       ],
-      shadow: ["shadow-card", "shadow-modal", "shadow-dropdown"],
+      shadow: ["shadow-dropdown"],
     },
   },
 });
@@ -37,3 +37,16 @@ export function sanitizeSearchTerm(term: string): string {
   return term.replace(/[,():%*\[\]]/g, " ").trim();
 }
 
+/**
+ * Escape HTML special characters for safe interpolation into HTML strings
+ * (print windows / template literals). React's auto-escaping covers JSX;
+ * this is only for `document.write` / `window.open` print documents.
+ */
+export function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}

@@ -133,7 +133,7 @@ export function ReturnWorkspace({ finePerDay }: { finePerDay: number }) {
     <div className="grid max-w-3xl gap-5">
       <QrScanner title="Pindai buku yang dikembalikan" hint="Arahkan kamera ke QR pada buku" onDetected={onDetected} />
       {busy && <p role="status" className="text-ink-muted">Memeriksa buku…</p>}
-      {msg && <p role="alert" className="rounded-md bg-sun-soft px-4 py-3 text-sun-deep">{msg}</p>}
+      {msg && <p role="alert" className="rounded-md bg-warning-bg px-4 py-3 text-warning">{msg}</p>}
 
       {copy && loan && (
         <div className="grid gap-4 rounded-card border border-outline bg-surface p-5">

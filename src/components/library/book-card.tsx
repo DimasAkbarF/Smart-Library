@@ -20,7 +20,7 @@ export function BookCard({ book, href }: { book: Book; href: string }) {
           alt={`Sampul ${book.title}`}
           width={80}
           height={112}
-          className="h-28 w-20 shrink-0 rounded-btn border border-rule object-cover shadow-xs"
+          className="h-28 w-20 shrink-0 rounded-btn border border-rule object-cover"
           loading="lazy"
           decoding="async"
         />

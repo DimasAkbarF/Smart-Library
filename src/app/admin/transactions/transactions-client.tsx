@@ -119,9 +119,9 @@ export function TransactionsClient({
     <div className="space-y-3">
       {/* Contextual Bulk Action Bar */}
       {selectedIds.length > 0 && (
-        <div className="sticky top-16 z-20 flex items-center justify-between gap-3 rounded-md border border-outline bg-background px-4 py-2.5 shadow-card">
+        <div className="sticky top-16 z-20 flex items-center justify-between gap-3 rounded-md border border-outline bg-surface px-4 py-2.5">
           <div className="flex items-center gap-3">
-            <span className="font-display text-body font-bold text-sky-deep">
+            <span className="font-display text-body font-bold text-primary">
               {selectedIds.length} transaksi dipilih
             </span>
             <button
@@ -153,7 +153,7 @@ export function TransactionsClient({
       )}
 
       {/* Interactive Table with Checkboxes & Drawer trigger */}
-      <div className="overflow-x-auto rounded-card border border-outline bg-background shadow-xs">
+      <div className="overflow-x-auto rounded-card border border-outline bg-surface">
         <table className="w-full min-w-[640px] snap-x snap-mandatory text-left text-body">
           <thead>
             <tr className="sticky top-0 z-10 border-b border-outline bg-surface-sunken">
@@ -163,7 +163,7 @@ export function TransactionsClient({
                   checked={allSelected}
                   onChange={toggleSelectAll}
                   aria-label="Pilih semua baris"
-                  className="size-4 rounded border-outline text-sky focus:ring-sky cursor-pointer"
+                  className="size-4 rounded border-outline accent-primary cursor-pointer"
                 />
               </th>
               <th className="px-3 py-3 sm:px-4 text-meta font-bold text-ink-subtle uppercase tracking-wider font-mono">
@@ -193,7 +193,7 @@ export function TransactionsClient({
                   key={r.id}
                   onClick={() => setSelectedLoan(r)}
                   className={`transition-colors duration-100 cursor-pointer ${
-                    isSelected ? "bg-sky-soft/40" : "hover:bg-surface/80"
+                    isSelected ? "bg-primary-soft/40" : "hover:bg-surface/80"
                   }`}
                 >
                   <td
@@ -205,7 +205,7 @@ export function TransactionsClient({
                       checked={isSelected}
                       onChange={() => toggleRow(r.id)}
                       aria-label="Pilih baris"
-                      className="size-4 rounded border-outline text-sky focus:ring-sky cursor-pointer"
+                      className="size-4 rounded border-outline accent-primary cursor-pointer"
                     />
                   </td>
                   <td className="px-3 py-3 sm:px-4.5 align-middle">
@@ -260,7 +260,7 @@ export function TransactionsClient({
           ) : (
             <Link
               href={href(page - 1)}
-              className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+              className="flex items-center gap-1 rounded-md border border-outline bg-surface px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface-sunken-ed hover:text-primary transition-colors"
             >
               <ChevronLeft className="size-3.5" />
               <span className="hidden sm:inline">Sebelumnya</span>
@@ -285,7 +285,7 @@ export function TransactionsClient({
           ) : (
             <Link
               href={href(page + 1)}
-              className="flex items-center gap-1 rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+              className="flex items-center gap-1 rounded-md border border-outline bg-surface px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface-sunken-ed hover:text-primary transition-colors"
             >
               <span className="hidden sm:inline">Berikutnya</span>
               <ChevronRight className="size-3.5" />
@@ -366,7 +366,7 @@ export function TransactionsClient({
             {/* Siswa Section */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
-                <User className="size-3.5 text-sky" />
+                <User className="size-3.5 text-primary" />
                 <span>Peminjam</span>
               </div>
               <div className="grid grid-cols-2 gap-3 text-label">
@@ -392,7 +392,7 @@ export function TransactionsClient({
             {/* Buku Section */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
-                <Book className="size-3.5 text-leaf" />
+                <Book className="size-3.5 text-success" />
                 <span>Koleksi Buku</span>
               </div>
               <div className="space-y-2 text-label">
@@ -403,7 +403,7 @@ export function TransactionsClient({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <span className="text-ink-subtle">Kode Inventaris:</span>
-                    <p className="font-mono font-bold text-sky-deep">{selectedLoan.inventory_code}</p>
+                    <p className="font-mono font-bold text-primary">{selectedLoan.inventory_code}</p>
                   </div>
                   <div>
                     <span className="text-ink-subtle">Denda Keterlambatan:</span>
@@ -418,7 +418,7 @@ export function TransactionsClient({
             {/* Linimasa Waktu */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono border-b border-outline pb-1">
-                <Calendar className="size-3.5 text-sun-deep" />
+                <Calendar className="size-3.5 text-warning" />
                 <span>Linimasa Sirkulasi</span>
               </div>
               <div className="rounded-lg border border-outline bg-surface-sunken/40 p-3 space-y-2 text-label">
@@ -433,7 +433,7 @@ export function TransactionsClient({
                 {selectedLoan.returned_at && (
                   <div className="flex justify-between border-t border-outline pt-2">
                     <span className="text-ink-muted">Dikembalikan Pada:</span>
-                    <span className="font-semibold text-leaf-deep">{formatTanggal(selectedLoan.returned_at)}</span>
+                    <span className="font-semibold text-success">{formatTanggal(selectedLoan.returned_at)}</span>
                   </div>
                 )}
               </div>

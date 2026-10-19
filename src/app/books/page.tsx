@@ -8,7 +8,7 @@ import { SearchInput } from "@/components/ui/search-input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Katalog Koleksi Buku Perpustakaan",
@@ -119,6 +119,33 @@ export default async function PublicBooksPage({
         <SearchInput placeholder="Cari judul, penulis, atau ISBN…" />
       </Suspense>
 
+      {/* Filter ketersediaan (boolean) — baris sendiri, di atas baris kategori.
+          Catatan: pada < 640px baris kategori yang menggulir horizontal membuat
+          chip ini berada di luar viewport (x=744–883px pada 360/390px). */}
+      <div className="-mx-4 px-4 sm:mx-0 sm:px-0">
+        <Link
+          href={href(sp, { avail: sp.avail === "1" ? undefined : "1", page: undefined })}
+          aria-current={sp.avail === "1" ? "true" : undefined}
+          className={cn(
+            "inline-flex min-h-tap-min sm:min-h-[36px] items-center gap-2 rounded-chip border px-3 text-label font-medium transition-colors",
+            sp.avail === "1"
+              ? "border-success/30 bg-success-bg text-success font-semibold"
+              : "border-rule bg-white text-ink-muted hover:border-rule-strong hover:text-ink",
+          )}
+        >
+          <span
+            aria-hidden
+            className={cn(
+              "flex size-4 shrink-0 items-center justify-center rounded-[2px] border",
+              sp.avail === "1" ? "border-success bg-success text-white" : "border-rule-strong bg-white",
+            )}
+          >
+            {sp.avail === "1" && <Check className="size-3" />}
+          </span>
+          <span>Hanya yang Tersedia</span>
+        </Link>
+      </div>
+
       <div
         className="flex items-center gap-2 overflow-x-auto pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible no-scrollbar [-webkit-mask-image:linear-gradient(to_right,#000_calc(100%_-_24px),transparent)] [mask-image:linear-gradient(to_right,#000_calc(100%_-_24px),transparent)] sm:[-webkit-mask-image:none] sm:[mask-image:none]"
         role="group"
@@ -128,9 +155,9 @@ export default async function PublicBooksPage({
           href={href(sp, { cat: undefined, page: undefined })}
           aria-current={!sp.cat ? "true" : undefined}
           className={cn(
-            "shrink-0 inline-flex min-h-[36px] items-center rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
+            "shrink-0 inline-flex min-h-tap-min sm:min-h-[36px] items-center rounded-chip px-3 py-1.5 text-label font-medium transition-colors",
             !sp.cat
-              ? "bg-primary-soft text-primary font-semibold border border-primary/20 shadow-xs"
+              ? "bg-primary-soft text-primary font-semibold border border-primary/20"
               : "bg-white text-ink-muted hover:text-ink border border-rule",
           )}
         >
@@ -142,27 +169,15 @@ export default async function PublicBooksPage({
             href={href(sp, { cat: sp.cat === c.id ? undefined : c.id, page: undefined })}
             aria-current={sp.cat === c.id ? "true" : undefined}
             className={cn(
-              "shrink-0 inline-flex min-h-[36px] items-center rounded-chip px-3 py-1.5 text-xs font-medium transition-colors",
+              "shrink-0 inline-flex min-h-tap-min sm:min-h-[36px] items-center rounded-chip px-3 py-1.5 text-label font-medium transition-colors",
               sp.cat === c.id
-                ? "bg-primary-soft text-primary font-semibold border border-primary/20 shadow-xs"
+                ? "bg-primary-soft text-primary font-semibold border border-primary/20"
                 : "bg-white text-ink-muted hover:text-ink border border-rule",
             )}
           >
             {c.name}
           </Link>
         ))}
-        <Link
-          href={href(sp, { avail: sp.avail === "1" ? undefined : "1", page: undefined })}
-          aria-current={sp.avail === "1" ? "true" : undefined}
-          className={cn(
-            "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-xs font-medium transition-colors",
-            sp.avail === "1"
-              ? "border-success/30 bg-success-bg text-success font-semibold shadow-xs"
-              : "border-rule bg-white text-ink-muted hover:text-ink",
-          )}
-        >
-          Hanya yang Tersedia
-        </Link>
       </div>
 
       {result.books.length === 0 ? (

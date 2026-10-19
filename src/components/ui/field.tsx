@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const inputCls =
-  "w-full rounded-btn border border-rule-strong bg-white px-3.5 text-base sm:text-sm text-ink font-plex-sans placeholder:text-ink-subtle transition-colors duration-150 focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:border-rule";
+  "w-full rounded-btn border border-rule-strong bg-white px-3.5 text-base sm:text-sm text-ink font-plex-sans placeholder:text-ink-subtle transition-colors duration-150 focus:border-primary disabled:cursor-not-allowed disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:border-rule";
 
 export function Field({
   label,

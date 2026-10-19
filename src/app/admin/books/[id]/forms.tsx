@@ -57,7 +57,7 @@ export function BookEditForm({ book, categories }: { book: Book; categories: Cat
         </p>
       )}
       {state?.ok && (
-        <p role="status" className="text-body font-semibold text-leaf-deep">
+        <p role="status" className="text-body font-semibold text-success">
           Perubahan berhasil disimpan.
         </p>
       )}
@@ -105,8 +105,8 @@ export function AddCopiesForm({ bookId }: { bookId: string }) {
       )}
 
       {recentCopies.length > 0 && (
-        <div className="rounded-lg border border-leaf/40 bg-leaf-soft/40 p-3.5 space-y-2">
-          <div className="flex items-center gap-2 text-leaf-deep font-semibold text-meta">
+        <div className="rounded-lg border border-success-line/40 bg-success-bg/40 p-3.5 space-y-2">
+          <div className="flex items-center gap-2 text-success font-semibold text-meta">
             <CheckCircle2 className="size-4 shrink-0" />
             <span>{recentCopies.length} Eksemplar baru berhasil ditambahkan beserta QR Code:</span>
           </div>

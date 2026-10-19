@@ -85,7 +85,7 @@ export function QrScanner({
   return (
     <section aria-label={title} className="space-y-4">
       {/* Scanner Viewfinder Box */}
-      <div className="relative overflow-hidden rounded-panel border border-rule bg-[#0f172a] shadow-xs">
+      <div className="relative overflow-hidden rounded-panel border border-rule bg-[#0f172a]">
         {/* Html5Qrcode container selalu terpasang di DOM */}
         <div
           id={`qr-${elementId}`}
@@ -138,7 +138,7 @@ export function QrScanner({
         {phase === "detected" && (
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-success/20">
             <div className="flex flex-col items-center gap-2 rounded-panel bg-white p-5 text-center shadow-dropdown border border-rule font-plex-sans">
-              <span className="flex size-12 items-center justify-center rounded-btn bg-success text-white shadow-xs">
+              <span className="flex size-12 items-center justify-center rounded-btn bg-success text-white">
                 <CheckCircle2 className="size-7" />
               </span>
               <div>

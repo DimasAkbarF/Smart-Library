@@ -275,6 +275,8 @@ let lastOverdueCheck = 0;
 
 /** Tandai overdue sebelum menampilkan dashboard/laporan (dibatasi maks 1x per 10 menit agar hemat query ~800ms). */
 export async function refreshOverdue() {
+  // Pengaman tambahan: hanya petugas/admin yang boleh memicu penandaan overdue.
+  await assertRole("admin");
   const now = Date.now();
   if (now - lastOverdueCheck < 10 * 60 * 1000) return;
   lastOverdueCheck = now;

@@ -39,9 +39,9 @@ export function ChangePasswordForm() {
             placeholder="Minimal 8 karakter unik"
             className={cn(
               "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white pl-3 pr-16 font-plex-sans text-[16px] sm:text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
-              "focus:border-primary focus:ring-2 focus:ring-primary/20",
+              "focus:border-primary",
               "disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:cursor-not-allowed",
-              invalid && "border-danger bg-danger-bg text-danger focus:border-danger focus:ring-danger/20"
+              invalid && "border-danger bg-danger-bg text-danger focus:border-danger"
             )}
           />
           <button
@@ -74,9 +74,9 @@ export function ChangePasswordForm() {
           placeholder="Ulangi kata sandi baru"
           className={cn(
             "h-11 sm:h-10 w-full rounded-btn border border-rule-strong bg-white px-3 font-plex-sans text-[16px] sm:text-[14px] text-ink placeholder:text-ink-subtle transition-colors",
-            "focus:border-primary focus:ring-2 focus:ring-primary/20",
+            "focus:border-primary",
             "disabled:bg-surface-sunken-ed disabled:text-ink-subtle disabled:cursor-not-allowed",
-            invalid && "border-danger bg-danger-bg text-danger focus:border-danger focus:ring-danger/20"
+            invalid && "border-danger bg-danger-bg text-danger focus:border-danger"
           )}
         />
       </div>

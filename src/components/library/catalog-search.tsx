@@ -123,7 +123,7 @@ export function CatalogSearch({ total }: { total: number }) {
                 id={listId}
                 role="listbox"
                 aria-label="Saran buku"
-                className="absolute top-full z-30 mt-1 w-full overflow-hidden rounded-card border border-rule bg-surface shadow-[0_8px_24px_rgb(22_27_38/0.12)]"
+                className="absolute top-full z-30 mt-1 w-full overflow-hidden rounded-card border border-rule bg-surface shadow-dropdown"
               >
                 {items.map((b, i) => (
                   <li key={b.id} role="presentation" className="border-b border-rule last:border-b-0">

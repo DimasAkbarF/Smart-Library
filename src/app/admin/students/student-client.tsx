@@ -67,7 +67,7 @@ export function StudentsSection({
         <Button
           type="button"
           onClick={() => setAddOpen(true)}
-          className="gap-2 shrink-0 shadow-xs min-h-[44px] sm:min-h-0 justify-center font-semibold"
+          className="gap-2 shrink-0 min-h-[44px] sm:min-h-0 justify-center font-semibold"
         >
           <Plus className="size-4" />
           <span>Tambah Siswa</span>
@@ -175,7 +175,7 @@ export function StudentsSection({
                 <button
                   type="button"
                   onClick={() => setEdit(s)}
-                  className="rounded-md border border-outline px-2.5 py-1 text-label font-semibold text-ink hover:bg-surface hover:text-sky-deep transition-colors"
+                  className="rounded-md border border-outline px-2.5 py-1 text-label font-semibold text-ink hover:bg-surface hover:text-primary transition-colors"
                 >
                   Ubah
                 </button>
@@ -196,11 +196,12 @@ export function StudentsSection({
         baseUrl={baseUrl}
         totalLabel={`${total.toLocaleString("id-ID")} siswa · halaman ${page} dari ${pageCount}`}
         renderMobileCard={(s) => (
-          <div className="rounded-card border border-rule bg-card p-4 shadow-xs flex flex-col gap-3 min-w-0">
+          <div className="rounded-card border border-rule bg-card p-4 flex flex-col gap-3 min-w-0">
             {/* Header: Nama, NIS, Kelas, Status */}
             <div className="flex items-start justify-between gap-3 min-w-0">
               <div className="flex items-start gap-3 min-w-0">
                 <div
+                  // eslint-disable-next-line local/no-banned-utilities -- avatar inisial siswa: bulat memang disengaja (design.md §3)
                   className="size-9 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center shrink-0 text-sm font-plex-sans"
                   aria-hidden="true"
                 >

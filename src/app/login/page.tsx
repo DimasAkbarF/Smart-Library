@@ -72,7 +72,7 @@ export default function LoginPage() {
         </div>
 
         {/* Panel Container Terintegrasi (design.md §6): Tanpa double border */}
-        <div className="overflow-hidden rounded-panel border border-rule bg-surface shadow-xs lg:grid lg:grid-cols-[5fr_7fr]">
+        <div className="overflow-hidden rounded-panel border border-rule bg-surface lg:grid lg:grid-cols-[5fr_7fr]">
           {/* Panel Kiri 5/12: Informasi Institusi & Layanan (Desktop) */}
           <SchoolBrandPanel />
 

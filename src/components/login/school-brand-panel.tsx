@@ -42,7 +42,7 @@ export function SchoolBrandPanel() {
       {/* Bagian Atas: Identitas Lembaga Resmi */}
       <div>
         <div className="flex items-center gap-3.5">
-          <div className="relative size-14 shrink-0 overflow-hidden rounded-[4px] bg-white p-1.5 shadow-sm">
+          <div className="relative size-14 shrink-0 overflow-hidden rounded-[4px] bg-white p-1.5">
             <Image
               src="/logo-smpn17.png"
               alt="Logo Resmi SMP Negeri 17 Tangerang Selatan"

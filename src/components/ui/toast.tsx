@@ -76,7 +76,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <div
               key={t.id}
               role={isError ? "alert" : "status"}
-              className="pointer-events-auto flex items-start gap-3 rounded-btn border border-rule-strong bg-white p-4 shadow-dropdown transition-all font-plex-sans"
+              className="pointer-events-auto flex items-start gap-3 rounded-btn border border-rule-strong bg-white p-4 shadow-dropdown transition-colors font-plex-sans"
             >
               <span className="shrink-0 pt-0.5">
                 {t.type === "success" && (

@@ -67,3 +67,15 @@ next-env.d.ts
 *.cert
 *.p12
 *.pfx
+
+# Audit & implementation reports (lokal, tidak di-push)
+/UI_UX_AUDIT.md
+/T0_IMPLEMENTATION_REPORT.md
+/T1_IMPLEMENTATION_REPORT.md
+/T3_IMPLEMENTATION_REPORT.md
+/SECURITY_AUDIT_REPORT.md
+/SECURITY_FIX_REPORT.md
+
+# Tooling / agent artifacts (tidak relevan untuk repo)
+/.agents/
+/skills-lock.json

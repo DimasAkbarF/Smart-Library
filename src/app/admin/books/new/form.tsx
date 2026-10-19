@@ -7,6 +7,7 @@ import { createBookWithCopies } from "@/features/admin/books";
 import { Field, Input, Select } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
+import { escapeHtml } from "@/lib/utils";
 import { QrImg } from "@/components/library/qr-img";
 import type { Category } from "@/lib/types";
 
@@ -32,7 +33,7 @@ export function BookCreateForm({ categories }: { categories: Category[] }) {
         <html>
           <head>
             <meta charset="utf-8">
-            <title>Label QR - ${state.book.title}</title>
+            <title>Label QR - ${escapeHtml(state.book?.title)}</title>
             <style>
               @page { size: auto; margin: 8mm; }
               body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 10px; color: #0f172a; }
@@ -54,9 +55,9 @@ export function BookCreateForm({ categories }: { categories: Category[] }) {
                 <div class="label-card">
                   <div class="school">SMPN 17 TANGERANG SELATAN</div>
                   <div class="qr-box"><img src="${c.qrUrl}" alt="QR" /></div>
-                  <div class="code">${c.inventory_code}</div>
-                  <div class="title">${state.book?.title}</div>
-                  <div class="meta">${c.location ? `Rak: ${c.location}` : "Perpustakaan"}</div>
+                  <div class="code">${escapeHtml(c.inventory_code)}</div>
+                  <div class="title">${escapeHtml(state.book?.title)}</div>
+                  <div class="meta">${c.location ? `Rak: ${escapeHtml(c.location)}` : "Perpustakaan"}</div>
                 </div>
               `
                 )
@@ -94,13 +95,13 @@ export function BookCreateForm({ categories }: { categories: Category[] }) {
     return (
       <div className="space-y-6 animate-rise">
         {/* Banner Sukses */}
-        <section className="rounded-xl border border-leaf/40 bg-leaf-soft/30 p-6 shadow-xs">
+        <section className="rounded-xl border border-success-line/40 bg-success-bg/30 p-6">
           <div className="flex items-start gap-4">
-            <span className="flex size-12 items-center justify-center rounded-xl bg-leaf text-white shrink-0 shadow-xs">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-success text-white shrink-0">
               <CheckCircle2 className="size-7" />
             </span>
             <div className="space-y-1">
-              <span className="font-mono text-meta font-bold tracking-wider text-leaf-deep uppercase">
+              <span className="font-mono text-meta font-bold tracking-wider text-success uppercase">
                 Registrasi Berhasil & QR Siap Dipakai
               </span>
               <h2 className="font-display text-title font-bold text-ink">
@@ -131,7 +132,7 @@ export function BookCreateForm({ categories }: { categories: Category[] }) {
                 type="button"
                 onClick={handlePrintAll}
                 disabled={printing}
-                className="gap-2 shadow-xs"
+                className="gap-2"
               >
                 <Printer className="size-4" />
                 <span>Cetak Semua Label QR</span>
@@ -143,10 +144,10 @@ export function BookCreateForm({ categories }: { categories: Category[] }) {
             {state.copies.map((copy) => (
               <div
                 key={copy.id}
-                className="rounded-card border-2 border-outline bg-background p-4 text-center shadow-xs flex flex-col justify-between"
+                className="rounded-card border-2 border-outline bg-surface p-4 text-center flex flex-col justify-between"
               >
                 <div>
-                  <p className="font-mono text-micro font-bold tracking-wider text-sky-deep uppercase">
+                  <p className="font-mono text-meta font-bold tracking-wider text-primary uppercase">
                     SMPN 17 TANGSEL
                   </p>
                   <p className="font-semibold text-label text-ink truncate mt-0.5" title={state.book?.title}>
@@ -161,7 +162,7 @@ export function BookCreateForm({ categories }: { categories: Category[] }) {
                     {copy.inventory_code}
                   </p>
                   {copy.location && (
-                    <span className="inline-block mt-1 rounded bg-surface-sunken px-2 py-0.5 font-mono text-micro text-ink-muted">
+                    <span className="inline-block mt-1 rounded bg-surface-sunken px-2 py-0.5 font-mono text-meta text-ink-muted">
                       Rak: {copy.location}
                     </span>
                   )}

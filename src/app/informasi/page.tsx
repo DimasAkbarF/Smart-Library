@@ -128,7 +128,7 @@ export default async function InformasiPage() {
           Fakta Kunci Perpustakaan
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-card border border-rule bg-white p-5 space-y-2 shadow-xs">
+          <div className="rounded-card border border-rule bg-white p-5 space-y-2">
             <div className="flex items-center gap-2 text-primary">
               <GraduationCap className="size-4 shrink-0" />
               <span className="text-xs font-semibold uppercase tracking-wider font-mono">Institusi Induk</span>
@@ -139,7 +139,7 @@ export default async function InformasiPage() {
             </p>
           </div>
 
-          <div className="rounded-card border border-rule bg-white p-5 space-y-2 shadow-xs">
+          <div className="rounded-card border border-rule bg-white p-5 space-y-2">
             <div className="flex items-center gap-2 text-primary">
               <MapPin className="size-4 shrink-0" />
               <span className="text-xs font-semibold uppercase tracking-wider font-mono">Alamat & Lokasi</span>
@@ -150,7 +150,7 @@ export default async function InformasiPage() {
             </p>
           </div>
 
-          <div className="rounded-card border border-rule bg-white p-5 space-y-2 shadow-xs">
+          <div className="rounded-card border border-rule bg-white p-5 space-y-2">
             <div className="flex items-center gap-2 text-primary">
               <Clock className="size-4 shrink-0" />
               <span className="text-xs font-semibold uppercase tracking-wider font-mono">Jam Operasional</span>
@@ -162,7 +162,7 @@ export default async function InformasiPage() {
             </p>
           </div>
 
-          <div className="rounded-card border border-rule bg-white p-5 space-y-2 shadow-xs">
+          <div className="rounded-card border border-rule bg-white p-5 space-y-2">
             <div className="flex items-center gap-2 text-primary">
               <QrCode className="size-4 shrink-0" />
               <span className="text-xs font-semibold uppercase tracking-wider font-mono">Sirkulasi & Kuota</span>
@@ -176,7 +176,7 @@ export default async function InformasiPage() {
       </section>
 
       {/* Artikel Bagian 1: Mengenal Smart Library */}
-      <article className="rounded-panel border border-rule bg-white p-6 sm:p-8 space-y-6 shadow-xs">
+      <article className="rounded-panel border border-rule bg-white p-6 sm:p-8 space-y-6">
         <div>
           <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase mb-1">
             <BookOpen className="size-4 shrink-0" />
@@ -231,7 +231,7 @@ export default async function InformasiPage() {
       </article>
 
       {/* Artikel Bagian 2: Alur Sirkulasi Buku (Step by Step) */}
-      <section className="rounded-panel border border-rule bg-white p-6 sm:p-8 space-y-6 shadow-xs">
+      <section className="rounded-panel border border-rule bg-white p-6 sm:p-8 space-y-6">
         <div>
           <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase mb-1">
             <QrCode className="size-4 shrink-0" />
@@ -247,7 +247,7 @@ export default async function InformasiPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="rounded-card border border-rule bg-surface p-4 space-y-2">
-            <span className="inline-flex size-6 items-center justify-center rounded-full bg-primary text-white font-mono text-xs font-bold">
+            <span className="inline-flex size-6 items-center justify-center rounded-btn bg-primary text-white font-mono text-xs font-bold">
               1
             </span>
             <p className="text-sm font-semibold text-ink">Eksplorasi Katalog</p>
@@ -257,7 +257,7 @@ export default async function InformasiPage() {
           </div>
 
           <div className="rounded-card border border-rule bg-surface p-4 space-y-2">
-            <span className="inline-flex size-6 items-center justify-center rounded-full bg-primary text-white font-mono text-xs font-bold">
+            <span className="inline-flex size-6 items-center justify-center rounded-btn bg-primary text-white font-mono text-xs font-bold">
               2
             </span>
             <p className="text-sm font-semibold text-ink">Ambil di Rak Buku</p>
@@ -267,7 +267,7 @@ export default async function InformasiPage() {
           </div>
 
           <div className="rounded-card border border-rule bg-surface p-4 space-y-2">
-            <span className="inline-flex size-6 items-center justify-center rounded-full bg-primary text-white font-mono text-xs font-bold">
+            <span className="inline-flex size-6 items-center justify-center rounded-btn bg-primary text-white font-mono text-xs font-bold">
               3
             </span>
             <p className="text-sm font-semibold text-ink">Pindai QR Petugas</p>
@@ -277,7 +277,7 @@ export default async function InformasiPage() {
           </div>
 
           <div className="rounded-card border border-rule bg-surface p-4 space-y-2">
-            <span className="inline-flex size-6 items-center justify-center rounded-full bg-primary text-white font-mono text-xs font-bold">
+            <span className="inline-flex size-6 items-center justify-center rounded-btn bg-primary text-white font-mono text-xs font-bold">
               4
             </span>
             <p className="text-sm font-semibold text-ink">Kembalikan Tepat Waktu</p>
@@ -289,7 +289,7 @@ export default async function InformasiPage() {
       </section>
 
       {/* Bagian FAQ (Tanya Jawab Terstruktur) */}
-      <section className="rounded-panel border border-rule bg-white p-6 sm:p-8 space-y-6 shadow-xs" aria-labelledby="faq-section-heading">
+      <section className="rounded-panel border border-rule bg-white p-6 sm:p-8 space-y-6" aria-labelledby="faq-section-heading">
         <div className="border-b border-rule pb-4">
           <div className="flex items-center gap-2 text-label font-semibold text-primary font-mono tracking-wider uppercase mb-1">
             <HelpCircle className="size-4 shrink-0" />
@@ -307,7 +307,7 @@ export default async function InformasiPage() {
           {faqItems.map((item, idx) => (
             <details
               key={idx}
-              className="group rounded-card border border-rule bg-surface p-4 sm:p-5 [&_summary::-webkit-details-marker]:hidden transition-all duration-150"
+              className="group rounded-card border border-rule bg-surface p-4 sm:p-5 [&_summary::-webkit-details-marker]:hidden transition-colors duration-150"
               open={idx === 0}
             >
               <summary className="flex cursor-pointer items-center justify-between font-medium text-ink text-sm sm:text-base">

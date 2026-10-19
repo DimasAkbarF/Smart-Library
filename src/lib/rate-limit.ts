@@ -196,18 +196,3 @@ export async function resetRateLimit(key: string): Promise<void> {
     }
   }
 }
-
-/**
- * Menghapus seluruh status lockout (reset darurat).
- */
-export async function clearAllRateLimits(): Promise<void> {
-  memoryStore.clear();
-  if (supabaseConfigured) {
-    try {
-      const svc = serviceClient();
-      await svc.from("auth_rate_limits").delete().neq("key", "__never_match__");
-    } catch {
-      /* abaikan */
-    }
-  }
-}

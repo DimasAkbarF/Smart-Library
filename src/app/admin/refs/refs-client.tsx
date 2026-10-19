@@ -34,7 +34,7 @@ export function CategoryPanel({ categories }: { categories: Category[] }) {
   const confirm = useConfirm();
 
   return (
-    <section className="rounded-card border border-rule bg-card p-5 shadow-card">
+    <section className="rounded-card border border-rule bg-card p-5">
       <h2 className="font-bold">Kategori</h2>
       <form
         action={(fd) => run(() => createCategory(String(fd.get("name") ?? "")))}
@@ -88,7 +88,7 @@ export function ClassPanel({ classes }: { classes: ClassRow[] }) {
   const confirm = useConfirm();
 
   return (
-    <section className="rounded-card border border-rule bg-card p-5 shadow-card">
+    <section className="rounded-card border border-rule bg-card p-5">
       <h2 className="font-bold">Kelas</h2>
       <form
         action={(fd) => run(() => createClass(String(fd.get("name") ?? "")))}

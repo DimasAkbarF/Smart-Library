@@ -85,7 +85,7 @@ export default async function StudentCardsPrintPage({
               className={cn(
                 "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
                 !classId
-                  ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
+                  ? "border-primary bg-primary-soft text-primary font-bold"
                   : "border-rule text-ink-muted hover:border-rule-strong hover:bg-card",
               )}
             >
@@ -101,7 +101,7 @@ export default async function StudentCardsPrintPage({
                   className={cn(
                     "shrink-0 inline-flex min-h-[36px] items-center rounded-chip border px-3 py-1.5 text-label font-semibold transition-colors",
                     isActive
-                      ? "border-primary bg-primary-soft text-primary shadow-xs font-bold"
+                      ? "border-primary bg-primary-soft text-primary font-bold"
                       : "border-rule text-ink-muted hover:border-rule-strong hover:bg-card",
                   )}
                 >
@@ -145,7 +145,7 @@ export default async function StudentCardsPrintPage({
               {page > 1 && (
                 <Link
                   href={pageHref(page - 1)}
-                  className="rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface"
+                  className="rounded-md border border-outline bg-surface px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface-sunken-ed"
                 >
                   ← Sebelumnya
                 </Link>
@@ -156,7 +156,7 @@ export default async function StudentCardsPrintPage({
               {page < data.pageCount && (
                 <Link
                   href={pageHref(page + 1)}
-                  className="rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface"
+                  className="rounded-md border border-outline bg-surface px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface-sunken-ed"
                 >
                   Berikutnya →
                 </Link>

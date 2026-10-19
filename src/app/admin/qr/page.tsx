@@ -97,7 +97,7 @@ export default async function QrPage({
             {page > 1 && (
               <Link
                 href={pageHref(page - 1)}
-                className="rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface"
+                className="rounded-md border border-outline bg-surface px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface-sunken-ed"
               >
                 ← Sebelumnya
               </Link>
@@ -108,7 +108,7 @@ export default async function QrPage({
             {page < pageCount && (
               <Link
                 href={pageHref(page + 1)}
-                className="rounded-md border border-outline bg-background px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface"
+                className="rounded-md border border-outline bg-surface px-3 py-1.5 text-label font-semibold text-ink hover:bg-surface-sunken-ed"
               >
                 Berikutnya →
               </Link>

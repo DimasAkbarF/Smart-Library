@@ -273,7 +273,7 @@ export function ImportClient() {
           ============================================================ */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-outline pb-5">
         <div>
-          <span className="text-label font-semibold text-sky-deep font-mono tracking-wider uppercase">
+          <span className="text-label font-semibold text-primary font-mono tracking-wider uppercase">
             Administrasi Data · SMP Negeri 17 Tangerang Selatan
           </span>
           <h1 className="mt-1 font-display text-display-sm sm:text-display-lg font-bold tracking-tight text-ink">
@@ -289,7 +289,7 @@ export function ImportClient() {
           variant="secondary"
           size="sm"
           onClick={downloadTemplate}
-          className="gap-2 shrink-0 shadow-xs"
+          className="gap-2 shrink-0"
         >
           <Download className="size-4" />
           <span>Unduh Template {tab === "buku" ? "Buku" : "Siswa"} (.xlsx)</span>
@@ -354,11 +354,11 @@ export function ImportClient() {
             className={cn(
               "flex items-center gap-2 rounded-md px-4 py-2 text-label font-semibold transition-colors cursor-pointer",
               tab === "buku"
-                ? "bg-background text-ink shadow-xs font-bold"
+                ? "bg-background text-ink font-bold"
                 : "text-ink-muted hover:text-ink"
             )}
           >
-            <BookOpen className="size-4 text-sky-deep" />
+            <BookOpen className="size-4 text-primary" />
             <span>Koleksi Buku</span>
           </button>
           <button
@@ -370,11 +370,11 @@ export function ImportClient() {
             className={cn(
               "flex items-center gap-2 rounded-md px-4 py-2 text-label font-semibold transition-colors cursor-pointer",
               tab === "siswa"
-                ? "bg-background text-ink shadow-xs font-bold"
+                ? "bg-background text-ink font-bold"
                 : "text-ink-muted hover:text-ink"
             )}
           >
-            <Users className="size-4 text-sky-deep" />
+            <Users className="size-4 text-primary" />
             <span>Anggota Siswa</span>
           </button>
         </div>
@@ -448,11 +448,11 @@ export function ImportClient() {
           className={cn(
             "flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 sm:p-12 text-center transition-colors cursor-pointer",
             isDragging
-              ? "border-sky bg-sky-soft/40"
-              : "border-outline-strong/70 bg-surface/50 hover:border-sky/70 hover:bg-surface"
+              ? "border-primary bg-primary-soft/40"
+              : "border-outline-strong/70 bg-surface/50 hover:border-primary/70 hover:bg-surface"
           )}
         >
-          <span className="flex size-14 items-center justify-center rounded-xl bg-sky-soft text-sky-deep shadow-2xs">
+          <span className="flex size-14 items-center justify-center rounded-xl bg-primary-soft text-primary">
             <Upload className="size-7" aria-hidden />
           </span>
           <h2 className="mt-4 font-display text-body sm:text-title font-bold text-ink">
@@ -472,7 +472,7 @@ export function ImportClient() {
             }}
             className="mt-4 gap-2"
           >
-            <FileSpreadsheet className="size-4 text-sky-deep" />
+            <FileSpreadsheet className="size-4 text-primary" />
             <span>Pilih File dari Komputer</span>
           </Button>
         </div>
@@ -484,9 +484,9 @@ export function ImportClient() {
       {file && data && !report && (
         <div className="space-y-6">
           {/* File Summary Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-outline bg-background p-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-outline bg-surface p-4">
             <div className="flex items-center gap-3 min-w-0">
-              <span className="flex size-11 items-center justify-center rounded-lg bg-sky-soft text-sky-deep shrink-0">
+              <span className="flex size-11 items-center justify-center rounded-lg bg-primary-soft text-primary shrink-0">
                 <FileSpreadsheet className="size-6" />
               </span>
               <div className="min-w-0">
@@ -512,14 +512,14 @@ export function ImportClient() {
 
           {/* Validation Alert */}
           {errCount === 0 ? (
-            <div className="flex items-center gap-3 rounded-lg border border-leaf/30 bg-leaf-soft/50 p-4 text-label font-semibold text-leaf-deep">
+            <div className="flex items-center gap-3 rounded-lg border border-success-line/30 bg-success-bg/50 p-4 text-label font-semibold text-success">
               <CheckCircle2 className="size-5 shrink-0" />
               <span>Seluruh {validCount} baris data berhasil divalidasi dan siap diimpor ke sistem.</span>
             </div>
           ) : (
-            <div className="rounded-lg border border-sun-deep/30 bg-sun-soft/50 p-4 text-label">
+            <div className="rounded-lg border border-warning-line/30 bg-warning-bg/50 p-4 text-label">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5 font-bold text-sun-deep text-body">
+                <div className="flex items-center gap-2.5 font-bold text-warning text-body">
                   <AlertTriangle className="size-5 shrink-0" />
                   <span>
                     {validCount} baris valid · {errCount} baris bermasalah (akan dilewati)
@@ -528,7 +528,7 @@ export function ImportClient() {
                 <button
                   type="button"
                   onClick={() => setShowErrorDetails(!showErrorDetails)}
-                  className="flex items-center gap-1 font-semibold text-sun-deep hover:underline cursor-pointer self-start sm:self-auto"
+                  className="flex items-center gap-1 font-semibold text-warning hover:underline cursor-pointer self-start sm:self-auto"
                 >
                   <span>{showErrorDetails ? "Sembunyikan Masalah" : "Lihat Masalah"}</span>
                   {showErrorDetails ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
@@ -536,7 +536,7 @@ export function ImportClient() {
               </div>
 
               {showErrorDetails && (
-                <ul className="mt-3 max-h-48 overflow-y-auto divide-y divide-sun-deep/20 border-t border-sun-deep/20 pt-2 text-ink">
+                <ul className="mt-3 max-h-48 overflow-y-auto divide-y divide-warning-line/20 border-t border-warning-line/20 pt-2 text-ink">
                   {data.errors.slice(0, 30).map((err, i) => (
                     <li key={i} className="py-1 text-label flex items-center justify-between gap-2">
                       <span className="font-mono font-semibold text-danger">Baris {err.row}</span>
@@ -552,14 +552,14 @@ export function ImportClient() {
           )}
 
           {/* Column Mapping Summary */}
-          <div className="rounded-xl border border-outline bg-background p-4 sm:p-5 shadow-xs">
+          <div className="rounded-xl border border-outline bg-surface p-4 sm:p-5">
             <h3 className="font-display text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono">
               Pemetaan Kolom Sistem
             </h3>
             <div className="mt-3 grid grid-cols-2 gap-2 text-label sm:grid-cols-4">
               {headers.map((h) => (
                 <div key={h} className="flex items-center gap-1.5 rounded-md border border-outline/70 bg-surface px-2.5 py-1.5">
-                  <Check className="size-3.5 text-leaf-deep shrink-0" />
+                  <Check className="size-3.5 text-success shrink-0" />
                   <span className="truncate font-mono font-semibold text-ink" title={fieldLabels[h] || h}>
                     {h}
                   </span>
@@ -569,7 +569,7 @@ export function ImportClient() {
           </div>
 
           {/* Data Preview Table (5-10 rows) */}
-          <div className="rounded-xl border border-outline bg-background overflow-hidden shadow-xs">
+          <div className="rounded-xl border border-outline bg-surface overflow-hidden">
             <div className="flex items-center justify-between border-b border-outline px-4 py-3 bg-surface-sunken">
               <h3 className="font-display text-meta font-bold uppercase tracking-wider text-ink-subtle font-mono">
                 Pratinjau Data ({Math.min(10, data.rows.length)} dari {validCount} Baris Valid)
@@ -609,7 +609,7 @@ export function ImportClient() {
               size="lg"
               disabled={busy || validCount === 0}
               onClick={onConfirm}
-              className="w-full sm:w-auto gap-2 shadow-xs"
+              className="w-full sm:w-auto gap-2"
             >
               {busy ? (
                 <span>Memproses Impor Data…</span>
@@ -636,9 +636,9 @@ export function ImportClient() {
           Shown when server action returns report
           ============================================================ */}
       {report && (
-        <section role="status" className="rounded-xl border border-outline bg-background p-6 shadow-xs space-y-4">
+        <section role="status" className="rounded-xl border border-outline bg-surface p-6 space-y-4">
           <div className="flex items-start gap-3">
-            <span className="flex size-12 items-center justify-center rounded-xl bg-leaf-soft text-leaf-deep shrink-0">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-success-bg text-success shrink-0">
               <CheckCircle2 className="size-7" />
             </span>
             <div>

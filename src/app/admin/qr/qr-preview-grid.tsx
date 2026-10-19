@@ -6,6 +6,7 @@ import { DownloadQrButton } from "@/components/library/download-qr-button";
 import { CopyStatusChip } from "@/components/ui/status-chip";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
+import { escapeHtml } from "@/lib/utils";
 import { Printer, Eye } from "lucide-react";
 import type { BookCopy } from "@/lib/types";
 
@@ -29,7 +30,7 @@ export function QrPreviewGrid({
         <html>
           <head>
             <meta charset="utf-8">
-            <title>Label QR - ${selectedCopy.inventory_code}</title>
+            <title>Label QR - ${escapeHtml(selectedCopy.inventory_code)}</title>
             <style>
               body {
                 font-family: system-ui, -apple-system, sans-serif;
@@ -77,8 +78,8 @@ export function QrPreviewGrid({
               <h1 class="title">SMART LIBRARY</h1>
               <p class="school">SMP Negeri 17 Tangerang Selatan</p>
               <img src="${qrDataUrl}" width="140" height="140" alt="QR" />
-              <p class="code">${selectedCopy.inventory_code}</p>
-              <p class="book-title">${selectedCopy.book_title}</p>
+              <p class="code">${escapeHtml(selectedCopy.inventory_code)}</p>
+              <p class="book-title">${escapeHtml(selectedCopy.book_title)}</p>
             </div>
             <script>
               window.onload = function() {
@@ -102,11 +103,11 @@ export function QrPreviewGrid({
           <div
             key={c.id}
             onClick={() => setSelectedCopy(c)}
-            className="qr-label print:break-inside-avoid group relative flex flex-col items-center rounded-card border border-rule bg-card p-4 text-center shadow-xs transition-all duration-200 hover:border-primary hover:shadow-card cursor-pointer"
+            className="qr-label print:break-inside-avoid group relative flex flex-col items-center rounded-card border border-rule bg-card p-4 text-center transition-colors duration-200 hover:border-primary cursor-pointer"
           >
             {/* Quick hover action pill */}
             <div className="no-print absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="flex size-7 items-center justify-center rounded-btn bg-primary text-white shadow-xs">
+              <span className="flex size-7 items-center justify-center rounded-btn bg-primary text-white">
                 <Eye className="size-3.5" />
               </span>
             </div>
@@ -155,7 +156,7 @@ export function QrPreviewGrid({
         >
           <div className="flex flex-col items-center text-center space-y-4">
             {/* Official Label Card Frame */}
-            <div className="w-full max-w-[280px] rounded-card border-2 border-ink bg-white p-6 shadow-card text-ink">
+            <div className="w-full max-w-[280px] rounded-card border-2 border-ink bg-white p-6 text-ink">
               <div className="border-b border-ink/20 pb-2 mb-3">
                 <p className="font-display text-body font-bold tracking-wider">SMART LIBRARY</p>
                 <p className="text-meta text-ink-muted">SMP Negeri 17 Tangerang Selatan</p>
