@@ -29,3 +29,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 6. **Documentation & ADRs:**
    - For all architecture decisions, see `docs/decisions/`.
    - For public API and server action contracts, see `docs/api-specification.md`.
+7. **Release Path:** Production is served by Vercel, which builds from `main`. Pushing a feature branch does NOT deploy it — merge the branch into `main` and push `main` to release.

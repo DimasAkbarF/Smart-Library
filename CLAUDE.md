@@ -4,6 +4,7 @@
 Smart Library SMP Negeri 17 Tangerang Selatan is a high-reliability school library information system built with Next.js 16 App Router, React 19, Supabase SSR, and PostgreSQL.
 
 - **Production Domain:** `https://perpustakaansmp17tangsel.web.id`
+- **Release Path:** Vercel builds production from `main`. Pushing a feature branch does not deploy it — merge the branch into `main` and push `main` to release.
 - **Architecture Decisions:** Always consult [`docs/decisions/README.md`](docs/decisions/README.md) before altering system behavior.
 - **API & Interface Specs:** Refer to [`docs/api-specification.md`](docs/api-specification.md).
 
