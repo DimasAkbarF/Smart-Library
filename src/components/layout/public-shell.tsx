@@ -80,6 +80,24 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       <div className="no-print print:hidden border-t border-rule bg-white py-6 px-4">
         <div className="mx-auto max-w-6xl">
           <SchoolFooter />
+          {/* Tautan internal site-wide: memberi jalur crawl dari SETIAP halaman
+              (termasuk 207 halaman buku) ke katalog & halaman informasi. */}
+          <nav
+            aria-label="Tautan footer"
+            className="mx-auto mt-4 flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs"
+          >
+            <Link href="/books" className="text-ink-muted hover:text-primary hover:underline">
+              Katalog Buku
+            </Link>
+            <span aria-hidden className="text-rule-strong">•</span>
+            <Link href="/informasi" className="text-ink-muted hover:text-primary hover:underline">
+              Profil &amp; FAQ Perpustakaan
+            </Link>
+            <span aria-hidden className="text-rule-strong">•</span>
+            <a href="/sitemap.xml" className="text-ink-muted hover:text-primary hover:underline">
+              Peta Situs
+            </a>
+          </nav>
         </div>
       </div>
     </div>

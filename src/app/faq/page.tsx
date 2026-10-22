@@ -1,5 +1,6 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export default function FaqRedirectPage() {
-  redirect("/informasi");
+  // 308 permanen: /faq tidak pernah menjadi halaman mandiri, isinya ada di /informasi.
+  permanentRedirect("/informasi");
 }

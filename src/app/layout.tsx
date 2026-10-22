@@ -39,9 +39,11 @@ export const metadata: Metadata = {
   description:
     "Smart Library SMPN 17 Tangerang Selatan (Perpus SMP 17 Tangsel) — Sistem perpustakaan digital sekolah berbasis QR: katalog koleksi buku, peminjaman, pengembalian, dan informasi literasi siswa.",
   applicationName: "Smart Library SMPN 17 Tangsel",
-  alternates: {
-    canonical: "/",
-  },
+  // PENTING: `alternates.canonical` & `robots` TIDAK boleh didefinisikan di root layout.
+  // Next.js mewarisi metadata layout teratas ke SEMUA route, sehingga canonical "/"
+  // pernah menyebabkan setiap halaman (termasuk /books?page=N) menunjuk ke homepage
+  // dan Google mengonsolidasikan 195 halaman buku menjadi satu URL katalog.
+  // Setiap route publik kini mendeklarasikan metadata sendiri (lihat docs/seo-indexing.md).
   keywords: [
     "smp negeri 17 tangerang selatan",
     "smpn 17 tangerang selatan",
@@ -85,7 +87,6 @@ export const metadata: Metadata = {
   creator: "SMP Negeri 17 Tangerang Selatan",
   publisher: "SMP Negeri 17 Tangerang Selatan",
   category: "education",
-  robots: { index: true, follow: true },
   verification: {
     google: "moQUHIkJGba0sgC0I_eMpolduulMFTkFLafDnO5YSOI",
   },

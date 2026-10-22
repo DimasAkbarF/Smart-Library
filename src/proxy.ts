@@ -3,8 +3,6 @@ import { updateSession } from "@/lib/supabase/proxy";
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-
-  // 1. HTTP to HTTPS redirect di environment produksi
   const proto = request.headers.get("x-forwarded-proto");
   const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
   const isLocalhost =
@@ -13,6 +11,19 @@ export async function proxy(request: NextRequest) {
     hostHeader.includes("[::1]") ||
     hostHeader.includes("0.0.0.0");
 
+  // 1. Host kanonik: www -> non-www (301) agar hanya satu versi domain terindeks.
+  if (
+    process.env.NODE_ENV === "production" &&
+    !isLocalhost &&
+    hostHeader.toLowerCase().startsWith("www.")
+  ) {
+    const apex = new URL(request.nextUrl.toString());
+    apex.host = apex.host.replace(/^www\./i, "");
+    apex.protocol = "https:";
+    return NextResponse.redirect(apex, 301);
+  }
+
+  // 2. HTTP to HTTPS redirect di environment produksi
   if (
     process.env.NODE_ENV === "production" &&
     !isLocalhost &&
@@ -24,7 +35,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(httpsUrl, 301);
   }
 
-  // 2. Redirect Rute Lama & Rute Siswa (301 Permanent)
+  // 3. Redirect Rute Lama & Rute Siswa (301 Permanent)
   if (pathname === "/admin/login") {
     return NextResponse.redirect(new URL("/login", request.url), 301);
   }
@@ -42,7 +53,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url), 301);
   }
 
-  // 3. Proteksi CSRF: Validasi Header Origin vs Host untuk metode mutasi
+  // 4. Proteksi CSRF: Validasi Header Origin vs Host untuk metode mutasi
   const method = request.method;
   if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
     const origin = request.headers.get("origin");
@@ -89,7 +100,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 4. Update dan validasi sesi Supabase serta proteksi rute admin
+  // 5. Update dan validasi sesi Supabase serta proteksi rute admin
   return updateSession(request);
 }
 

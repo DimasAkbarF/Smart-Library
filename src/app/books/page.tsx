@@ -10,30 +10,6 @@ import { cn } from "@/lib/utils";
 
 import { ArrowRight, Check } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Katalog Koleksi Buku Perpustakaan",
-  description:
-    "Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel). Katalog buku resmi Kurikulum Merdeka, sirkulasi peminjaman QR Code, dan informasi literasi siswa.",
-  keywords: [
-    "perpustakaan smpn 17 tangsel",
-    "perpustakaan smp 17 tangsel",
-    "perpus smp 17 tangsel",
-    "smart library smpn 17 tangsel",
-    "smp negeri 17 tangerang selatan",
-    "smpn 17 tangerang selatan",
-    "katalog buku smpn 17 tangsel",
-    "katalog perpustakaan smp 17 tangsel",
-    "npsn 20613593",
-    "jam buka perpustakaan smp 17 tangsel",
-    "alamat perpustakaan smpn 17 tangsel",
-    "peminjaman buku smp 17 tangsel",
-    "pamulang permai tangsel",
-  ],
-  alternates: {
-    canonical: "/books",
-  },
-};
-
 type SP = { q?: string; cat?: string; avail?: string; page?: string };
 
 function href(sp: SP, patch: Partial<SP>): string {
@@ -45,6 +21,57 @@ function href(sp: SP, patch: Partial<SP>): string {
   if (merged.page) next.set("page", merged.page);
   const s = next.toString();
   return s ? `/books?${s}` : "/books";
+}
+
+/**
+ * Canonical per-halaman (App Router).
+ *
+ * Aturan:
+ * - Halaman 1 tanpa filter  -> canonical "/books"
+ * - Halaman N (N>1) tanpa filter -> canonical "/books?page=N"  (self-referencing)
+ * - Filter/pencarian (q/cat/avail) -> canonical "/books" (konsolidasi tampilan)
+ * - Filter/pencarian -> noindex (tampilan, bukan halaman indeks yang layak)
+ *
+ * Canonical statis "/books" untuk SEMUA halaman paginasi adalah penyebab 195 URL
+ * berstatus "Discovered - currently not indexed": Google mengonsolidasikan
+ * /books?page=2..18 ke /books, berhenti menjelajah, dan tidak pernah merayapi
+ * 195 halaman buku di halaman 2+. Lihat docs/seo-indexing.md.
+ */
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SP>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const page = Math.max(1, Number(sp.page) || 1);
+  const hasFilter = Boolean(sp.q || sp.cat || sp.avail);
+  const canonical = !hasFilter && page > 1 ? `/books?page=${page}` : "/books";
+
+  return {
+    title:
+      page > 1 && !hasFilter
+        ? `Katalog Buku Perpustakaan — Halaman ${page}`
+        : "Katalog Koleksi Buku Perpustakaan",
+    description:
+      "Smart Library SMP Negeri 17 Tangerang Selatan (Perpus SMP 17 Tangsel). Katalog buku resmi Kurikulum Merdeka, sirkulasi peminjaman QR Code, dan informasi literasi siswa.",
+    keywords: [
+      "perpustakaan smpn 17 tangsel",
+      "perpustakaan smp 17 tangsel",
+      "perpus smp 17 tangsel",
+      "smart library smpn 17 tangsel",
+      "smp negeri 17 tangerang selatan",
+      "smpn 17 tangerang selatan",
+      "katalog buku smpn 17 tangsel",
+      "katalog perpustakaan smp 17 tangsel",
+      "npsn 20613593",
+      "jam buka perpustakaan smp 17 tangsel",
+      "alamat perpustakaan smpn 17 tangsel",
+      "peminjaman buku smp 17 tangsel",
+      "pamulang permai tangsel",
+    ],
+    alternates: { canonical },
+    robots: hasFilter ? { index: false, follow: true } : { index: true, follow: true },
+  };
 }
 
 export default async function PublicBooksPage({

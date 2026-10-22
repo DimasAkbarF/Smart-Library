@@ -66,6 +66,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   productionBrowserSourceMaps: false,
+  // Konsistensi URL global:
+  // - trailing slash TIDAK dipakai ("/books", bukan "/books/") -> Next.js otomatis
+  //   308 dari "/books/" ke "/books", sehingga tidak ada URL kembar.
+  // - http -> https dan www -> non-www ditangani di src/proxy.ts (301).
+  trailingSlash: false,
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400,

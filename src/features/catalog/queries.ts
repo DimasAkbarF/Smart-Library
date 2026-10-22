@@ -8,6 +8,15 @@ import { sanitizeSearchTerm } from "@/lib/utils";
 
 const PAGE_SIZE = 12;
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Abaikan filter yang bukan UUID agar query tidak melempar error 500 (URL rusak/berbots). */
+function sanitizeCategoryId(raw?: string): string {
+  const value = (raw ?? "").trim();
+  return UUID_RE.test(value) ? value : "";
+}
+
+
 export interface CatalogResult {
   books: Book[];
   total: number;
@@ -90,7 +99,7 @@ export async function searchBooks(opts: {
   page?: number;
 }): Promise<CatalogResult> {
   const q = opts.q ? sanitizeSearchTerm(opts.q) : "";
-  const categoryId = opts.categoryId || "";
+  const categoryId = sanitizeCategoryId(opts.categoryId);
   const availableOnly = Boolean(opts.availableOnly);
   const page = Math.max(1, opts.page ?? 1);
 
@@ -132,6 +141,69 @@ const getCachedBookDetail = unstable_cache(
 
 export async function getBookDetail(id: string): Promise<Book | null> {
   return getCachedBookDetail(id);
+}
+
+/**
+ * Buku terkait (kategori yang sama) untuk internal linking.
+ * Setiap halaman buku detail diberi 4-6 tautan keluar ke buku lain sehingga
+ * Googlebot menemukan koleksi lewat tautan HTML, bukan hanya lewat sitemap.
+ */
+const getCachedRelatedBooks = unstable_cache(
+  async (categoryId: string, excludeId: string, limit: number): Promise<Book[]> => {
+    const svc = serviceClient();
+    let query = svc
+      .from("books")
+      .select("id, isbn, title, author, publisher, publication_year, category_id, cover_url, categories(name)");
+
+    query = categoryId
+      ? query.eq("category_id", categoryId).neq("id", excludeId)
+      : query.neq("id", excludeId);
+
+    const { data } = await query.order("title").limit(limit);
+    const rows = data ?? [];
+    if (rows.length === 0) return [];
+
+    const ids = rows.map((b) => b.id);
+    const { data: copies } = await svc
+      .from("book_copies")
+      .select("book_id, status")
+      .in("book_id", ids);
+
+    const byBook = new Map<string, { total: number; avail: number }>();
+    for (const c of copies ?? []) {
+      const cur = byBook.get(c.book_id) ?? { total: 0, avail: 0 };
+      cur.total += 1;
+      if (c.status === "AVAILABLE") cur.avail += 1;
+      byBook.set(c.book_id, cur);
+    }
+
+    return rows.map((b) => {
+      const stat = byBook.get(b.id) ?? { total: 0, avail: 0 };
+      return {
+        id: b.id,
+        isbn: b.isbn,
+        title: b.title,
+        author: b.author,
+        publisher: b.publisher,
+        publication_year: b.publication_year,
+        category_id: b.category_id,
+        category_name: (b.categories as unknown as { name: string } | null)?.name ?? null,
+        cover_url: b.cover_url,
+        total_copies: stat.total,
+        available_copies: stat.avail,
+      };
+    });
+  },
+  ["book-related-cache"],
+  { revalidate: 3600, tags: ["catalog"] },
+);
+
+export async function getRelatedBooks(
+  categoryId: string | null,
+  excludeId: string,
+  limit = 6,
+): Promise<Book[]> {
+  return getCachedRelatedBooks(categoryId ?? "", excludeId, limit);
 }
 
 const getCachedCategories = unstable_cache(

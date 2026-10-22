@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, Calendar, CheckCircle2, Clock, ShieldCheck, Tag } from "lucide-react";
-import { getBookDetail } from "@/features/catalog/queries";
+import { getBookDetail, getRelatedBooks } from "@/features/catalog/queries";
 import { getPolicy } from "@/features/loans/actions";
 import { CopyStatusChip } from "@/components/ui/status-chip";
 import { Button } from "@/components/ui/button";
+import { BookCard } from "@/components/library/book-card";
 
 export async function generateMetadata({
   params,
@@ -32,6 +33,7 @@ export async function generateMetadata({
     alternates: {
       canonical: `/books/${id}`,
     },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -43,6 +45,8 @@ export default async function PublicBookDetail({
   const { id } = await params;
   const [book, policy] = await Promise.all([getBookDetail(id), getPolicy()]);
   if (!book) notFound();
+  const related = await getRelatedBooks(book.category_id, book.id, 6);
+  const SITE = "https://perpustakaansmp17tangsel.web.id";
 
   const bookJsonLd = {
     "@context": "https://schema.org",
@@ -80,6 +84,22 @@ export default async function PublicBookDetail({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd).replace(/</g, "\\u003c") }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Katalog Buku", item: `${SITE}/books` },
+              ...(book.category_name
+                ? [{ "@type": "ListItem", position: 2, name: book.category_name }]
+                : []),
+              { "@type": "ListItem", position: book.category_name ? 3 : 2, name: book.title },
+            ],
+          }).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* Top Nav */}
       <div>
         <Link href="/books" className="inline-flex w-fit mb-3">
@@ -91,6 +111,31 @@ export default async function PublicBookDetail({
           <span className="size-1.5 rounded-chip bg-primary" />
           <span>Koleksi Buku Perpustakaan · SMP Negeri 17 Tangerang Selatan</span>
         </div>
+        {/* Breadcrumb yang dapat diklik (jalur crawl hierarkis ke katalog) */}
+        <nav aria-label="Remah roti" className="text-xs text-ink-muted">
+          <ol className="flex flex-wrap items-center gap-1">
+            <li>
+              <Link href="/books" className="hover:text-primary hover:underline">
+                Katalog Buku
+              </Link>
+            </li>
+            {book.category_name && (
+              <>
+                <li aria-hidden>/</li>
+                <li>
+                  <Link
+                    href={`/books?cat=${book.category_id}`}
+                    className="hover:text-primary hover:underline"
+                  >
+                    {book.category_name}
+                  </Link>
+                </li>
+              </>
+            )}
+            <li aria-hidden>/</li>
+            <li className="text-ink font-medium">{book.title}</li>
+          </ol>
+        </nav>
       </div>
 
       {/* Availability Banner Callout */}
@@ -241,6 +286,29 @@ export default async function PublicBookDetail({
           </div>
         </div>
       </section>
+
+      {/* Buku terkait — jalur tautan internal keluar dari tiap halaman detail.
+          Tanpa ini, setiap halaman buku hanya punya 1 inbound link (dari daftar)
+          sehingga Google menilainya sebagai halaman-depth rendah. */}
+      {related.length > 0 && (
+        <section aria-labelledby="related-heading" className="space-y-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="related-heading" className="font-serif text-xl font-bold text-ink">
+              {book.category_name ? `Buku lain dalam kategori ${book.category_name}` : "Buku lainnya di koleksi"}
+            </h2>
+            <Link href="/books" className="text-xs font-semibold text-primary hover:underline">
+              Lihat semua katalog
+            </Link>
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((r) => (
+              <li key={r.id}>
+                <BookCard book={r} href={`/books/${r.id}`} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

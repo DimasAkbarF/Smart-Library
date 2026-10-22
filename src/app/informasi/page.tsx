@@ -38,6 +38,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/informasi",
   },
+  robots: { index: true, follow: true },
 };
 
 const faqItems = [
