@@ -401,8 +401,24 @@ di luar host situs.
 6. Pantau mingguan: targetkan 195 URL "Discovered" → "Crawled" → "Indexed" dalam 2–4
    minggu.
 7. **Pengayaan data (wajib, kalau tidak halaman tetap tipis):** isi `author`, `isbn`,
-   `publication_year`, `cover_url` lewat menu **Impor Data** (`/admin/import`) untuk
-   207 buku; 205 buku saat ini bertuliskan author generik "Koleksi Perpustakaan".
+   `publication_year`, `cover_url` untuk 207 buku. 205 buku saat ini bertuliskan
+   author generik "Koleksi Perpustakaan". Alur yang sudah disiapkan:
+
+   ```bash
+   npm run books:export                      # -> docs/template-koleksi-buku.csv (207 baris)
+   # buka di Excel/Sheets, isi kolom 'author' (+ opsional isbn/tahun/penerbit/sampul)
+   npm run books:apply -- --file docs/koleksi-buku.csv --dry   # lihat dulu apa yang berubah
+   npm run books:apply -- --file docs/koleksi-buku.csv         # terapkan
+   ```
+
+   Aturan skrip: pencocokan per judul (toleran tanda kutip & spasi), hanya kolom
+   terisi yang diperbarui, judul tidak pernah diubah, baris dengan jumlah kolom
+   tidak sesuai header dilewati (bukan ditulis dengan data bergeser), dan semua
+   perubahan dicatat di `audit_logs`.
+
+   > Catatan: menu **Impor Data** (`/admin/import`) **tidak** cocok untuk tujuan
+   > ini — impor mencocokkan `judul+penulis`, sehingga-changing author akan
+   > membuat **judul ganda** di katalog, bukan memperbarui.
 8. Opsional: buat route `/kategori/[slug]` agar kategori punya URL hub yang diindeks.
 
 ---

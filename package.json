@@ -21,7 +21,9 @@
     "lint": "eslint",
     "test": "node scripts/test-password-policy.mjs && node scripts/test-all-features.mjs",
     "seed": "node scripts/seed.mjs",
-    "test:password": "node scripts/test-password-policy.mjs"
+    "test:password": "node scripts/test-password-policy.mjs",
+    "books:export": "node scripts/export-book-metadata.mjs",
+    "books:apply": "node scripts/apply-book-metadata.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
