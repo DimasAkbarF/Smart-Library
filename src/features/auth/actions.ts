@@ -388,6 +388,10 @@ export async function unlockIdentifier(rawIdentifier: string): Promise<{ ok: boo
   await resetRateLimit(`admin_login:ip:${rawId}`);
   await resetRateLimit(`login:id:${rawId}`);
   await resetRateLimit(`login:ip:${rawId}`);
+  // Halaman ganti kata sandi memakai key rate limit sendiri (ADR-006) — tanpa ini,
+  // staf yang terkunci di form ganti sandi tidak punya cara membuka kuncinya.
+  await resetRateLimit(`change_password:id:${rawId}`);
+  await resetRateLimit(`change_password:ip:${rawId}`);
   console.info(`[AUTH] Rate limit reset manual untuk identifier/IP: ${rawId}`);
   return { ok: true, message: `Status lockout untuk '${rawId}' berhasil direset.` };
 }

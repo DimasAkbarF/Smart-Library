@@ -43,7 +43,8 @@ Smart Library SMP Negeri 17 Tangerang Selatan is a high-reliability school libra
 - **No Password Auto-Update on Login:** Never call `auth.admin.updateUserById` during login (it revokes active refresh tokens).
 - **Password Change Uses the Session Path:** `/change-password` must use `supabase.auth.updateUser({ password })` on the *user session* client, so active refresh tokens survive. `auth.admin.updateUserById({ password })` is only an emergency fallback.
 - **Password Change Re-Authenticates:** `/change-password` requires the current password (verified server-side via Supabase Auth) and has its own rate-limit keys (`change_password:id:*` / `change_password:ip:*`) so failed attempts never lock the login counters. Password values must never reach logs, audit metadata, URLs, or error messages.
-- **Password Policy:** `src/lib/password.ts` is the single source of truth — min 12 chars, min 3 of 4 character classes, no common/default passwords, and no reuse of username/NIS/email. `scripts/test-password-policy.mjs` guards it.
+- **Password Policy:** `src/lib/password.ts` is the single source of truth — min 12 chars, min 3 of 4 character classes, no common/default passwords, and no reuse of username/NIS/email. `scripts/test-password-policy.mjs` guards it. Never hardcode a different minimum in zod schemas, hints, or `minLength` attributes — always read `PASSWORD_POLICY`.
+- **Rate Limit Source of Truth:** `auth_rate_limits` (Supabase) is authoritative; the in-memory cache mirrors it. Deleting a row must actually unlock the key, and `unlockIdentifier` / `scripts/reset-lockout.mjs` must also clear `change_password:*` keys.
 
 ### Student Access & Digital Cards
 - **Tokenized Access:** Students do NOT have login accounts or passwords.

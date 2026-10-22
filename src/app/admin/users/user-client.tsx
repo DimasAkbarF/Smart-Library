@@ -10,6 +10,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { Button } from "@/components/ui/button";
 import { StatusChip } from "@/components/ui/status-chip";
 import { pesanRamah, kodeDariError } from "@/lib/errors";
+import { PASSWORD_POLICY } from "@/lib/password";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
@@ -190,13 +191,13 @@ function ResetPasswordForm({ user, onDone }: { user: Profile; onDone: (msg: stri
       </p>
       <Field
         label="Kata sandi baru"
-        hint="Minimal 8 karakter, bukan kata sandi umum, tidak boleh sama dengan username atau email."
+        hint={`Minimal ${PASSWORD_POLICY.minLength} karakter, minimal ${PASSWORD_POLICY.minClasses} jenis karakter (huruf besar, huruf kecil, angka, simbol), bukan kata sandi umum, tidak boleh sama dengan username atau email.`}
       >
         <Input
           name="new-password"
           type="password"
           required
-          minLength={8}
+          minLength={PASSWORD_POLICY.minLength}
           autoComplete="new-password"
           placeholder="Kata sandi baru"
         />
@@ -229,8 +230,18 @@ function UserForm({ onDone }: { onDone: () => void }) {
       <Field label="Email">
         <Input name="email" type="email" required placeholder="nama@sekolah.sch.id" />
       </Field>
-      <Field label="Kata sandi awal">
-        <Input name="password" type="password" required minLength={6} placeholder="Minimal 6 karakter" />
+      <Field
+        label="Kata sandi awal"
+        hint={`Minimal ${PASSWORD_POLICY.minLength} karakter, minimal ${PASSWORD_POLICY.minClasses} jenis karakter. Pengguna wajib menggantinya saat login.`}
+      >
+        <Input
+          name="password"
+          type="password"
+          required
+          minLength={PASSWORD_POLICY.minLength}
+          autoComplete="new-password"
+          placeholder={`Minimal ${PASSWORD_POLICY.minLength} karakter`}
+        />
       </Field>
       <Field label="Peran">
         <Select name="role" defaultValue="admin">

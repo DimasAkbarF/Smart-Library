@@ -89,3 +89,30 @@ Catatan: akun admin disimpan di Supabase Auth, sehingga **tidak ada hash lokal**
   0 error console. Error 400 yang muncul pada `/admin/transactions` berasal dari
   prefetch RSC ke `/api/export` (bukan React) dan sudah diperbaiki dengan
   `prefetch={false}`.
+
+## Addendum (22 Okt 2026, hasil audit "bug di server")
+
+Tiga celah ditemukan dan diperbaiki setelah implementasi awal:
+
+1. **Halaman admin masih menyebut aturan lama.** `src/features/admin/users.ts`
+   memakai zod `.min(8, "…minimal 8 karakter.")` dan `user-client.tsx` memakai
+   `minLength={6}`/8, sementara `validatePassword` sudah menolak < 12 karakter.
+   Akibatnya admin melihat galat yang membingungkan. Sekarang **semua** batas
+   minimum membaca `PASSWORD_POLICY` (sumber kebenaran tunggal), termasuk
+   zod, hint UI, dan atribut `minLength`.
+2. **Tidak ada cara membuka kunci `change_password:*`.** `unlockIdentifier` dan
+   `scripts/reset-lockout.mjs` hanya mengenal key `login:*`/`admin_login:*`,
+   sehingga staf yang terkunci di form ganti sandi tidak bisa dibuka kuncinya.
+   Keduanya kini reset `change_password:id:*` dan `change_password:ip:*` juga.
+3. **Counter rate limit di memori tidak mengikuti penghapusan baris database.**
+   `checkRateLimit` memakai `memoryStore` sebagai cache; menghapus baris
+   `auth_rate_limits` (lewat script pemulihan atau admin) **tidak** menghapus
+   counter di memori server yang sedang berjalan → akun tetap terkunci sampai
+   server restart. Sekarang: bila query DB sukses dan **tidak ada** baris,
+   entri memori ikut dibuang (database = sumber kebenaran). Bila query DB
+   **gagal** (jaringan mati), entri memori **dipertahankan** agar proteksi
+   brute-force tidak runtuh saat DB down.
+
+   Efek samping yang diinginkan: test suite tidak lagi meninggalkan akun admin
+   terkunci (terverifikasi: counter tetap `1` setelah 2× run berurutan,
+   sebelumnya `2 → 4 → 6 …` sampai terkunci).

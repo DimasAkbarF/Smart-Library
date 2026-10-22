@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { serviceClient } from "@/lib/supabase/service";
 import { assertRole, tulisAudit } from "@/lib/auth";
-import { validatePassword } from "@/lib/password";
+import { validatePassword, PASSWORD_POLICY } from "@/lib/password";
 import { generateOtpAuthUri, generateTotpSecret, verifyTotpToken } from "@/lib/totp";
 import type { Profile } from "@/lib/types";
 
@@ -26,7 +26,12 @@ const UserSchema = z.object({
     .regex(/^[a-z0-9._-]+$/, "Username hanya huruf kecil, angka, titik, strip."),
   full_name: z.string().trim().min(1, "Nama wajib diisi."),
   email: z.string().trim().email("Email tidak valid."),
-  password: z.string().min(8, "Kata sandi minimal 8 karakter."),
+  password: z
+    .string()
+    .min(
+      PASSWORD_POLICY.minLength,
+      `Kata sandi minimal ${PASSWORD_POLICY.minLength} karakter.`,
+    ),
   role: z.enum(["admin"]),
 });
 

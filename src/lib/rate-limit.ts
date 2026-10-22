@@ -60,13 +60,16 @@ export async function checkRateLimit(
   if (supabaseConfigured) {
     try {
       const svc = serviceClient();
-      const { data } = await svc
+      // maybeSingle(): data=null tanpa error bila baris memang tidak ada.
+      const { data, error } = await svc
         .from("auth_rate_limits")
         .select("count, first_failed_at, locked_until, backoff_level")
         .eq("key", key)
-        .single();
+        .maybeSingle();
 
-      if (data) {
+      if (error) {
+        // DB tidak bisa dibaca → JANGAN reset counter di memori (fallback normal).
+      } else if (data) {
         entry = {
           count: Number(data.count),
           firstFailedAt: Number(data.first_failed_at),
@@ -74,6 +77,13 @@ export async function checkRateLimit(
           backoffLevel: Number(data.backoff_level),
         };
         memoryStore.set(key, entry);
+      } else if (entry) {
+        // Baris di database sudah dihapus (mis. oleh `scripts/reset-lockout.mjs`
+        // atau admin yang membuka kunci akun). Database adalah sumber kebenaran,
+        // jadi counter di memori harus ikut dibuang — kalau tidak, akun tetap
+        // terkunci sampai server restart.
+        memoryStore.delete(key);
+        entry = undefined;
       }
     } catch {
       // Graceful fallback ke memoryStore jika tabel belum dimigrasi atau koneksi terputus

@@ -1,8 +1,33 @@
 import puppeteer from "puppeteer-core";
 import path from "node:path";
+import { readFileSync, existsSync } from "node:fs";
 
 const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
 const ARTIFACT_DIR = process.env.ARTIFACT_DIR || "/home/dimskuyyyy/.gemini/antigravity-cli/brain/8fdd00a7-b251-42df-97ad-0d7562576666";
+
+/**
+ * Bersihkan penghitung rate limit `change_password:*` setelah skenario gagal,
+ * supaya test suite tidak meninggalkan akun admin terkunci (server bug yang
+ * mudah lupa). Memakai service role; hanya untuk lingkungan uji.
+ */
+async function bersihkanRateLimitGantiSandi() {
+  try {
+    if (existsSync(".env.local")) {
+      for (const line of readFileSync(".env.local", "utf8").split("\n")) {
+        const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.+?)\s*$/);
+        if (m) process.env[m[1]] = m[2];
+      }
+    }
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) return;
+    const { createClient } = await import("@supabase/supabase-js");
+    const svc = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+    await svc.from("auth_rate_limits").delete().like("key", "change_password:%");
+  } catch {
+    // Abaikan: tidak boleh menggagalkan test.
+  }
+}
 
 async function runAllFeatureTests() {
   console.log(`\n======================================================`);
@@ -342,6 +367,10 @@ async function runAllFeatureTests() {
       wrongCurrentRejected ? "pesan error tampil" : "tidak ada penolakan sandi lama"
     );
 
+    // Pembersihan: percobaan gagal di atas menambah penghitung rate limit
+    // `change_password:*`. Test suite harus TIDAK meninggalkan akun terkunci.
+    await bersihkanRateLimitGantiSandi();
+
     // Skenario C: anti-leak — nilai kata sandi tidak boleh muncul di respons server
     // (Catatan: `value` pada elemen <input type=password> memang selalu ada di DOM
     //  browser; yang diuji di sini adalah kebocoran ke HTML/respons server.)
@@ -401,6 +430,71 @@ async function runAllFeatureTests() {
     // CATATAN: jalur sukses (ganti sandi berhasil) TIDAK diuji otomatis karena
     // akan mengubah kata sandi akun admin sungguhan di database. Verifikasi
     // manual: isi "sandi saat ini" yang benar + sandi baru sesuai kebijakan.
+
+    // 3.17 Kebijakan kata sandi pada pembuatan akun admin (/admin/users)
+    //      Password lemah harus DITOLAK server (tanpa membuat akun baru).
+    console.log("\n--- [3.17] KEBIJAKAN KATA SANDI DI /admin/users ---");
+    await gotoUrl(`${BASE_URL}/admin/users`);
+
+    const ujiUsername = `uji.policy.${Date.now().toString().slice(-6)}`;
+    const openCreate = await page.evaluate(() => {
+      const btn = [...document.querySelectorAll("button")].find((b) =>
+        /Tambah Pengguna/i.test(b.textContent || "")
+      );
+      if (btn) btn.click();
+      return !!btn;
+    });
+    await new Promise((r) => setTimeout(r, 800));
+    recordResult(
+      "Admin Users: dialog pembuatan akun terbuka",
+      "/admin/users",
+      openCreate,
+      openCreate ? "tombol 'Tambah Pengguna' diklik" : "tombol tidak ditemukan"
+    );
+
+    if (openCreate) {
+      const filled = await page.evaluate((username) => {
+        const set = (name, value) => {
+          const el = document.querySelector(`input[name="${name}"]`);
+          if (!el) return false;
+          const setter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            "value"
+          ).set;
+          setter.call(el, value);
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          return true;
+        };
+        return (
+          set("full_name", "Uji Kebijakan Sandi") &&
+          set("username", username) &&
+          set("email", `${username}@sekolah.local`) &&
+          set("password", "Lembah123") // 9 karakter, 2 jenis karakter
+        );
+      }, ujiUsername);
+
+      await new Promise((r) => setTimeout(r, 300));
+      await page.evaluate(() => {
+        const btn = [...document.querySelectorAll("button")].find(
+          (b) => /Buat akun/i.test(b.textContent || "") && b.type === "submit"
+        );
+        btn?.click();
+      });
+      await new Promise((r) => setTimeout(r, 3000));
+
+      const bodyText = await page.evaluate(() => document.body.innerText);
+      const rejected = /minimal 12 karakter|jenis karakter/i.test(bodyText);
+      const notCreated = !bodyText.includes(ujiUsername);
+      recordResult(
+        "Admin Users: password lemah ditolak server",
+        "/admin/users",
+        filled && rejected && notCreated,
+        rejected && notCreated
+          ? "server menolak password lemah, akun tidak dibuat"
+          : `rejected=${rejected} notCreated=${notCreated}`
+      );
+    }
+
 
     // ----------------------------------------------------
     // KATEGORI 4: UJI INTERAKTIF PENCARIAN & DATA

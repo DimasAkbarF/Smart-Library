@@ -98,6 +98,9 @@ async function main() {
     `admin_login:id:${target}`,
     `login:ip:${target}`,
     `admin_login:ip:${target}`,
+    // Halaman ganti kata sandi punya key rate limit sendiri (Blok 3, ADR-006).
+    `change_password:id:${target}`,
+    `change_password:ip:${target}`,
   ];
 
   const { error } = await supabase

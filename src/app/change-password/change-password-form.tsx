@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import { AlertCircle, Check, ShieldAlert, ShieldCheck, X } from "lucide-react";
 import { changePassword, type ChangePasswordState } from "@/features/auth/actions";
 import { cn } from "@/lib/utils";
+import { PASSWORD_POLICY } from "@/lib/password";
 
 const STRENGTH_BAR: Record<number, { label: string; color: string }> = {
   0: { label: "Lemah", color: "bg-danger" },
@@ -62,9 +63,10 @@ export function ChangePasswordForm() {
       <div className="rounded-[4px] border border-[#E8CF97] bg-[#FBF1DC] p-3 text-meta text-[#8A5300] flex items-start gap-2.5">
         <ShieldAlert className="size-4.5 shrink-0 mt-0.5 text-[#8A5300]" />
         <span>
-          Demi keamanan akun, Anda diwajibkan mengganti kata sandi bawaan/semporary. Minimal 12
-          karakter dengan minimal 3 jenis karakter (huruf besar, huruf kecil, angka, simbol), dan
-          tidak boleh sama dengan username/NIS/email.
+          Demi keamanan akun, Anda diwajibkan mengganti kata sandi bawaan/semporary. Minimal{" "}
+          {PASSWORD_POLICY.minLength} karakter dengan minimal {PASSWORD_POLICY.minClasses} jenis
+          karakter (huruf besar, huruf kecil, angka, simbol), dan tidak boleh sama dengan
+          username/NIS/email.
         </span>
       </div>
 
@@ -141,7 +143,7 @@ export function ChangePasswordForm() {
         )}
 
         <p id="new_password-help" className="text-[12px] text-ink-muted">
-          {fieldError("new_password") ?? "Minimal 12 karakter, minimal 3 jenis karakter."}
+          {fieldError("new_password") ?? `Minimal ${PASSWORD_POLICY.minLength} karakter, minimal ${PASSWORD_POLICY.minClasses} jenis karakter.`}
         </p>
       </div>
 
@@ -175,8 +177,8 @@ export function ChangePasswordForm() {
       {/* Daftar syarat */}
       <ul className="grid gap-1 rounded-[4px] border border-rule bg-surface-sunken-ed p-3 text-[12px]">
         {[
-          { ok: strength.length >= 12, label: "Minimal 12 karakter" },
-          { ok: strength.classes >= 3, label: "Minimal 3 jenis karakter (A-Z, a-z, 0-9, simbol)" },
+          { ok: strength.length >= PASSWORD_POLICY.minLength, label: `Minimal ${PASSWORD_POLICY.minLength} karakter` },
+          { ok: strength.classes >= PASSWORD_POLICY.minClasses, label: `Minimal ${PASSWORD_POLICY.minClasses} jenis karakter (A-Z, a-z, 0-9, simbol)` },
           { ok: newPassword.length > 0 && !["password", "admin123", "perpustakaan"].includes(newPassword.toLowerCase()), label: "Bukan kata sandi umum" },
         ].map((rule) => (
           <li key={rule.label} className="flex items-center gap-1.5">
