@@ -41,6 +41,9 @@ Smart Library SMP Negeri 17 Tangerang Selatan is a high-reliability school libra
 - **Allowed Roles:** Only `admin` can authenticate. The legacy `librarian` role was migrated to `admin` (Migration 004).
 - **No Turnstile / Cloudflare:** Cloudflare Turnstile has been completely removed. Do NOT re-introduce any Turnstile or CAPTCHA dependencies. Security is enforced server-side via dual-key rate limiting (per-username & per-IP) and anti-timing cryptographic delays (`dummyCryptoDelay`).
 - **No Password Auto-Update on Login:** Never call `auth.admin.updateUserById` during login (it revokes active refresh tokens).
+- **Password Change Uses the Session Path:** `/change-password` must use `supabase.auth.updateUser({ password })` on the *user session* client, so active refresh tokens survive. `auth.admin.updateUserById({ password })` is only an emergency fallback.
+- **Password Change Re-Authenticates:** `/change-password` requires the current password (verified server-side via Supabase Auth) and has its own rate-limit keys (`change_password:id:*` / `change_password:ip:*`) so failed attempts never lock the login counters. Password values must never reach logs, audit metadata, URLs, or error messages.
+- **Password Policy:** `src/lib/password.ts` is the single source of truth — min 12 chars, min 3 of 4 character classes, no common/default passwords, and no reuse of username/NIS/email. `scripts/test-password-policy.mjs` guards it.
 
 ### Student Access & Digital Cards
 - **Tokenized Access:** Students do NOT have login accounts or passwords.

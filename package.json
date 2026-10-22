@@ -19,8 +19,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node scripts/test-all-features.mjs",
-    "seed": "node scripts/seed.mjs"
+    "test": "node scripts/test-password-policy.mjs && node scripts/test-all-features.mjs",
+    "seed": "node scripts/seed.mjs",
+    "test:password": "node scripts/test-password-policy.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

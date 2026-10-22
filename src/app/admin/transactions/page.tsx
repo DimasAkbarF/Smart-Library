@@ -53,6 +53,7 @@ export default async function TransactionsPage({
         </div>
         <Link
           href={exportHref}
+          prefetch={false}
           className="inline-flex min-h-tap-min items-center justify-center rounded-md border border-outline bg-surface px-4 py-2 text-label font-semibold text-ink hover:bg-surface-sunken-ed hover:text-primary transition-colors w-full sm:w-auto"
         >
           Ekspor Seluruh CSV

@@ -278,6 +278,130 @@ async function runAllFeatureTests() {
       t.includes("Sandi") || t.includes("Password")
     );
 
+    // 3.16 Validasi form ganti kata sandi (Blok 5):
+    //      - 3 field wajib ada (sandi saat ini / baru / konfirmasi)
+    //      - konfirmasi tidak cocok DITOLAK (tanpa menyentuh akun)
+    //      - sandi saat ini salah DITOLAK (tanpa mengubah password)
+    //      - nilai kata sandi tidak bocor ke HTML/log
+    console.log("\n--- [3.16] VALIDASI FORM GANTI KATA SANDI ---");
+    const consoleErrors = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
+
+    await gotoUrl(`${BASE_URL}/change-password`);
+    const hasThreeFields =
+      !!(await page.$('input[name="current_password"]')) &&
+      !!(await page.$('input[name="new_password"]')) &&
+      !!(await page.$('input[name="confirm_password"]'));
+    recordResult(
+      "Form Ganti Sandi: 3 field wajib",
+      "/change-password",
+      hasThreeFields,
+      hasThreeFields ? "current_password + new_password + confirm_password ada" : "field wajib tidak lengkap"
+    );
+
+    const strengthVisible = await page.evaluate(() =>
+      document.body.innerText.includes("Minimal 12 karakter")
+    );
+    recordResult(
+      "Form Ganti Sandi: daftar syarat & indikator kekuatan",
+      "/change-password",
+      strengthVisible,
+      strengthVisible ? "syarat kebijakan tampil" : "syarat tidak tampil"
+    );
+
+    // Skenario A: konfirmasi tidak cocok
+    await page.type('input[name="current_password"]', "admin123");
+    await page.type('input[name="new_password"]', "PerpustakaanKuat17!");
+    await page.type('input[name="confirm_password"]', "PerpustakaanKuat18!");
+    await page.click('button[type="submit"]');
+    await new Promise((r) => setTimeout(r, 2500));
+    const mismatchText = await page.evaluate(() => document.body.innerText);
+    const mismatchRejected = /konfirmasi kata sandi baru tidak cocok/i.test(mismatchText);
+    recordResult(
+      "Form Ganti Sandi: konfirmasi tidak cocok ditolak",
+      "/change-password",
+      mismatchRejected,
+      mismatchRejected ? "pesan error tampil" : "tidak ada penolakan konfirmasi"
+    );
+
+    // Skenario B: kata sandi saat ini salah -> ditolak, password lama TIDAK berubah
+    await gotoUrl(`${BASE_URL}/change-password`);
+    await page.type('input[name="current_password"]', "PasswordSalahSekali123!");
+    await page.type('input[name="new_password"]', "PerpustakaanKuat17!");
+    await page.type('input[name="confirm_password"]', "PerpustakaanKuat17!");
+    await page.click('button[type="submit"]');
+    await new Promise((r) => setTimeout(r, 4000));
+    const wrongCurrentText = await page.evaluate(() => document.body.innerText);
+    const wrongCurrentRejected = /kata sandi saat ini salah/i.test(wrongCurrentText);
+    recordResult(
+      "Form Ganti Sandi: sandi saat ini salah ditolak",
+      "/change-password",
+      wrongCurrentRejected,
+      wrongCurrentRejected ? "pesan error tampil" : "tidak ada penolakan sandi lama"
+    );
+
+    // Skenario C: anti-leak — nilai kata sandi tidak boleh muncul di respons server
+    // (Catatan: `value` pada elemen <input type=password> memang selalu ada di DOM
+    //  browser; yang diuji di sini adalah kebocoran ke HTML/respons server.)
+    const actionBodies = [];
+    const respHandler = async (res) => {
+      if (!res.url().includes("/change-password")) return;
+      try {
+        const type = res.request().resourceType();
+        if (type === "document" || type === "fetch" || type === "xhr") {
+          actionBodies.push(await res.text());
+        }
+      } catch {
+        // respons sudahPager: abaikan
+      }
+    };
+    page.on("response", respHandler);
+
+    await gotoUrl(`${BASE_URL}/change-password`);
+    await page.type('input[name="current_password"]', "PasswordSalahSekali123!");
+    await page.type('input[name="new_password"]', "PerpustakaanKuat17!");
+    await page.type('input[name="confirm_password"]', "PerpustakaanKuat17!");
+    await page.click('button[type="submit"]');
+    await new Promise((r) => setTimeout(r, 4000));
+    page.off("response", respHandler);
+
+    const secrets = ["PerpustakaanKuat17!", "PasswordSalahSekali123!"];
+    const leaked = actionBodies.filter((t) => secrets.some((s) => t.includes(s)));
+    recordResult(
+      "Form Ganti Sandi: nilai sandi tidak bocor ke respons server",
+      "/change-password",
+      leaked.length === 0,
+      leaked.length === 0 ? `${actionBodies.length} respons diperiksa, bersih` : `bocor di ${leaked.length} respons`
+    );
+
+    // Skenario C2: halaman yang baru dimuat tidak boleh memuat nilai sandi
+    await gotoUrl(`${BASE_URL}/change-password`);
+    const freshHtml = await page.content();
+    const freshLeak = secrets.filter((s) => freshHtml.includes(s));
+    recordResult(
+      "Form Ganti Sandi: halaman baru tidak memuat nilai sandi",
+      "/change-password",
+      freshLeak.length === 0,
+      freshLeak.length === 0 ? "bersih" : `bocor: ${freshLeak.length} nilai`
+    );
+
+    // Skenario D: tidak ada error React "Too many re-renders" (#441) di console
+    const reactRenderLoop = consoleErrors.filter((t) =>
+      /Too many re-renders|Minified React error #441/i.test(t)
+    );
+    recordResult(
+      "Tanpa render loop React (#441)",
+      "/change-password",
+      reactRenderLoop.length === 0,
+      reactRenderLoop.length === 0 ? "console bersih" : reactRenderLoop[0]?.slice(0, 160)
+    );
+
+    // CATATAN: jalur sukses (ganti sandi berhasil) TIDAK diuji otomatis karena
+    // akan mengubah kata sandi akun admin sungguhan di database. Verifikasi
+    // manual: isi "sandi saat ini" yang benar + sandi baru sesuai kebijakan.
+
     // ----------------------------------------------------
     // KATEGORI 4: UJI INTERAKTIF PENCARIAN & DATA
     // ----------------------------------------------------

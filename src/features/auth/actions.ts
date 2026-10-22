@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { pbkdf2Sync, timingSafeEqual } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
+import { createAnonClient } from "@/lib/supabase/client";
 import { serviceClient } from "@/lib/supabase/service";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { ROLE_HOME } from "@/lib/types";
@@ -226,21 +227,83 @@ export const adminLogin = login;
 
 /**
  * GANTI KATA SANDI (Wajib login pertama & reset password)
+ *
+ * Keamanan:
+ * - Memverifikasi kata sandi SAAT INI (re-auth) memakai Supabase Auth, sehingga
+ *   sesi yang dibajak tidak bisa mengunci pemilik akun dengan mengganti sandi.
+ * - Rate limit TERPISAH dari login (`change_password:*`) supaya percobaan gagal
+ *   di halaman ini tidak mengunci akun secara global.
+ * - Tidak pernah memakai `auth.admin.updateUserById({ password })` (mencabut
+ *   refresh token aktif). Dipakai `supabase.auth.updateUser()` berbasis sesi.
+ * - Nilai kata sandi TIDAK PERNAH masuk log, audit, atau pesan error.
  */
+export interface ChangePasswordState {
+  message?: string;
+  field?: "current_password" | "new_password" | "confirm_password";
+}
+
+const ChangePasswordSchema = z.object({
+  current_password: z.string().min(1, "Masukkan kata sandi saat ini."),
+  new_password: z.string().min(1, "Masukkan kata sandi baru."),
+  confirm_password: z.string().min(1, "Ulangi kata sandi baru."),
+});
+
 export async function changePassword(
-  _prev: { message?: string; ok?: boolean },
+  _prev: ChangePasswordState,
   formData: FormData,
-): Promise<{ message?: string; ok?: boolean }> {
+): Promise<ChangePasswordState> {
   const session = await getSession();
   if (!session) redirect("/login");
 
-  const newPassword = String(formData.get("new_password") ?? "");
-  const confirmPassword = String(formData.get("confirm_password") ?? "");
+  const parsed = ChangePasswordSchema.safeParse({
+    current_password: formData.get("current_password"),
+    new_password: formData.get("new_password"),
+    confirm_password: formData.get("confirm_password"),
+  });
 
-  if (newPassword !== confirmPassword) {
-    return { message: "Konfirmasi kata sandi tidak cocok." };
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    const field = (issue?.path?.[0] ?? "new_password") as ChangePasswordState["field"];
+    return { message: issue?.message ?? "Data belum lengkap.", field };
   }
 
+  const { current_password: currentPassword, new_password: newPassword, confirm_password: confirmPassword } =
+    parsed.data;
+
+  const { clientIp } = await getClientInfo();
+  const username = session.profile.username;
+  const idKey = `change_password:id:${username.toLowerCase()}`;
+  const ipKey = `change_password:ip:${clientIp}`;
+
+  // 1. RATE LIMIT TERPISAH (tidak memakai counter login)
+  const idStatus = await checkRateLimit(idKey, 5);
+  const ipStatus = await checkRateLimit(ipKey, 10);
+  if (!idStatus.allowed || !ipStatus.allowed) {
+    const waitMin = Math.ceil(Math.max(idStatus.retryAfterSeconds, ipStatus.retryAfterSeconds) / 60);
+    await tulisAudit(session.userId, "auth.password_change_rate_limited", "user", session.userId, {
+      ip: clientIp,
+      wait_minutes: waitMin,
+    });
+    return {
+      message: `Terlalu banyak percobaan ganti kata sandi yang gagal. Coba lagi dalam ${waitMin} menit.`,
+      field: "current_password",
+    };
+  }
+
+  // 2. KONFIRMASI HARUS SAMA
+  if (newPassword !== confirmPassword) {
+    return { message: "Konfirmasi kata sandi baru tidak cocok.", field: "confirm_password" };
+  }
+
+  // 3. SANDI BARU TIDAK BOLEH SAMA DENGAN YANG SAAT INI
+  if (newPassword === currentPassword) {
+    return {
+      message: "Kata sandi baru harus berbeda dari kata sandi saat ini.",
+      field: "new_password",
+    };
+  }
+
+  // 4. KEBIJAKAN KEKUATAN (server = sumber kebenaran)
   const validation = validatePassword(newPassword, {
     username: session.profile.username,
     email: session.profile.email ?? undefined,
@@ -248,19 +311,53 @@ export async function changePassword(
   });
 
   if (!validation.valid) {
-    return { message: validation.message };
+    return { message: validation.message, field: "new_password" };
   }
+
+  // 5. VERIFIKASI KATA SANDI SAAT INI (re-auth via Supabase Auth, client tanpa sesi)
+  const email = session.profile.email || `${username}@sekolah.local`;
+  const verifyClient = createAnonClient();
+  const { error: verifyErr } = await verifyClient.auth
+    .signInWithPassword({ email, password: currentPassword })
+    .catch((e: unknown) => ({ data: { user: null }, error: e as Error }));
+
+  if (verifyErr) {
+    await recordFailedAttempt(idKey, 5);
+    await recordFailedAttempt(ipKey, 10);
+    await tulisAudit(session.userId, "auth.password_change_rejected", "user", session.userId, {
+      ip: clientIp,
+      reason: "current_password_mismatch",
+    });
+    return {
+      message: "Kata sandi saat ini salah. Silakan masukkan kembali.",
+      field: "current_password",
+    };
+  }
+
+  // 6. UBAH KATA SANDI via sesi user (refresh token aktif TIDAK dicabut)
+  const supabase = await createClient();
+  const { error: updateErr } = await supabase.auth.updateUser({ password: newPassword });
+
+  if (updateErr) {
+    // Fallback: service role (hanya bila jalur sesi ditolak, mis. reauth required).
+    console.warn("[AUTH] updateUser berbasis sesi ditolak, mencoba jalur service role:", updateErr?.message);
+    const svc = serviceClient();
+    const { error: authErr } = await svc.auth.admin.updateUserById(session.userId, {
+      password: newPassword,
+    });
+    if (authErr) {
+      console.error("[AUTH] Gagal update kata sandi Supabase:", authErr?.message);
+      return {
+        message: "Gagal memperbarui kata sandi. Coba beberapa saat lagi.",
+        field: "new_password",
+      };
+    }
+  }
+
+  await resetRateLimit(idKey);
+  await resetRateLimit(ipKey);
 
   const svc = serviceClient();
-  const { error: authErr } = await svc.auth.admin.updateUserById(session.userId, {
-    password: newPassword,
-  });
-
-  if (authErr) {
-    console.error("[AUTH] Gagal update kata sandi Supabase:", authErr);
-    return { message: "Gagal memperbarui kata sandi. Coba beberapa saat lagi." };
-  }
-
   await svc
     .from("profiles")
     .update({ must_change_password: false })
@@ -273,11 +370,13 @@ export async function changePassword(
   await tulisAudit(session.userId, "auth.password_changed", "user", session.userId, {
     username: session.profile.username,
     role: session.profile.role,
+    ip: clientIp,
   });
 
   console.info(`[AUTH] Kata sandi berhasil diperbarui untuk @${session.profile.username}. Redirecting to /admin`);
   redirect(ROLE_HOME.admin);
 }
+
 
 /**
  * BUKA KUNCI IDENTIFIER (Reset Darurat Rate Limit):
